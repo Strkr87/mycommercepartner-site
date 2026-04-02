@@ -26,6 +26,7 @@ module.exports = async (req, res) => {
   const profile = await getProfile(user.id);
   json(res, 200, {
     user: serializeUser(user, profile || {}),
-    trialUsed: Number(profile?.trial_used || 0)
+    trialUsed: Number(profile?.trial_used || 0),
+    creditsUsed: Number(profile?.credits_used || 0)
   });
 };

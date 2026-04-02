@@ -1,6 +1,6 @@
 const TRIAL_LIMIT = 2;
 const trialStore = global.__mcpTrialStore || (global.__mcpTrialStore = new Map());
-const { authEnabled, getUserFromToken, getProfile, upsertProfile } = require("../lib/platform");
+const { authEnabled, getUserFromToken, getProfile, upsertProfile, planCreditLimit } = require("../lib/platform");
 
 function pick(rx, s) {
   return (s.match(rx) || [, ""])[1];
@@ -217,22 +217,56 @@ module.exports = async (req, res) => {
     const userAgent = String(req.headers["user-agent"] || "unknown");
     const visitorKey = `${ip}::${userAgent}`;
     const used = remoteProfile ? Number(remoteProfile.trial_used || 0) : Number(trialStore.get(visitorKey) || 0);
+    const creditsUsed = Number(remoteProfile?.credits_used || 0);
+    const creditsLimit = planCreditLimit(profilePlan || String(req.headers["x-user-plan"] || ""));
+    const creditsRemaining = creditsLimit ? Math.max(0, creditsLimit - creditsUsed) : 0;
 
     if (!hasPlan && used >= TRIAL_LIMIT) {
       res.setHeader("X-Trial-Used", String(used));
       res.status(402).json({ error: "Trial limit reached", trialLimited: true, trialUsed: used, trialRemaining: 0 });
       return;
     }
+    if (hasPlan && creditsLimit && creditsUsed >= creditsLimit) {
+      res.status(402).json({
+        error: "Credit limit reached",
+        creditsLimited: true,
+        creditsUsed,
+        creditsLimit,
+        creditsRemaining: 0,
+        user: remoteUser && remoteProfile ? {
+          id: remoteUser.id,
+          email: remoteUser.email,
+          name: remoteProfile.full_name || remoteUser.user_metadata?.full_name || remoteUser.email,
+          plan: profilePlan,
+          trialUsed: used,
+          creditsUsed,
+          creditsLimit,
+          creditsRemaining: 0
+        } : null
+      });
+      return;
+    }
 
     const result = buildResult(req.body || {});
     const nextUsed = hasPlan ? used : used + 1;
+    const nextCreditsUsed = hasPlan && creditsLimit ? creditsUsed + 1 : creditsUsed;
     if (!hasPlan && remoteUser && remoteProfile) {
       await upsertProfile({
         id: remoteUser.id,
         email: remoteUser.email,
         full_name: remoteProfile.full_name || remoteUser.user_metadata?.full_name || remoteUser.email,
         plan: profilePlan || null,
-        trial_used: nextUsed
+        trial_used: nextUsed,
+        credits_used: creditsUsed
+      });
+    } else if (hasPlan && remoteUser && remoteProfile) {
+      await upsertProfile({
+        id: remoteUser.id,
+        email: remoteUser.email,
+        full_name: remoteProfile.full_name || remoteUser.user_metadata?.full_name || remoteUser.email,
+        plan: profilePlan || null,
+        trial_used: used,
+        credits_used: nextCreditsUsed
       });
     } else if (!hasPlan) {
       trialStore.set(visitorKey, nextUsed);
@@ -241,13 +275,20 @@ module.exports = async (req, res) => {
     result.trialUsed = nextUsed;
     result.trialRemaining = hasPlan ? null : Math.max(0, TRIAL_LIMIT - nextUsed);
     result.trialLimited = false;
+    result.creditsUsed = hasPlan ? nextCreditsUsed : creditsUsed;
+    result.creditsLimit = creditsLimit;
+    result.creditsRemaining = hasPlan && creditsLimit ? Math.max(0, creditsLimit - nextCreditsUsed) : creditsRemaining;
+    result.creditsLimited = false;
     if (remoteUser && remoteProfile) {
       result.user = {
         id: remoteUser.id,
         email: remoteUser.email,
         name: remoteProfile.full_name || remoteUser.user_metadata?.full_name || remoteUser.email,
         plan: profilePlan,
-        trialUsed: nextUsed
+        trialUsed: nextUsed,
+        creditsUsed: hasPlan ? nextCreditsUsed : creditsUsed,
+        creditsLimit,
+        creditsRemaining: hasPlan && creditsLimit ? Math.max(0, creditsLimit - nextCreditsUsed) : creditsRemaining
       };
     }
     res.status(200).json(result);

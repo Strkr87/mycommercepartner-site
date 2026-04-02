@@ -35,7 +35,8 @@ module.exports = async (req, res) => {
     email: data.user.email,
     full_name: name.trim(),
     plan: plan || null,
-    trial_used: 0
+    trial_used: 0,
+    credits_used: 0
   });
 
   json(res, 200, {
