@@ -16,6 +16,13 @@ add column if not exists credits_used integer not null default 0;
 alter table public.profiles
 add column if not exists bonus_credits integer not null default 0;
 
+create table if not exists public.guest_trials (
+  fingerprint text primary key,
+  trial_used integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create or replace function public.set_profiles_updated_at()
 returns trigger
 language plpgsql
@@ -32,7 +39,14 @@ before update on public.profiles
 for each row
 execute function public.set_profiles_updated_at();
 
+drop trigger if exists guest_trials_set_updated_at on public.guest_trials;
+create trigger guest_trials_set_updated_at
+before update on public.guest_trials
+for each row
+execute function public.set_profiles_updated_at();
+
 alter table public.profiles enable row level security;
+alter table public.guest_trials enable row level security;
 
 drop policy if exists "Users can view their own profile" on public.profiles;
 create policy "Users can view their own profile"
@@ -51,3 +65,10 @@ create policy "Users can insert their own profile"
 on public.profiles
 for insert
 with check (auth.uid() = id);
+
+drop policy if exists "Service role manages guest trials" on public.guest_trials;
+create policy "Service role manages guest trials"
+on public.guest_trials
+for all
+using (auth.role() = 'service_role')
+with check (auth.role() = 'service_role');

@@ -1,6 +1,6 @@
 const TRIAL_LIMIT = 2;
 const trialStore = global.__mcpTrialStore || (global.__mcpTrialStore = new Map());
-const { authEnabled, getUserFromToken, getProfile, upsertProfile, planCreditLimit } = require("../lib/platform");
+const { authEnabled, getUserFromToken, getProfile, getGuestTrial, upsertGuestTrial, upsertProfile, planCreditLimit } = require("../lib/platform");
 
 function pick(rx, s) {
   return (s.match(rx) || [, ""])[1];
@@ -216,7 +216,8 @@ module.exports = async (req, res) => {
     const ip = String(Array.isArray(forwardedFor) ? forwardedFor[0] : forwardedFor).split(",")[0].trim() || req.socket?.remoteAddress || "unknown";
     const userAgent = String(req.headers["user-agent"] || "unknown");
     const visitorKey = `${ip}::${userAgent}`;
-    const used = remoteProfile ? Number(remoteProfile.trial_used || 0) : Number(trialStore.get(visitorKey) || 0);
+    const guestTrial = !remoteUser && authEnabled() ? await getGuestTrial(visitorKey) : null;
+    const used = remoteProfile ? Number(remoteProfile.trial_used || 0) : guestTrial ? Number(guestTrial.trial_used || 0) : Number(trialStore.get(visitorKey) || 0);
     const creditsUsed = Number(remoteProfile?.credits_used || 0);
     const bonusCredits = Number(remoteProfile?.bonus_credits || 0);
     const creditsLimit = planCreditLimit(profilePlan || String(req.headers["x-user-plan"] || "")) + bonusCredits;
@@ -273,7 +274,11 @@ module.exports = async (req, res) => {
         bonus_credits: bonusCredits
       });
     } else if (!hasPlan) {
-      trialStore.set(visitorKey, nextUsed);
+      if (authEnabled()) {
+        await upsertGuestTrial(visitorKey, nextUsed);
+      } else {
+        trialStore.set(visitorKey, nextUsed);
+      }
     }
     res.setHeader("X-Trial-Used", String(nextUsed));
     result.trialUsed = nextUsed;
