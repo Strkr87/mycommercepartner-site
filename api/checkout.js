@@ -6,7 +6,7 @@ const {
   getProfile,
   planToPriceId,
   stripeRequest
-} = require("./_lib/platform");
+} = require("../lib/platform");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") {

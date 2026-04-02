@@ -1,4 +1,4 @@
-const { authEnabled, json, getUserFromToken, getProfile, serializeUser } = require("../_lib/platform");
+const { authEnabled, json, getUserFromToken, getProfile, serializeUser } = require("../../lib/platform");
 
 module.exports = async (req, res) => {
   if (req.method !== "GET") {

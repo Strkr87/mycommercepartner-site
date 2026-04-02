@@ -1,4 +1,4 @@
-const { authEnabled, json, supabaseAuth, upsertProfile, serializeUser } = require("../_lib/platform");
+const { authEnabled, json, supabaseAuth, upsertProfile, serializeUser } = require("../../lib/platform");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") {

@@ -7,7 +7,7 @@ const {
   upsertProfile,
   serializeUser,
   stripeGet
-} = require("./_lib/platform");
+} = require("../lib/platform");
 
 module.exports = async (req, res) => {
   if (req.method !== "GET") {

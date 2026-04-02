@@ -1,4 +1,4 @@
-const { authEnabled, paymentsEnabled, json } = require("./_lib/platform");
+const { authEnabled, paymentsEnabled, json } = require("../lib/platform");
 
 module.exports = async (req, res) => {
   if (req.method !== "GET") {

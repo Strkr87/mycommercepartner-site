@@ -1,6 +1,6 @@
 const TRIAL_LIMIT = 2;
 const trialStore = global.__mcpTrialStore || (global.__mcpTrialStore = new Map());
-const { authEnabled, getUserFromToken, getProfile, upsertProfile } = require("./_lib/platform");
+const { authEnabled, getUserFromToken, getProfile, upsertProfile } = require("../lib/platform");
 
 function pick(rx, s) {
   return (s.match(rx) || [, ""])[1];
