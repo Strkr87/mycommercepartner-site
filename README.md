@@ -22,6 +22,7 @@ Launch-ready Vercel site for an eBay listing optimization SaaS.
 - `api/checkout.js` - Stripe checkout session creation
 - `api/checkout-status.js` - post-checkout verification and plan activation
 - `api/billing-portal.js` - Stripe customer portal launch for subscription management
+- `api/topup.js` - one-time Stripe checkout for credit top-ups
 - `vercel.json` - deployment configuration
 - `supabase/schema.sql` - required database schema
 
@@ -53,7 +54,8 @@ Launch-ready Vercel site for an eBay listing optimization SaaS.
 - Trial tracking tied to signed-in users
 - Stripe subscription checkout from pricing buttons
 - Plan activation after successful checkout return
-- Customer self-serve billing management and cancellation through Stripe
+- Customer self-serve billing management, plan changes, and cancellation through Stripe
+- One-time credit top-up purchases that add extra optimization credits
 - Trial limit enforcement before upgrade
 
 ## Remaining production tasks

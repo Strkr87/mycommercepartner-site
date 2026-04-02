@@ -50,16 +50,21 @@ module.exports = async (req, res) => {
   }
 
   const existing = await getProfile(user.id);
+  const kind = data.metadata?.kind || "plan";
+  const topupCredits = Number(data.metadata?.topup_credits || 0);
   const profile = await upsertProfile({
     id: user.id,
     email: user.email,
     full_name: existing?.full_name || user.user_metadata?.full_name || user.email,
-    plan: data.metadata?.plan || existing?.plan || null,
+    plan: kind === "topup" ? existing?.plan || null : data.metadata?.plan || existing?.plan || null,
     trial_used: Number(existing?.trial_used || 0),
-    credits_used: Number(existing?.credits_used || 0)
+    credits_used: Number(existing?.credits_used || 0),
+    bonus_credits: Number(existing?.bonus_credits || 0) + (kind === "topup" ? topupCredits : 0)
   });
 
   json(res, 200, {
+    kind,
+    topupCredits,
     user: serializeUser(user, profile)
   });
 };

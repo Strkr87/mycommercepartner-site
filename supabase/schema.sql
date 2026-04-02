@@ -5,12 +5,16 @@ create table if not exists public.profiles (
   plan text,
   trial_used integer not null default 0,
   credits_used integer not null default 0,
+  bonus_credits integer not null default 0,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
 alter table public.profiles
 add column if not exists credits_used integer not null default 0;
+
+alter table public.profiles
+add column if not exists bonus_credits integer not null default 0;
 
 create or replace function public.set_profiles_updated_at()
 returns trigger

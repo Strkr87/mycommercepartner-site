@@ -218,7 +218,8 @@ module.exports = async (req, res) => {
     const visitorKey = `${ip}::${userAgent}`;
     const used = remoteProfile ? Number(remoteProfile.trial_used || 0) : Number(trialStore.get(visitorKey) || 0);
     const creditsUsed = Number(remoteProfile?.credits_used || 0);
-    const creditsLimit = planCreditLimit(profilePlan || String(req.headers["x-user-plan"] || ""));
+    const bonusCredits = Number(remoteProfile?.bonus_credits || 0);
+    const creditsLimit = planCreditLimit(profilePlan || String(req.headers["x-user-plan"] || "")) + bonusCredits;
     const creditsRemaining = creditsLimit ? Math.max(0, creditsLimit - creditsUsed) : 0;
 
     if (!hasPlan && used >= TRIAL_LIMIT) {
@@ -240,6 +241,7 @@ module.exports = async (req, res) => {
           plan: profilePlan,
           trialUsed: used,
           creditsUsed,
+          bonusCredits,
           creditsLimit,
           creditsRemaining: 0
         } : null
@@ -257,7 +259,8 @@ module.exports = async (req, res) => {
         full_name: remoteProfile.full_name || remoteUser.user_metadata?.full_name || remoteUser.email,
         plan: profilePlan || null,
         trial_used: nextUsed,
-        credits_used: creditsUsed
+        credits_used: creditsUsed,
+        bonus_credits: bonusCredits
       });
     } else if (hasPlan && remoteUser && remoteProfile) {
       await upsertProfile({
@@ -266,7 +269,8 @@ module.exports = async (req, res) => {
         full_name: remoteProfile.full_name || remoteUser.user_metadata?.full_name || remoteUser.email,
         plan: profilePlan || null,
         trial_used: used,
-        credits_used: nextCreditsUsed
+        credits_used: nextCreditsUsed,
+        bonus_credits: bonusCredits
       });
     } else if (!hasPlan) {
       trialStore.set(visitorKey, nextUsed);
@@ -276,6 +280,7 @@ module.exports = async (req, res) => {
     result.trialRemaining = hasPlan ? null : Math.max(0, TRIAL_LIMIT - nextUsed);
     result.trialLimited = false;
     result.creditsUsed = hasPlan ? nextCreditsUsed : creditsUsed;
+    result.bonusCredits = bonusCredits;
     result.creditsLimit = creditsLimit;
     result.creditsRemaining = hasPlan && creditsLimit ? Math.max(0, creditsLimit - nextCreditsUsed) : creditsRemaining;
     result.creditsLimited = false;
@@ -287,6 +292,7 @@ module.exports = async (req, res) => {
         plan: profilePlan,
         trialUsed: nextUsed,
         creditsUsed: hasPlan ? nextCreditsUsed : creditsUsed,
+        bonusCredits,
         creditsLimit,
         creditsRemaining: hasPlan && creditsLimit ? Math.max(0, creditsLimit - nextCreditsUsed) : creditsRemaining
       };
