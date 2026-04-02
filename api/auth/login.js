@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
     })
   });
 
-  if (!response.ok || !data?.user?.id || !data?.access_token) {
+  if (!response.ok || !data?.user?.id) {
     json(res, response.status || 401, { error: data?.error_description || "Unable to log in" });
     return;
   }
@@ -33,10 +33,10 @@ module.exports = async (req, res) => {
 
   json(res, 200, {
     user: serializeUser(data.user, profile || {}),
-    session: {
+    session: data?.access_token ? {
       accessToken: data.access_token,
       refreshToken: data.refresh_token
-    },
+    } : null,
     trialUsed: Number(profile?.trial_used || 0)
   });
 };
