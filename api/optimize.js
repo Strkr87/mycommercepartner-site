@@ -1,6 +1,5 @@
 const TRIAL_LIMIT = 2;
-const trialStore = global.__mcpTrialStore || (global.__mcpTrialStore = new Map());
-const { authEnabled, getUserFromToken, getProfile, getGuestTrial, upsertGuestTrial, upsertProfile, planCreditLimit } = require("../lib/platform");
+const { authEnabled, getUserFromToken, getProfile, upsertProfile, planCreditLimit } = require("../lib/platform");
 
 function pick(rx, s) {
   return (s.match(rx) || [, ""])[1];
@@ -212,17 +211,16 @@ module.exports = async (req, res) => {
     const remoteProfile = remoteUser ? await getProfile(remoteUser.id) : null;
     const profilePlan = remoteProfile?.plan || "";
     const hasPlan = Boolean(profilePlan || req.headers["x-user-plan"]);
-    const forwardedFor = req.headers["x-forwarded-for"] || "";
-    const ip = String(Array.isArray(forwardedFor) ? forwardedFor[0] : forwardedFor).split(",")[0].trim() || req.socket?.remoteAddress || "unknown";
-    const userAgent = String(req.headers["user-agent"] || "unknown");
-    const visitorKey = `${ip}::${userAgent}`;
-    const guestTrial = !remoteUser && authEnabled() ? await getGuestTrial(visitorKey) : null;
-    const used = remoteProfile ? Number(remoteProfile.trial_used || 0) : guestTrial ? Number(guestTrial.trial_used || 0) : Number(trialStore.get(visitorKey) || 0);
+    const used = remoteProfile ? Number(remoteProfile.trial_used || 0) : 0;
     const creditsUsed = Number(remoteProfile?.credits_used || 0);
     const bonusCredits = Number(remoteProfile?.bonus_credits || 0);
     const creditsLimit = planCreditLimit(profilePlan || String(req.headers["x-user-plan"] || "")) + bonusCredits;
     const creditsRemaining = creditsLimit ? Math.max(0, creditsLimit - creditsUsed) : 0;
 
+    if (!remoteUser && !hasPlan) {
+      res.status(401).json({ error: "Create an account to unlock your 2 free optimizations", authRequired: true, trialLimit: TRIAL_LIMIT });
+      return;
+    }
     if (!hasPlan && used >= TRIAL_LIMIT) {
       res.setHeader("X-Trial-Used", String(used));
       res.status(402).json({ error: "Trial limit reached", trialLimited: true, trialUsed: used, trialRemaining: 0 });
@@ -273,12 +271,6 @@ module.exports = async (req, res) => {
         credits_used: nextCreditsUsed,
         bonus_credits: bonusCredits
       });
-    } else if (!hasPlan) {
-      if (authEnabled()) {
-        await upsertGuestTrial(visitorKey, nextUsed);
-      } else {
-        trialStore.set(visitorKey, nextUsed);
-      }
     }
     res.setHeader("X-Trial-Used", String(nextUsed));
     result.trialUsed = nextUsed;
