@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
     })
   });
 
-  if (!response.ok || !data?.user?.id || !data?.session?.access_token) {
+  if (!response.ok || !data?.user?.id) {
     json(res, response.status || 400, { error: data?.msg || data?.error_description || "Unable to create account" });
     return;
   }
@@ -40,10 +40,10 @@ module.exports = async (req, res) => {
 
   json(res, 200, {
     user: serializeUser(data.user, profile),
-    session: {
+    session: data?.session?.access_token ? {
       accessToken: data.session.access_token,
       refreshToken: data.session.refresh_token
-    },
+    } : null,
     trialUsed: Number(profile.trial_used || 0)
   });
 };
