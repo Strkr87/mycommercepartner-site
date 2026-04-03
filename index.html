@@ -137,7 +137,7 @@ function updateAuthUI(){
   $("accountBillingMeta").textContent=loggedIn&&user.plan?"Upgrade, downgrade, cancel, or buy more credits from your account menu.":billing.meta;
   updateTrialUI();
 }
-function function showLogin(){$("forgotForm").style.display="none";$("loginForm").style.display="";$("authHeading").textContent="Welcome back";}
+function showLogin(){$("forgotForm").style.display="none";$("loginForm").style.display="";$("authHeading").textContent="Welcome back";}
 function showForgot(){$("loginForm").style.display="none";$("forgotForm").style.display="";$("authHeading").textContent="Reset your password";}
 document.addEventListener("DOMContentLoaded",function(){
   var fb=$("forgotBtn");if(fb)fb.addEventListener("click",showForgot);
