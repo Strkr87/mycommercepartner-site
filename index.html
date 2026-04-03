@@ -68,7 +68,7 @@ Included: Charging cable</textarea></div><div class="full"><label for="descripti
 <script>
 (function(){
   var messages=[],open=false;
-  var box=$("chatBox"),toggle=$("chatToggle"),close=$("chatClose"),input=$("chatInput"),send=$("chatSend"),msgs=$("chatMessages");
+  var gi=function(id){return document.getElementById(id);};var box=gi("chatBox"),toggle=gi("chatToggle"),close=gi("chatClose"),input=gi("chatInput"),send=gi("chatSend"),msgs=gi("chatMessages");
   function toggleChat(){open=!open;box.classList.toggle("open",open);toggle.textContent=open?"✕":"💬";if(open)input.focus();}
   toggle.addEventListener("click",toggleChat);
   close.addEventListener("click",toggleChat);
