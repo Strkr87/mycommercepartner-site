@@ -155,8 +155,8 @@ function setAuthMode(mode){
   $("tabSignup").classList.toggle("active",signup);
   $("tabLogin").classList.toggle("active",!signup);
   $("signupForm").classList.toggle("open",signup);
-  if($("forgotForm"))$("forgotForm").style.display="none";
-  $("loginForm").style.display=signup?"none":"";
+  if($("forgotForm")){$("forgotForm").style.display="none";}
+  $("loginForm").style.display="";
   $("loginForm").classList.toggle("open",!signup);
   $("authHeading").textContent=signup?"Create your account":"Welcome back";
   document.querySelector(".authmeta").textContent=signup?"Save listings, track credits, and keep your optimization work organized.":"Log in to access saved listings, credits, and your optimization workspace.";
