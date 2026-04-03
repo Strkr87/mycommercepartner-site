@@ -207,10 +207,12 @@ function build80(tokens, fallback){
     if(/[^a-z0-9%-]/i.test(word)) return false;
     return true;
   });
-  let usedWords=titleWords(title);
-  for(let word of extras){
-    let lower=word.toLowerCase();
+  let usedWords=titleWords(title),coveredWords=new Set(clean.flatMap(token=>token.toLowerCase().split(/\s+/).filter(Boolean)));
+  for(let idx=0;idx<extras.length;idx++){
+    let word=extras[idx],lower=word.toLowerCase(),nextLower=(extras[idx+1]||"").toLowerCase();
     if(clean.some(token=>token.toLowerCase().includes(lower))) continue;
+    if(coveredWords.has(lower)) continue;
+    if(nextLower&&coveredWords.has(nextLower)) continue;
     if(usedWords.has(lower)) continue;
     let next=title?`${title} ${word}`:word;
     if(next.length<=80) title=next; else break;
