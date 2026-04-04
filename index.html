@@ -87,6 +87,7 @@
           </form>
         </div>
       </div>
+      <div id="authMessage" class="status" style="display:none">Ready.</div>
     </section>
 
     <section class="section">
@@ -146,7 +147,8 @@ Used iPhone 13 Pro Max in good condition. It works well and is unlocked. Has nor
     function writeSession(user){if(user){localStorage.setItem('mcpSession', JSON.stringify(user))}else{localStorage.removeItem('mcpSession')}}
     function updateAuthUI(){ const loggedIn=!!readSession(); const dashNav=document.getElementById('dashboardNav'); const heroBtn=document.getElementById('dashboardHeroBtn'); if(dashNav){ dashNav.style.display = loggedIn ? 'inline-flex' : 'none'; } if(heroBtn){ heroBtn.textContent = loggedIn ? 'Go to Dashboard' : 'Get Started Free'; } }
     function goToDashboard(e){ if(e) e.preventDefault(); if(readSession()){ window.location.href='dashboard.html'; } else { document.getElementById('authInline').scrollIntoView({behavior:'smooth'}); } }
-    const authStatus = { set textContent(v){ console.log(v) } };
+    const authMessage = document.getElementById('authMessage');
+    const authStatus = { set textContent(v){ if(authMessage){ authMessage.style.display='block'; authMessage.textContent=v; } } };
 
     updateAuthUI();
     document.getElementById('dashboardNav').addEventListener('click', goToDashboard);
