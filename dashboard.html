@@ -15,7 +15,7 @@
     .main{grid-template-columns:1.35fr .65fr;margin-top:24px}.projects .project{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;padding:18px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)} .thumb{width:62px;height:62px;border-radius:16px;background:linear-gradient(135deg,#e9e1d6,#fff);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:1.4rem}.tag{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;font-size:.78rem;font-weight:700;background:#f3eee6;color:#6e5d49}
     .action-list{display:grid;gap:12px}.action-item{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;padding:16px 18px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)} .icon{width:40px;height:40px;border-radius:14px;background:#173029;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
     .progress{height:12px;border-radius:999px;background:#eee7dd;overflow:hidden;margin-top:10px}.progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#f3a367);width:68%}.credit-meter{margin-top:16px;padding:16px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)}.credit-scale{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-top:8px}
-    .mini-list{margin-top:14px;display:grid;gap:10px}.mini-list div{padding:12px 14px;border-radius:14px;background:#fff;border:1px solid var(--line)}.dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px}.metric-card,.billing-card,.activity-card,.profile-card{background:#fffdf9;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:22px}.metric-card h3,.billing-card h3,.activity-card h3,.profile-card h3{font:1.3rem/1.2 Georgia,serif;margin-bottom:10px}.metric-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.mini-stat{padding:14px;border-radius:16px;background:#fff;border:1px solid var(--line)}.mini-stat strong{display:block;font-size:1.25rem;margin-bottom:4px}.activity-list{display:grid;gap:10px;margin-top:14px}.activity-list div{padding:12px 14px;border-radius:14px;background:#fff;border:1px solid var(--line)}.profile-top{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}.avatar{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,var(--accent),#f3a367);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:700}
+    .mini-list{margin-top:14px;display:grid;gap:10px}.mini-list div{padding:12px 14px;border-radius:14px;background:#fff;border:1px solid var(--line)}.dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px}.metric-card,.billing-card,.activity-card,.profile-card,.alerts-card,.preview-card{background:#fffdf9;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:22px}.metric-card h3,.billing-card h3,.activity-card h3,.profile-card h3,.alerts-card h3,.preview-card h3{font:1.3rem/1.2 Georgia,serif;margin-bottom:10px}.metric-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.mini-stat{padding:14px;border-radius:16px;background:#fff;border:1px solid var(--line)}.mini-stat strong{display:block;font-size:1.25rem;margin-bottom:4px}.activity-list{display:grid;gap:10px;margin-top:14px}.activity-list div{padding:12px 14px;border-radius:14px;background:#fff;border:1px solid var(--line)}.profile-top{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}.avatar{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,var(--accent),#f3a367);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:700}.chart{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:150px;margin-top:18px}.bar{border-radius:12px 12px 6px 6px;background:linear-gradient(180deg,#f4c6a2,var(--accent));min-height:40px}.preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.preview-item{padding:14px;border-radius:16px;background:#fff;border:1px solid var(--line)}.preview-image{height:120px;border-radius:14px;background:linear-gradient(135deg,#ece3d7,#fff);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:10px}.alert-list{display:grid;gap:10px;margin-top:14px}.alert{padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:#fff}.alert strong{display:block;margin-bottom:4px}
     @media(max-width:960px){.hero,.main,.summary,.dashboard-grid{grid-template-columns:1fr 1fr}} @media(max-width:720px){header,.hero,.main,.summary,.dashboard-grid{grid-template-columns:1fr;display:grid}.summary{grid-template-columns:1fr 1fr}} @media(max-width:560px){.summary{grid-template-columns:1fr}}
   </style>
 </head>
@@ -169,6 +169,50 @@
           <div><strong>Email:</strong> seller@example.com</div>
           <div><strong>Workspace status:</strong> Active</div>
           <div><strong>Next billing action:</strong> Manage plan or upgrade before next cycle if volume increases</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <h3>Listing performance trend</h3>
+        <p class="sub">A simple visual snapshot of recent optimization performance momentum.</p>
+        <div class="chart">
+          <div class="bar" style="height:44%"></div>
+          <div class="bar" style="height:56%"></div>
+          <div class="bar" style="height:63%"></div>
+          <div class="bar" style="height:70%"></div>
+          <div class="bar" style="height:68%"></div>
+          <div class="bar" style="height:82%"></div>
+          <div class="bar" style="height:88%"></div>
+        </div>
+      </div>
+
+      <div class="billing-card">
+        <h3>Subscription management</h3>
+        <p class="sub">Review your current plan and the next upgrade path.</p>
+        <div class="mini-list">
+          <div><strong>Current plan:</strong> Growth</div>
+          <div><strong>Renewal date:</strong> May 2, 2026</div>
+          <div><strong>Upgrade option:</strong> Enterprise if monthly volume continues increasing</div>
+          <div><strong>Best next action:</strong> Keep current plan unless you exceed your credit cap consistently</div>
+        </div>
+      </div>
+
+      <div class="preview-card">
+        <h3>Listing previews</h3>
+        <p class="sub">Quick visual access to listings currently in your workflow.</p>
+        <div class="preview-grid">
+          <div class="preview-item"><div class="preview-image">📱</div><strong>iPhone 13 Pro Max</strong><p class="sub">Enhanced listing draft ready</p></div>
+          <div class="preview-item"><div class="preview-image">👟</div><strong>Nike Air Max 90</strong><p class="sub">Description still in progress</p></div>
+        </div>
+      </div>
+
+      <div class="alerts-card">
+        <h3>Notifications & alerts</h3>
+        <p class="sub">Important things that need attention soon.</p>
+        <div class="alert-list">
+          <div class="alert"><strong>3 drafts waiting for review</strong><span class="muted">Finishing these first is the fastest path to momentum.</span></div>
+          <div class="alert"><strong>4 listings flagged for audit priority</strong><span class="muted">These are the strongest candidates for the $49 audit offer.</span></div>
+          <div class="alert"><strong>Credit usage is healthy</strong><span class="muted">You still have room for another meaningful optimization batch this cycle.</span></div>
         </div>
       </div>
     </section>
