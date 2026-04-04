@@ -46,7 +46,7 @@ Included: Charging cable</textarea></div><div class="full"><label for="descripti
 .chat-suggestions{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px}
 .chat-sug{padding:6px 11px;border-radius:999px;border:1px solid rgba(23,48,41,.14);background:#fff;font-size:.79rem;font-weight:700;color:var(--ink);cursor:pointer;transition:.15s ease}
 .chat-sug:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
-@media(max-width:640px){#chatBox{width:calc(100vw - 28px)}#chatWidget{right:14px;bottom:72px}}
+@media(max-width:640px){#chatWidget{display:none!important}#chatBox{width:calc(100vw - 28px)}#chatWidget{right:14px;bottom:72px}}
 </style>
 
 <div id="chatWidget">
@@ -207,6 +207,7 @@ function canOptimize(){if(hasActivePlan()){let credits=creditSnapshot(currentUse
 function updateAuthUI(){
   let user=currentUser(), loggedIn=!!user;
   let credits=creditSnapshot(user);
+  if(window.innerWidth<=640){loggedIn=false;user={};$("accountMenu").classList.remove("open","signedin");}
   let billing=billingSnapshot(user);
   let billingVisible=loggedIn&&!!user.plan&&paymentsEnabled();
   $("accountMenu").classList.toggle("signedin",loggedIn);
