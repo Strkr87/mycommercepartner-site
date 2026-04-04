@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Dashboard | MyCommercePartner</title>
+  <meta name="description" content="User dashboard for MyCommercePartner with account summary, credits, recent listing projects, and quick actions.">
+  <style>
+    :root{--bg:#f7f1e8;--ink:#173029;--muted:#61716a;--line:rgba(23,48,41,.12);--accent:#e57a3b;--accent2:#19443a;--soft:#fffdf9;--shadow:0 16px 36px rgba(23,48,41,.08);--shadow-soft:0 8px 18px rgba(23,48,41,.05);--r:20px;--max:1180px}
+    *{box-sizing:border-box} body{margin:0;font:16px/1.6 Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#fbf7f1,#f3e9dc)} a{color:inherit} h1,h2,h3,p{margin:0}
+    .wrap{max-width:var(--max);margin:auto;padding:20px 16px 40px} header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 16px;background:#fffdf9;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-soft)}
+    .brand{display:flex;gap:12px;align-items:center;text-decoration:none}.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ffbc73)} nav{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.navlink,.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:700}.navlink{color:var(--muted)} .btn{padding:12px 16px;border-radius:999px;border:1px solid transparent;cursor:pointer}.primary{background:#173029;color:#fff}.ghost{background:#fff;border-color:var(--line);color:var(--ink)}
+    .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:20px}.panel,.card{background:#fffdf9;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:24px}.eyebrow{display:inline-block;padding:6px 12px;border-radius:999px;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#fff3e6;color:#a45426}
+    h1{margin-top:14px;font:clamp(2.3rem,4.6vw,4rem)/1 Georgia,serif}.sub{margin-top:12px;color:var(--muted)} .summary,.main,.projects,.actions{display:grid;gap:18px}.summary{grid-template-columns:repeat(4,1fr);margin-top:18px}.stat{padding:18px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)} .stat big{display:block;font:700 1.7rem/1 Georgia,serif;margin-bottom:6px}
+    .main{grid-template-columns:1.35fr .65fr;margin-top:24px}.projects .project{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;padding:18px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)} .tag{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;font-size:.78rem;font-weight:700;background:#f3eee6;color:#6e5d49}
+    .action-list{display:grid;gap:12px}.action-item{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;padding:16px 18px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)} .icon{width:40px;height:40px;border-radius:14px;background:#173029;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+    .progress{height:12px;border-radius:999px;background:#eee7dd;overflow:hidden;margin-top:10px}.progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#f3a367);width:68%}
+    .mini-list{margin-top:14px;display:grid;gap:10px}.mini-list div{padding:12px 14px;border-radius:14px;background:#fff;border:1px solid var(--line)}
+    @media(max-width:960px){.hero,.main,.summary{grid-template-columns:1fr 1fr}} @media(max-width:720px){header,.hero,.main,.summary{grid-template-columns:1fr;display:grid}.summary{grid-template-columns:1fr 1fr}} @media(max-width:560px){.summary{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="index.html"><div class="logo"></div><div><div><b>MyCommercePartner</b></div><div style="font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">seller dashboard</div></div></a>
+      <nav>
+        <a class="navlink" href="index.html">Home</a>
+        <a class="navlink" href="faq.html">FAQ</a>
+        <a class="navlink" href="about.html">About</a>
+        <a class="btn ghost" href="index.html#pricing">Plans</a>
+        <a class="btn primary" href="index.html#optimizer">Optimize Listing</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="panel">
+        <span class="eyebrow">Dashboard</span>
+        <h1>Welcome back, seller.</h1>
+        <p class="sub">Track credits, review recent listing work, and jump back into optimization without hunting through your workflow.</p>
+        <div class="summary">
+          <div class="stat"><big>Growth</big><div>Current plan</div></div>
+          <div class="stat"><big>172</big><div>Credits remaining</div></div>
+          <div class="stat"><big>48</big><div>Listings improved this month</div></div>
+          <div class="stat"><big>3</big><div>Drafts ready to review</div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3 style="font:1.45rem/1.2 Georgia,serif">Usage this month</h3>
+        <p class="sub">Your account is active and ready for more listing work.</p>
+        <div class="progress"><span></span></div>
+        <p class="sub" style="margin-top:10px">68% of monthly credits used</p>
+        <div class="mini-list">
+          <div><strong>Next recommended step:</strong> finish the 3 draft listings waiting for final review.</div>
+          <div><strong>Best quick win:</strong> run a batch on stale electronics inventory before your next listing cycle.</div>
+          <div><strong>Need more help?</strong> start a $49 audit or move into a higher monthly plan.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="main">
+      <div class="projects">
+        <div class="card">
+          <h2 style="font:1.5rem/1.2 Georgia,serif">Recent listing projects</h2>
+          <div class="project" style="margin-top:16px">
+            <div>
+              <strong>Apple iPhone 13 Pro Max 256GB Unlocked Sierra Blue</strong>
+              <p class="sub">Title, bullet points, and enhanced product description drafted.</p>
+            </div>
+            <div class="tag">Ready to review</div>
+          </div>
+          <div class="project">
+            <div>
+              <strong>Nike Air Max 90 Men Size 10 White Black</strong>
+              <p class="sub">Condition and bullet cleanup complete. Description still needs final polish.</p>
+            </div>
+            <div class="tag">In progress</div>
+          </div>
+          <div class="project">
+            <div>
+              <strong>Vintage Sony Walkman Cassette Player</strong>
+              <p class="sub">Audit recommendations generated with missing specifics flagged.</p>
+            </div>
+            <div class="tag">Audit ready</div>
+          </div>
+          <div class="project">
+            <div>
+              <strong>OEM Auto Part Listing Batch</strong>
+              <p class="sub">Keyword structure and compatibility formatting improved across the batch.</p>
+            </div>
+            <div class="tag">Completed</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <div class="card">
+          <h2 style="font:1.5rem/1.2 Georgia,serif">Quick actions</h2>
+          <div class="action-list" style="margin-top:16px">
+            <div class="action-item"><div class="icon">✍</div><div><strong>Optimize a new listing</strong><p class="sub">Start a fresh listing workflow and generate stronger titles, bullets, and descriptions.</p></div></div>
+            <div class="action-item"><div class="icon">🔎</div><div><strong>Request a $49 audit</strong><p class="sub">Get a prioritized review of 10 listings if you want faster paid insight.</p></div></div>
+            <div class="action-item"><div class="icon">📈</div><div><strong>Upgrade your plan</strong><p class="sub">Increase monthly credits if you are optimizing larger batches consistently.</p></div></div>
+            <div class="action-item"><div class="icon">🗂</div><div><strong>Review saved drafts</strong><p class="sub">Jump back into listings that already have suggested copy waiting.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
