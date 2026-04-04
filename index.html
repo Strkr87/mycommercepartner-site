@@ -33,7 +33,7 @@
       <nav>
         <a class="navlink" href="about.html">About</a>
         <a class="navlink" href="faq.html">FAQ</a>
-        <a class="navlink" href="#" id="dashboardNav">Dashboard</a>
+        <a class="navlink" href="#" id="dashboardNav" style="display:none">Dashboard</a>
         <a class="navlink" href="#authInline">Log in</a>
         <a class="btn primary" href="#authInline">Sign up</a>
       </nav>
@@ -45,7 +45,7 @@
         <h1>Turn weak eBay listings into clearer, higher-converting listings faster.</h1>
         <p class="sub" style="margin-top:14px">MyCommercePartner helps eBay sellers improve titles, item specifics, and buyer-facing copy so listings are easier to find, easier to trust, and easier to buy from.</p>
         <div class="actions">
-          <a class="btn primary" href="#" id="dashboardHeroBtn">Go to Dashboard</a>
+          <a class="btn primary" href="#" id="dashboardHeroBtn">Get Started Free</a>
           <a class="btn ghost" href="mailto:hello@mycommercepartner.com?subject=Listing%20Conversion%20Audit%20Request">Start with the $49 Audit</a>
           <a class="btn ghost" href="#pricing">See Pricing</a>
         </div>
@@ -144,9 +144,11 @@ Used iPhone 13 Pro Max in good condition. It works well and is unlocked. Has nor
     function writeUsers(users){localStorage.setItem('mcpUsers', JSON.stringify(users))}
     function readSession(){try{return JSON.parse(localStorage.getItem('mcpSession')||'null')}catch(e){return null}}
     function writeSession(user){if(user){localStorage.setItem('mcpSession', JSON.stringify(user))}else{localStorage.removeItem('mcpSession')}}
+    function updateAuthUI(){ const loggedIn=!!readSession(); const dashNav=document.getElementById('dashboardNav'); const heroBtn=document.getElementById('dashboardHeroBtn'); if(dashNav){ dashNav.style.display = loggedIn ? 'inline-flex' : 'none'; } if(heroBtn){ heroBtn.textContent = loggedIn ? 'Go to Dashboard' : 'Get Started Free'; } }
     function goToDashboard(e){ if(e) e.preventDefault(); if(readSession()){ window.location.href='dashboard.html'; } else { document.getElementById('authInline').scrollIntoView({behavior:'smooth'}); } }
     const authStatus = { set textContent(v){ console.log(v) } };
 
+    updateAuthUI();
     document.getElementById('dashboardNav').addEventListener('click', goToDashboard);
     document.getElementById('dashboardHeroBtn').addEventListener('click', goToDashboard);
 
@@ -159,7 +161,7 @@ Used iPhone 13 Pro Max in good condition. It works well and is unlocked. Has nor
       const users = readUsers();
       if(users.some(u => u.email === email)){ authStatus.textContent = 'That email already has an account. Try logging in instead.'; return; }
       const user = {name,email,password,createdAt:new Date().toISOString()};
-      users.push(user); writeUsers(users); writeSession(user);
+      users.push(user); writeUsers(users); writeSession(user); updateAuthUI();
       authStatus.textContent = 'Account created. Your 2 free optimizations are now unlocked.';
       this.reset();
       window.location.href='dashboard.html';
@@ -171,7 +173,7 @@ Used iPhone 13 Pro Max in good condition. It works well and is unlocked. Has nor
       const password = document.getElementById('loginPassword').value;
       const user = readUsers().find(u => u.email === email && u.password === password);
       if(!user){ authStatus.textContent = 'We could not match that email and password.'; return; }
-      writeSession(user);
+      writeSession(user); updateAuthUI();
       authStatus.textContent = 'You are logged in. Your 2 free optimizations are available on this account.';
       this.reset();
       window.location.href='dashboard.html';
