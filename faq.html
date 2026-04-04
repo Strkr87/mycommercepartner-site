@@ -1,460 +1,49 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FAQ | MyCommercePartner</title>
-<meta name="description" content="Answers to common questions about MyCommercePartner's eBay listing optimization platform.">
-<style>
-:root{--bg:#f7f1e8;--ink:#173029;--muted:#61716a;--line:rgba(23,48,41,.10);--accent:#e57a3b;--accent2:#19443a;--soft:#fffdf9;--mint:#2f7e6a;--shadow:0 16px 36px rgba(23,48,41,.08);--shadow-soft:0 8px 18px rgba(23,48,41,.05);--r:22px;--max:1120px}
-*{box-sizing:border-box}
-body{margin:0;font:16px/1.6 "Segoe UI","Trebuchet MS",sans-serif;color:var(--ink);background:radial-gradient(circle at top left,rgba(229,122,59,.12),transparent 24%),radial-gradient(circle at 85% 8%,rgba(47,126,106,.10),transparent 20%),linear-gradient(180deg,#fbf7f1,#f3e9dc);min-height:100vh}
-a{color:inherit}
-h1,h2,h3,p{margin:0}
-.wrap{max-width:var(--max);margin:auto;padding:22px 18px 60px}
-
-/* Header */
-header{position:sticky;top:12px;z-index:12;padding:14px 16px;background:rgba(251,247,241,.72);backdrop-filter:blur(14px);border:1px solid rgba(23,48,41,.08);border-radius:20px;box-shadow:var(--shadow-soft);display:flex;justify-content:space-between;align-items:center;gap:16px}
-.brand{display:flex;gap:12px;align-items:center;text-decoration:none}
-.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#ffbc73);box-shadow:0 12px 22px rgba(229,122,59,.22);flex-shrink:0}
-.brand-text b{display:block;font-size:1rem}
-.brand-text div{font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
-nav{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
-.navlink{font-weight:700;text-decoration:none;color:var(--muted);transition:color .18s}
-.navlink:hover{color:var(--ink)}
-.navlink.active{color:var(--ink)}
-.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:999px;font-weight:700;border:1px solid transparent;cursor:pointer;text-decoration:none;transition:.18s ease}
-.btn:hover{transform:translateY(-1px)}
-.primary{background:linear-gradient(135deg,var(--accent),#f3a367);color:#fff;box-shadow:0 10px 20px rgba(229,122,59,.18)}
-.ghost{background:rgba(255,255,255,.88);border-color:rgba(23,48,41,.12);color:var(--ink)}
-
-/* Hero */
-.faq-hero{text-align:center;padding:60px 18px 48px;max-width:640px;margin:0 auto}
-.eyebrow{display:inline-block;padding:7px 14px;border-radius:999px;background:linear-gradient(135deg,rgba(229,122,59,.13),rgba(255,208,102,.22));color:#b85a22;font-size:.78rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px}
-.faq-hero h1{font:clamp(2rem,4.5vw,3.2rem)/.98 Georgia,serif;letter-spacing:-.04em;margin-bottom:16px}
-.faq-hero p{color:var(--muted);font-size:1.05rem;max-width:46ch;margin:0 auto}
-
-/* Categories */
-.faq-cats{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:32px 0 48px}
-.cat-btn{padding:9px 18px;border-radius:999px;border:1px solid rgba(23,48,41,.14);background:rgba(255,255,255,.88);font-weight:700;font-size:.88rem;cursor:pointer;transition:.18s ease;color:var(--ink)}
-.cat-btn:hover,.cat-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
-
-/* FAQ groups */
-.faq-group{margin-bottom:48px}
-.faq-group-title{font-size:1.1rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--line)}
-
-/* Accordion */
-.faq-list{display:grid;gap:12px}
-.faq-item{background:#fff;border:1px solid rgba(23,48,41,.09);border-radius:18px;box-shadow:0 6px 16px rgba(23,48,41,.05);overflow:hidden;transition:box-shadow .2s ease}
-.faq-item:hover{box-shadow:0 12px 28px rgba(23,48,41,.09)}
-.faq-item.open{border-color:rgba(229,122,59,.28);box-shadow:0 12px 28px rgba(229,122,59,.08)}
-.faq-q{width:100%;padding:20px 22px;display:flex;justify-content:space-between;align-items:center;gap:16px;border:none;background:none;text-align:left;font:700 1rem/1.4 "Segoe UI","Trebuchet MS",sans-serif;color:var(--ink);cursor:pointer}
-.faq-q:hover{background:rgba(23,48,41,.02)}
-.faq-icon{width:28px;height:28px;border-radius:50%;background:rgba(23,48,41,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;font-weight:800;transition:background .18s,transform .25s}
-.faq-item.open .faq-icon{background:linear-gradient(135deg,var(--accent),#f3a367);color:#fff;transform:rotate(45deg)}
-.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease}
-.faq-item.open .faq-a{max-height:600px}
-.faq-a-inner{padding:0 22px 20px;color:var(--muted);font-size:.96rem;line-height:1.7}
-.faq-a-inner a{color:var(--accent);font-weight:700;text-decoration:none}
-.faq-a-inner a:hover{text-decoration:underline}
-.faq-a-inner strong{color:var(--ink)}
-
-/* CTA band */
-.cta-band{margin-top:64px;padding:48px 36px;border-radius:28px;background:linear-gradient(180deg,#20453d,#17352f);color:#f4f8f5;text-align:center;box-shadow:0 20px 48px rgba(23,48,41,.18)}
-.cta-band h2{font:clamp(1.6rem,3vw,2.2rem)/.98 Georgia,serif;color:#fff5df;margin-bottom:12px}
-.cta-band p{color:rgba(244,248,245,.8);margin-bottom:28px;max-width:44ch;margin-left:auto;margin-right:auto}
-.cta-band .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-
-/* Footer */
-footer{background:rgba(23,48,41,.02);border-top:1px solid var(--line);margin-top:40px;padding:40px 18px;text-align:center}
-footer p{color:var(--muted);font-size:.92rem}
-footer a{color:var(--accent);font-weight:700;text-decoration:none}
-footer a:hover{text-decoration:underline}
-
-@media(max-width:768px){
-  header{position:static;border-radius:18px}
-  nav .navlink{display:none}
-  .faq-hero{padding:36px 0 32px}
-  .cta-band{padding:32px 20px}
-  .faq-q{padding:16px 18px;font-size:.95rem}
-  .faq-a-inner{padding:0 18px 16px}
-}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FAQ | MyCommercePartner</title>
+  <meta name="description" content="Frequently asked questions about MyCommercePartner, listing optimization, pricing, and audits.">
+  <style>
+    :root{--bg:#f7f1e8;--ink:#173029;--muted:#61716a;--line:rgba(23,48,41,.12);--accent:#e57a3b;--soft:#fffdf9;--shadow:0 16px 36px rgba(23,48,41,.08);--r:20px;--max:980px}
+    *{box-sizing:border-box} body{margin:0;font:16px/1.6 Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#fbf7f1,#f3e9dc)} a{color:inherit} h1,h2,h3,p{margin:0}
+    .wrap{max-width:var(--max);margin:auto;padding:20px 16px 40px} header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 16px;background:#fffdf9;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+    .brand{display:flex;gap:12px;align-items:center;text-decoration:none}.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ffbc73)} nav{display:flex;gap:12px;flex-wrap:wrap}.btn,.navlink{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:700}.btn{padding:12px 16px;border-radius:999px;background:#173029;color:#fff}.navlink{color:var(--muted)}
+    .hero,.faq{margin-top:24px}.panel,.item{background:#fffdf9;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}.panel{padding:28px}.item{padding:22px;margin-top:14px}.eyebrow{display:inline-block;padding:6px 12px;border-radius:999px;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#fff3e6;color:#a45426}
+    h1{margin-top:14px;font:clamp(2.3rem,4.6vw,4rem)/1 Georgia,serif} h2{font:1.15rem/1.3 Arial,sans-serif;margin-bottom:8px}.muted{color:var(--muted)}
+    @media(max-width:700px){header{flex-direction:column;align-items:flex-start}}
+  </style>
 </head>
 <body>
-<div class="wrap">
+  <div class="wrap">
+    <header>
+      <a class="brand" href="index.html"><div class="logo"></div><div><div><b>MyCommercePartner</b></div><div style="font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">eBay seller optimization</div></div></a>
+      <nav>
+        <a class="navlink" href="index.html">Home</a>
+        <a class="navlink" href="about.html">About</a>
+        <a class="btn" href="index.html#authInline">Get Started</a>
+      </nav>
+    </header>
 
-<header>
-  <a class="brand" href="/">
-    <div class="logo"></div>
-    <div class="brand-text"><b>MyCommercePartner</b><div>eBay seller optimization</div></div>
-  </a>
-  <nav>
-    <a class="navlink" href="/#optimizer">Optimizer</a>
-    <a class="navlink" href="/#testimonials">Reviews</a>
-    <a class="navlink" href="/#pricing">Pricing</a>
-    <a class="navlink active" href="/faq">FAQ</a>
-    <a class="btn ghost" href="/#optimizer">Try Demo</a>
-    <a class="btn primary" href="/auth/register">Sign up</a>
-  </nav>
-</header>
+    <section class="hero">
+      <div class="panel">
+        <span class="eyebrow">FAQ</span>
+        <h1>Frequently asked questions</h1>
+        <p class="muted" style="margin-top:14px">Answers to common questions about listing optimization, audits, pricing, and how MyCommercePartner helps eBay sellers improve conversion.</p>
+      </div>
+    </section>
 
-<div class="faq-hero">
-  <span class="eyebrow">Help Center</span>
-  <h1>Frequently Asked Questions</h1>
-  <p>Everything you need to know about MyCommercePartner — how it works, what's included, and how to get the most from your listings.</p>
-</div>
-
-<div class="faq-cats">
-  <button class="cat-btn active" onclick="filterCat('all')">All questions</button>
-  <button class="cat-btn" onclick="filterCat('getting-started')">Getting started</button>
-  <button class="cat-btn" onclick="filterCat('optimization')">Optimization</button>
-  <button class="cat-btn" onclick="filterCat('billing')">Billing & plans</button>
-  <button class="cat-btn" onclick="filterCat('account')">Account</button>
-</div>
-
-<!-- Getting Started -->
-<div class="faq-group" data-cat="getting-started">
-  <div class="faq-group-title">Getting started</div>
-  <div class="faq-list">
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        What is MyCommercePartner?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        MyCommercePartner is a listing optimization platform built for eBay sellers. You paste in your current title, description, condition, pricing, and item specifics — and we generate a stronger version with a cleaner title, better bullet points, improved description, and a prioritized action plan to improve search visibility and conversion.
-      </div></div>
-    </div>
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        Do I need an account to try it?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        You can explore the live demo on the homepage without an account. To save your work and run real optimizations, you'll need to <a href="/auth/register">create a free account</a>. Signing up gives you 2 free optimization credits to use before choosing a plan.
-      </div></div>
-    </div>
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        What information do I need to get started?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        The more detail you provide, the better the output. At minimum you need a <strong>product title</strong>, <strong>category</strong>, and <strong>condition</strong>. Adding item specifics, a current description, your price, and shipping details gives the optimizer more to work with and produces stronger recommendations.
-      </div></div>
-    </div>
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        Which eBay categories does it support?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        MyCommercePartner works across all eBay categories. It has enhanced support for <strong>Electronics, Cell Phones, Laptops, Auto Parts, and Fashion</strong> — with category-specific title logic, bullet templates, and specifics recommendations. You can also enter a custom category for anything outside the preset list.
-      </div></div>
-    </div>
-
+    <section class="faq">
+      <div class="item"><h2>What does MyCommercePartner do?</h2><p>MyCommercePartner helps eBay sellers improve listing titles, buyer-facing copy, item specifics, and overall listing presentation so products are easier to find, easier to trust, and easier to buy.</p></div>
+      <div class="item"><h2>Who is it best for?</h2><p>It is best for resellers, repeat sellers, and inventory-heavy stores that want stronger listings without rewriting everything from scratch.</p></div>
+      <div class="item"><h2>What are the 2 free optimizations?</h2><p>New users can try the workflow with 2 free listing optimizations after creating an account, so they can test the value before moving into a paid option.</p></div>
+      <div class="item"><h2>What is the $49 Listing Conversion Audit?</h2><p>The audit is a lower-friction paid offer where 10 listings are reviewed for weak titles, missing specifics, trust issues, and conversion bottlenecks. You receive prioritized recommendations you can act on quickly.</p></div>
+      <div class="item"><h2>Do you offer monthly plans?</h2><p>Yes. MyCommercePartner offers monthly credit-based plans for sellers who want to improve listings consistently over time.</p></div>
+      <div class="item"><h2>What is the difference between a basic and enhanced listing?</h2><p>A basic listing often relies on plain text and weak buyer communication. An enhanced listing uses better keyword coverage, benefit-focused bullets, stronger structure, and a cleaner product presentation.</p></div>
+      <div class="item"><h2>Can you help beyond software?</h2><p>Yes. In addition to the optimizer and audit, MyCommercePartner can support rewrite packages, listing cleanup, and store tune-up style help.</p></div>
+      <div class="item"><h2>How do I get started?</h2><p>The easiest path is to create an account and use the 2 free optimizations, or start with the $49 audit if you want a faster paid entry point.</p></div>
+    </section>
   </div>
-</div>
-
-<!-- Optimization -->
-<div class="faq-group" data-cat="optimization">
-  <div class="faq-group-title">Optimization</div>
-  <div class="faq-list">
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        What does the optimizer actually output?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        Each optimization run produces: a <strong>rewritten title</strong> (within eBay's 80-character limit), <strong>recommended item specifics</strong>, <strong>bullet selling points</strong>, an <strong>optimized description</strong>, a list of <strong>next best moves</strong>, and a scoring breakdown across SEO, conversion, and completeness.
-      </div></div>
-    </div>
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        How is the title rewritten?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        The optimizer restructures your title around high-priority search terms for your category, places the most important keywords toward the front, removes filler words, and formats everything to fit within eBay's 80-character limit. The goal is a title that both ranks well in search and reads naturally to buyers.
-      </div></div>
-    </div>
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        Can I upload a product image?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        Yes. You can upload a product image directly in the workspace. It will appear alongside your optimized description output, making it easier to review the full listing package before applying it to eBay.
-      </div></div>
-    </div>
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        What do the SEO, Conversion, and Overall scores mean?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        <strong>SEO score</strong> measures how well your listing is positioned to appear in eBay search results — keyword placement, title structure, and specifics completeness. <strong>Conversion score</strong> measures how likely a buyer who finds your listing is to make a purchase — based on trust signals, condition clarity, and description quality. <strong>Overall score</strong> is a combined view of listing health across both dimensions.
-      </div></div>
-    </div>
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        How long does an optimization take?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        Most optimizations complete in under 10 seconds. A typical listing review and rewrite cycle — from pasting your details to having publish-ready copy — takes around 3 minutes.
-      </div></div>
-    </div>
-
-  </div>
-</div>
-
-<!-- Billing -->
-<div class="faq-group" data-cat="billing">
-  <div class="faq-group-title">Billing &amp; plans</div>
-  <div class="faq-list">
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        What plans are available?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        We offer three monthly plans: <strong>Starter ($39/mo)</strong> — 50 credits, single workspace, best for solo sellers. <strong>Growth ($99/mo)</strong> — 250 credits, saved templates, bulk queue, A+ Content support. <strong>Enterprise ($249/mo)</strong> — 800 credits, team seats, approvals, built for high-volume operations. You can also purchase <a href="/#pricing">credit top-ups</a> at any time without changing your plan.
-      </div></div>
-    </div>
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        What counts as one credit?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        One credit = one full optimization run. That includes the title rewrite, item specifics, bullet points, description, action items, and scoring — everything in one package.
-      </div></div>
-    </div>
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        Do unused credits roll over?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        Monthly plan credits reset at the start of each billing cycle and do not roll over. Top-up credits you purchase separately do not expire and carry over month to month.
-      </div></div>
-    </div>
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        Can I cancel my subscription?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        Yes, you can cancel at any time from the billing portal inside your account. Your plan stays active until the end of the current billing period — there are no cancellation fees or lock-in contracts.
-      </div></div>
-    </div>
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        What payment methods do you accept?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        We accept all major credit and debit cards (Visa, Mastercard, Amex, Discover) via Stripe. All transactions are encrypted and we never store your card details directly.
-      </div></div>
-    </div>
-
-  </div>
-</div>
-
-<!-- Account -->
-<div class="faq-group" data-cat="account">
-  <div class="faq-group-title">Account</div>
-  <div class="faq-list">
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        How do I manage my subscription or billing?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        Log in to your account and click <strong>Manage billing</strong> from the account menu in the top navigation. This opens the Stripe customer portal where you can view invoices, update payment details, change your plan, or cancel.
-      </div></div>
-    </div>
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        Can I change my plan later?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        Yes. You can upgrade or downgrade at any time from the billing portal. Upgrades take effect immediately; downgrades apply at the start of your next billing cycle.
-      </div></div>
-    </div>
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        I forgot my password. What do I do?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        On the login screen, use the <strong>Forgot password</strong> link to request a reset email. If you run into any issues, contact us at <a href="mailto:support@mycommercepartner.com">support@mycommercepartner.com</a> and we'll get you sorted.
-      </div></div>
-    </div>
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggle(this)">
-        How do I contact support?
-        <span class="faq-icon">+</span>
-      </button>
-      <div class="faq-a"><div class="faq-a-inner">
-        Email us at <a href="mailto:support@mycommercepartner.com">support@mycommercepartner.com</a>. We aim to respond within one business day. For billing-specific issues, the fastest path is through the Stripe billing portal inside your account.
-      </div></div>
-    </div>
-
-  </div>
-</div>
-
-<!-- CTA Band -->
-<div class="cta-band">
-  <h2>Ready to strengthen your listings?</h2>
-  <p>Create your free account and use your 2 included optimizations before choosing a plan.</p>
-  <div class="actions">
-    <a class="btn primary" href="/auth/register">Create free account</a>
-    <a class="btn ghost" href="/#optimizer" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.18);color:#fff">Try the demo first</a>
-  </div>
-</div>
-
-</div><!-- /.wrap -->
-
-<footer>
-  <p>Built with care for eBay sellers by MyCommercePartner &copy; <span id="year"></span></p>
-  <p><a href="/privacy">Privacy Policy</a> &bull; <a href="/terms">Terms of Service</a> &bull; <a href="mailto:support@mycommercepartner.com">Contact Us</a></p>
-</footer>
-
-<!-- Chat Widget -->
-<style>
-#chatWidget{position:fixed;bottom:24px;right:14px;z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
-#chatToggle{width:56px;height:56px;border-radius:999px;border:none;background:linear-gradient(135deg,var(--accent2),#2f7e6a);color:#fff;font-size:1.5rem;box-shadow:0 10px 24px rgba(25,68,58,.28);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .18s ease,box-shadow .18s ease}
-#chatToggle:hover{transform:translateY(-2px);box-shadow:0 16px 32px rgba(25,68,58,.32)}
-#chatBox{width:340px;background:#fffdf9;border:1px solid rgba(23,48,41,.10);border-radius:22px;box-shadow:0 24px 48px rgba(23,48,41,.14);display:none;flex-direction:column;overflow:hidden;max-height:480px}
-#chatBox.open{display:flex}
-#chatHeader{padding:14px 16px;background:linear-gradient(135deg,#20453d,#2f7e6a);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:8px}
-#chatHeader h4{margin:0;font-size:.98rem}
-#chatHeader p{margin:0;font-size:.78rem;color:rgba(255,255,255,.72)}
-#chatClose{background:none;border:none;color:rgba(255,255,255,.8);font-size:1.2rem;cursor:pointer;padding:2px 6px;border-radius:6px;line-height:1}
-#chatClose:hover{color:#fff;background:rgba(255,255,255,.12)}
-#chatMessages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}
-.chat-msg{max-width:88%;padding:10px 13px;border-radius:16px;font-size:.91rem;line-height:1.55}
-.chat-msg.bot{background:rgba(23,48,41,.06);color:var(--ink);border-bottom-left-radius:4px;align-self:flex-start}
-.chat-msg.user{background:linear-gradient(135deg,var(--accent),#f3a367);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
-.chat-msg.typing{color:var(--muted);font-style:italic}
-#chatInputRow{padding:10px 12px;border-top:1px solid rgba(23,48,41,.08);display:flex;gap:8px;align-items:center}
-#chatInput{flex:1;padding:10px 12px;border-radius:12px;border:1px solid rgba(23,48,41,.14);background:#fff;font:15px/1.4 "Segoe UI",sans-serif;color:var(--ink);resize:none;outline:none}
-#chatInput:focus{border-color:rgba(229,122,59,.4);box-shadow:0 0 0 3px rgba(229,122,59,.10)}
-#chatSend{width:36px;height:36px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent),#f3a367);color:#fff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.18s ease}
-#chatSend:hover{transform:translateY(-1px)}
-#chatSend:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.chat-suggestions{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px}
-.chat-sug{padding:6px 11px;border-radius:999px;border:1px solid rgba(23,48,41,.14);background:#fff;font-size:.79rem;font-weight:700;color:var(--ink);cursor:pointer;transition:.15s ease}
-.chat-sug:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
-@media(max-width:640px){#chatBox{width:calc(100vw - 28px)}#chatWidget{right:14px;bottom:20px}}
-</style>
-
-<div id="chatWidget">
-  <div id="chatBox">
-    <div id="chatHeader">
-      <div><h4>MCP Assistant</h4><p>Ask me anything about MyCommercePartner</p></div>
-      <button id="chatClose" aria-label="Close chat">&times;</button>
-    </div>
-    <div id="chatMessages">
-      <div class="chat-msg bot">Hi! I'm here to help with any questions about MyCommercePartner — pricing, how it works, your account, or anything else. What can I help you with?</div>
-    </div>
-    <div class="chat-suggestions">
-      <button class="chat-sug" onclick="chatSuggest(this)">How does it work?</button>
-      <button class="chat-sug" onclick="chatSuggest(this)">What plans are available?</button>
-      <button class="chat-sug" onclick="chatSuggest(this)">What is a credit?</button>
-    </div>
-    <div id="chatInputRow">
-      <input id="chatInput" type="text" placeholder="Type a question..." maxlength="400" autocomplete="off">
-      <button id="chatSend" aria-label="Send">&#9658;</button>
-    </div>
-  </div>
-  <button id="chatToggle" aria-label="Open chat">💬</button>
-</div>
-
-<script>
-(function(){
-  var messages=[],open=false;
-  var box=document.getElementById("chatBox"),toggle=document.getElementById("chatToggle"),close=document.getElementById("chatClose"),input=document.getElementById("chatInput"),send=document.getElementById("chatSend"),msgs=document.getElementById("chatMessages");
-  function toggleChat(){open=!open;box.classList.toggle("open",open);toggle.textContent=open?"✕":"💬";if(open)input.focus();}
-  toggle.addEventListener("click",toggleChat);
-  close.addEventListener("click",toggleChat);
-  input.addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMsg();}});
-  send.addEventListener("click",function(){sendMsg();});
-  function addMsg(role,text){
-    var el=document.createElement("div");
-    el.className="chat-msg "+(role==="user"?"user":"bot");
-    el.textContent=text;
-    msgs.appendChild(el);
-    msgs.scrollTop=msgs.scrollHeight;
-    return el;
-  }
-  function chatSuggest(btn){var text=btn.textContent;btn.closest(".chat-suggestions").remove();sendMsg(text);}
-  window.chatSuggest=chatSuggest;
-  async function sendMsg(text){
-    var txt=(text||input.value).trim();
-    if(!txt)return;
-    input.value="";
-    send.disabled=true;
-    addMsg("user",txt);
-    messages.push({role:"user",content:txt});
-    var typing=addMsg("bot","Typing…");
-    typing.classList.add("typing");
-    try{
-      var res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:messages})});
-      var data=await res.json().catch(function(){return{};});
-      var reply=data.reply||"Sorry, I'm having trouble right now. Email us at support@mycommercepartner.com.";
-      typing.remove();
-      addMsg("bot",reply);
-      messages.push({role:"assistant",content:reply});
-    }catch(e){
-      typing.remove();
-      addMsg("bot","Something went wrong. Please try again or email support@mycommercepartner.com.");
-    }
-    send.disabled=false;
-    input.focus();
-  }
-})();
-</script>
-
-<script>
-function toggle(btn) {
-  const item = btn.closest('.faq-item');
-  const wasOpen = item.classList.contains('open');
-  document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
-  if (!wasOpen) item.classList.add('open');
-}
-
-function filterCat(cat) {
-  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
-  document.querySelectorAll('.faq-group').forEach(g => {
-    g.style.display = (cat === 'all' || g.dataset.cat === cat) ? '' : 'none';
-  });
-}
-
-document.getElementById('year').textContent = new Date().getFullYear();
-</script>
 </body>
 </html>
