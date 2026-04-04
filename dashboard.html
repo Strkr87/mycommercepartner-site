@@ -217,5 +217,9 @@
       </div>
     </section>
   </div>
+  <script>
+    function readSession(){try{return JSON.parse(localStorage.getItem('mcpSession')||'null')}catch(e){return null}}
+    if(!readSession()){ window.location.href='index.html#authInline'; }
+  </script>
 </body>
 </html>

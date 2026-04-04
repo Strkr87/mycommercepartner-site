@@ -33,7 +33,7 @@
       <nav>
         <a class="navlink" href="about.html">About</a>
         <a class="navlink" href="faq.html">FAQ</a>
-        <a class="navlink" href="dashboard.html">Dashboard</a>
+        <a class="navlink" href="#" id="dashboardNav">Dashboard</a>
         <a class="navlink" href="#authInline">Log in</a>
         <a class="btn primary" href="#authInline">Sign up</a>
       </nav>
@@ -45,7 +45,7 @@
         <h1>Turn weak eBay listings into clearer, higher-converting listings faster.</h1>
         <p class="sub" style="margin-top:14px">MyCommercePartner helps eBay sellers improve titles, item specifics, and buyer-facing copy so listings are easier to find, easier to trust, and easier to buy from.</p>
         <div class="actions">
-          <a class="btn primary" href="dashboard.html">Go to Dashboard</a>
+          <a class="btn primary" href="#" id="dashboardHeroBtn">Go to Dashboard</a>
           <a class="btn ghost" href="mailto:hello@mycommercepartner.com?subject=Listing%20Conversion%20Audit%20Request">Start with the $49 Audit</a>
           <a class="btn ghost" href="#pricing">See Pricing</a>
         </div>
@@ -142,8 +142,13 @@ Used iPhone 13 Pro Max in good condition. It works well and is unlocked. Has nor
     function normalizeEmail(v){return String(v||'').trim().toLowerCase()}
     function readUsers(){try{return JSON.parse(localStorage.getItem('mcpUsers')||'[]')}catch(e){return []}}
     function writeUsers(users){localStorage.setItem('mcpUsers', JSON.stringify(users))}
+    function readSession(){try{return JSON.parse(localStorage.getItem('mcpSession')||'null')}catch(e){return null}}
     function writeSession(user){if(user){localStorage.setItem('mcpSession', JSON.stringify(user))}else{localStorage.removeItem('mcpSession')}}
+    function goToDashboard(e){ if(e) e.preventDefault(); if(readSession()){ window.location.href='dashboard.html'; } else { document.getElementById('authInline').scrollIntoView({behavior:'smooth'}); } }
     const authStatus = { set textContent(v){ console.log(v) } };
+
+    document.getElementById('dashboardNav').addEventListener('click', goToDashboard);
+    document.getElementById('dashboardHeroBtn').addEventListener('click', goToDashboard);
 
     document.getElementById('signupForm').addEventListener('submit', function(e){
       e.preventDefault();
@@ -157,6 +162,7 @@ Used iPhone 13 Pro Max in good condition. It works well and is unlocked. Has nor
       users.push(user); writeUsers(users); writeSession(user);
       authStatus.textContent = 'Account created. Your 2 free optimizations are now unlocked.';
       this.reset();
+      window.location.href='dashboard.html';
     });
 
     document.getElementById('loginForm').addEventListener('submit', function(e){
@@ -168,6 +174,7 @@ Used iPhone 13 Pro Max in good condition. It works well and is unlocked. Has nor
       writeSession(user);
       authStatus.textContent = 'You are logged in. Your 2 free optimizations are available on this account.';
       this.reset();
+      window.location.href='dashboard.html';
     });
   </script>
 </body>
