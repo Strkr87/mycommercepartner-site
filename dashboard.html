@@ -13,7 +13,7 @@
     .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:20px}.panel,.card{background:#fffdf9;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:24px}.eyebrow{display:inline-block;padding:6px 12px;border-radius:999px;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#fff3e6;color:#a45426}
     h1{margin-top:14px;font:clamp(2.3rem,4.6vw,4rem)/1 Georgia,serif}.sub{margin-top:12px;color:var(--muted)} .summary,.main,.projects,.actions{display:grid;gap:18px}.summary{grid-template-columns:repeat(4,1fr);margin-top:18px}.stat{padding:18px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)} .stat big{display:block;font:700 1.7rem/1 Georgia,serif;margin-bottom:6px}
     .main{grid-template-columns:1.35fr .65fr;margin-top:24px}.projects .project{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;padding:18px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)} .thumb{width:62px;height:62px;border-radius:16px;background:linear-gradient(135deg,#e9e1d6,#fff);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:1.4rem}.tag{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;font-size:.78rem;font-weight:700;background:#f3eee6;color:#6e5d49}
-    .action-list{display:grid;gap:12px}.action-item{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;padding:16px 18px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)} .icon{width:40px;height:40px;border-radius:14px;background:#173029;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+    .action-list{display:grid;gap:12px}.action-item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;padding:16px 18px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)} .icon{width:40px;height:40px;border-radius:14px;background:#173029;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem}.action-copy{display:grid;gap:4px}.action-cta{white-space:nowrap;align-self:center}
     .progress{height:12px;border-radius:999px;background:#eee7dd;overflow:hidden;margin-top:10px}.progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#f3a367);width:68%}.credit-meter{margin-top:16px;padding:16px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)}.credit-scale{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-top:8px}
     .mini-list{margin-top:14px;display:grid;gap:10px}.mini-list div{padding:12px 14px;border-radius:14px;background:#fff;border:1px solid var(--line)}.dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px}.metric-card,.billing-card,.activity-card,.profile-card,.alerts-card,.preview-card{background:#fffdf9;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:22px}.metric-card h3,.billing-card h3,.activity-card h3,.profile-card h3,.alerts-card h3,.preview-card h3{font:1.3rem/1.2 Georgia,serif;margin-bottom:10px}.metric-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.mini-stat{padding:14px;border-radius:16px;background:#fff;border:1px solid var(--line)}.mini-stat strong{display:block;font-size:1.25rem;margin-bottom:4px}.activity-list{display:grid;gap:10px;margin-top:14px}.activity-list div{padding:12px 14px;border-radius:14px;background:#fff;border:1px solid var(--line)}.profile-top{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}.avatar{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,var(--accent),#f3a367);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:700}.chart{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:150px;margin-top:18px}.bar{border-radius:12px 12px 6px 6px;background:linear-gradient(180deg,#f4c6a2,var(--accent));min-height:40px}.preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.preview-item{padding:14px;border-radius:16px;background:#fff;border:1px solid var(--line)}.preview-image{height:120px;border-radius:14px;background:linear-gradient(135deg,#ece3d7,#fff);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:10px}.alert-list{display:grid;gap:10px;margin-top:14px}.alert{padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:#fff}.alert strong{display:block;margin-bottom:4px}
     @media(max-width:960px){.hero,.main,.summary,.dashboard-grid{grid-template-columns:1fr 1fr}} @media(max-width:720px){header,.hero,.main,.summary,.dashboard-grid{grid-template-columns:1fr;display:grid}.summary{grid-template-columns:1fr 1fr}} @media(max-width:560px){.summary{grid-template-columns:1fr}}
@@ -27,8 +27,8 @@
         <a class="navlink" href="index.html">Home</a>
         <a class="navlink" href="faq.html">FAQ</a>
         <a class="navlink" href="about.html">About</a>
-        <a class="btn ghost" href="index.html#pricing">Plans</a>
-        <a class="btn primary" href="index.html#optimizer">Optimize Listing</a>
+        <a class="btn ghost" href="#billing">Plans</a>
+        <a class="btn primary" href="#optimizerWorkspace">Optimize Listing</a>
       </nav>
     </header>
 
@@ -104,10 +104,10 @@
         <div class="card">
           <h2 style="font:1.5rem/1.2 Georgia,serif">Quick actions</h2>
           <div class="action-list" style="margin-top:16px">
-            <div class="action-item"><div class="icon">✍</div><div><strong>Optimize a new listing</strong><p class="sub">Start a fresh listing workflow and generate stronger titles, bullets, and descriptions.</p></div></div>
-            <div class="action-item"><div class="icon">🔎</div><div><strong>Request a $49 audit</strong><p class="sub">Get a prioritized review of 10 listings if you want faster paid insight.</p></div></div>
-            <div class="action-item"><div class="icon">📈</div><div><strong>Upgrade your plan</strong><p class="sub">Increase monthly credits if you are optimizing larger batches consistently.</p></div></div>
-            <div class="action-item"><div class="icon">🗂</div><div><strong>Review saved drafts</strong><p class="sub">Jump back into listings that already have suggested copy waiting.</p></div></div>
+            <div class="action-item"><div class="icon">✍</div><div class="action-copy"><strong>Optimize a new listing</strong><p class="sub">Start a fresh listing workflow and generate stronger titles, bullets, and descriptions.</p></div><a class="btn ghost action-cta" href="#optimizerWorkspace">Open workspace</a></div>
+            <div class="action-item"><div class="icon">🔎</div><div class="action-copy"><strong>Request a $49 audit</strong><p class="sub">Get a prioritized review of 10 listings if you want faster paid insight.</p></div><a class="btn ghost action-cta" href="#auditOffer">Request audit</a></div>
+            <div class="action-item"><div class="icon">📈</div><div class="action-copy"><strong>Upgrade your plan</strong><p class="sub">Increase monthly credits if you are optimizing larger batches consistently.</p></div><a class="btn ghost action-cta" href="#billing">View plans</a></div>
+            <div class="action-item"><div class="icon">🗂</div><div class="action-copy"><strong>Review saved drafts</strong><p class="sub">Jump back into listings that already have suggested copy waiting.</p></div><a class="btn ghost action-cta" href="#savedDrafts">See drafts</a></div>
           </div>
         </div>
       </div>
@@ -125,7 +125,7 @@
         </div>
       </div>
 
-      <div class="billing-card">
+      <div class="billing-card" id="billing">
         <h3>Billing & plan</h3>
         <p class="sub">Keep track of your current plan, renewal cycle, and upgrade opportunities.</p>
         <div class="mini-list">
@@ -197,7 +197,7 @@
         </div>
       </div>
 
-      <div class="preview-card">
+      <div class="preview-card" id="savedDrafts">
         <h3>Listing previews</h3>
         <p class="sub">Quick visual access to listings currently in your workflow.</p>
         <div class="preview-grid">
@@ -206,7 +206,7 @@
         </div>
       </div>
 
-      <div class="alerts-card">
+      <div class="alerts-card" id="auditOffer">
         <h3>Notifications & alerts</h3>
         <p class="sub">Important things that need attention soon.</p>
         <div class="alert-list">
@@ -214,6 +214,21 @@
           <div class="alert"><strong>4 listings flagged for audit priority</strong><span class="muted">These are the strongest candidates for the $49 audit offer.</span></div>
           <div class="alert"><strong>Credit usage is healthy</strong><span class="muted">You still have room for another meaningful optimization batch this cycle.</span></div>
         </div>
+      </div>
+    </section>
+
+    <section class="card" id="optimizerWorkspace" style="margin-top:24px">
+      <span class="eyebrow">Optimizer Workspace</span>
+      <h2 style="font:1.8rem/1.2 Georgia,serif;margin-top:12px">Start a new listing optimization</h2>
+      <p class="sub" style="margin-top:10px">This keeps you inside the dashboard experience while you prepare the next listing to optimize.</p>
+      <div class="mini-list" style="margin-top:18px">
+        <div><strong>Step 1:</strong> Paste your current title and product details.</div>
+        <div><strong>Step 2:</strong> Add condition notes, specifics, and any missing context.</div>
+        <div><strong>Step 3:</strong> Generate improved title, description, and conversion-focused listing structure.</div>
+      </div>
+      <div style="margin-top:18px;display:flex;gap:12px;flex-wrap:wrap">
+        <a class="btn primary" href="#savedDrafts">Continue with saved drafts</a>
+        <a class="btn ghost" href="#auditOffer">Need a manual audit first?</a>
       </div>
     </section>
   </div>
