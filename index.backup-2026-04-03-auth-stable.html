@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MyCommercePartner | eBay Listing Optimizer</title>
+  <meta name="description" content="Listing optimization for eBay sellers to improve titles, descriptions, search visibility, and conversion.">
+  <style>
+    :root{--bg:#f7f1e8;--ink:#173029;--muted:#61716a;--line:rgba(23,48,41,.10);--accent:#e57a3b;--accent2:#19443a;--soft:#fffdf9;--mint:#2f7e6a;--shadow:0 16px 36px rgba(23,48,41,.08);--shadow-soft:0 8px 18px rgba(23,48,41,.05);--r:22px;--max:1120px}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font:16px/1.6 "Segoe UI","Trebuchet MS",sans-serif;color:var(--ink);background:radial-gradient(circle at top left,rgba(229,122,59,.12),transparent 24%),radial-gradient(circle at 85% 8%,rgba(47,126,106,.10),transparent 20%),linear-gradient(180deg,#fbf7f1,#f3e9dc)}
+    a{color:inherit} h1,h2,h3,p{margin:0} .wrap{max-width:var(--max);margin:auto;padding:22px 18px 40px}
+    header,.hero,.results,.pricing,.testimonials,.howitworks{display:grid;gap:16px}
+    header{grid-template-columns:1fr auto;align-items:center;padding:14px 16px;background:rgba(251,247,241,.82);backdrop-filter:blur(14px);border:1px solid rgba(23,48,41,.08);border-radius:20px;box-shadow:var(--shadow-soft);position:sticky;top:12px;z-index:10}
+    .brand{display:flex;gap:12px;align-items:center;text-decoration:none}.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#ffbc73);box-shadow:0 12px 22px rgba(229,122,59,.22)}
+    nav{display:flex;gap:16px;flex-wrap:wrap;align-items:center}.navlink{font-weight:700;text-decoration:none;color:var(--muted)}.navlink:hover{color:var(--ink)}
+    .btn,.plancta{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:999px;text-decoration:none;font-weight:700;border:1px solid transparent;cursor:pointer;transition:.18s ease}
+    .btn:hover,.plancta:hover{transform:translateY(-1px)} .primary{background:linear-gradient(135deg,var(--accent),#f3a367);color:#fff;box-shadow:0 10px 20px rgba(229,122,59,.18)} .ghost{background:rgba(255,255,255,.88);border-color:rgba(23,48,41,.12);color:var(--ink)}
+    .hero{grid-template-columns:1.05fr .95fr;margin-top:14px}.panel,.card,.result,.step,.testimonial{background:rgba(255,255,255,.88);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}.panel,.card,.result,.step,.testimonial{padding:24px}
+    .panel.dark{background:linear-gradient(180deg,#20453d,#17352f);color:#f4f8f5}.eyebrow,.section-label,.chip{display:inline-flex;align-items:center;padding:7px 12px;border-radius:999px;font-size:.78rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+    .eyebrow{background:#fff;color:var(--mint);border:1px solid rgba(47,126,106,.12)} .section-label{background:linear-gradient(135deg,rgba(229,122,59,.13),rgba(255,208,102,.22));color:#b85a22} .chip{background:#fffefb;border:1px solid rgba(23,48,41,.08);font-size:.82rem;letter-spacing:0;text-transform:none;color:#556760}
+    h1{margin-top:14px;font:clamp(2.6rem,5vw,4.8rem)/.98 Georgia,serif;letter-spacing:-.05em;max-width:12ch} h2{font:clamp(1.85rem,3.5vw,2.6rem)/1 Georgia,serif;letter-spacing:-.03em} .sub{margin-top:14px;color:var(--muted);max-width:58ch}
+    .actions,.chips,.row{display:flex;gap:12px;flex-wrap:wrap}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}.stat{padding:14px 15px;border-radius:18px;background:rgba(255,255,255,.88);border:1px solid rgba(23,48,41,.08);box-shadow:var(--shadow-soft)}
+    .mediaframe{overflow:hidden;border-radius:22px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06)} .mediaframe img,.storycard img,.step img{display:block;width:100%;object-fit:cover}
+    .mediaframe img{height:340px}.herosplit{display:grid;grid-template-columns:1fr 1fr;gap:14px}.storycard{padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.07)} .storycard img{height:140px;border-radius:14px;margin-bottom:12px}
+    .section{margin-top:28px}.section-header{text-align:center;margin-bottom:28px}.section-header p{color:var(--muted);max-width:52ch;margin:10px auto 0}.results,.pricing{grid-template-columns:repeat(3,1fr);gap:20px}.howitworks,.testimonials{grid-template-columns:repeat(3,1fr);gap:20px}
+    .box{margin-top:10px;padding:13px 14px;border-radius:16px;background:#fffefc;border:1px solid rgba(23,48,41,.08);white-space:pre-wrap;line-height:1.6} ul{margin:10px 0 0;padding-left:18px}
+    .highlight{position:relative;overflow:hidden;border:1px solid rgba(229,122,59,.25)!important;box-shadow:0 18px 34px rgba(229,122,59,.08)!important}.highlight::after{content:"Most Popular";position:absolute;top:16px;right:-34px;background:#ffd58b;color:#5f3a16;padding:6px 40px;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;transform:rotate(35deg)}
+    .price{font:2.2rem/1 Georgia,serif;margin:.5rem 0}.plancta{width:100%;background:#173029;color:#fff;border-radius:14px;margin-top:14px}
+    .auth-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}.auth-form{display:grid;gap:12px;margin-top:12px} label{font-size:.84rem;font-weight:700;margin-bottom:2px;display:block} input,select,textarea{width:100%;padding:13px 14px;border-radius:16px;border:1px solid rgba(23,48,41,.12);background:#fffdfb;color:var(--ink)}
+    textarea{min-height:104px;resize:vertical}.status{margin-top:14px;padding:12px 14px;border-radius:14px;background:#eef8f4;border:1px solid rgba(47,126,106,.18);color:#1f5c4b}.muted{color:var(--muted)}
+    .tool{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}.workspace{padding:22px;background:rgba(255,252,248,.92);border:1px solid rgba(23,48,41,.09);border-radius:30px;box-shadow:var(--shadow)} .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}
+    .footer-note{margin-top:28px;color:var(--muted);font-size:.9rem}
+    @media(max-width:960px){header,.hero,.tool,.results,.pricing,.howitworks,.testimonials,.auth-grid,.grid,.stats,.herosplit{grid-template-columns:1fr 1fr}.wrap{padding:16px 14px 30px}header{position:static}}
+    @media(max-width:760px){header,.hero,.tool,.results,.pricing,.howitworks,.testimonials,.auth-grid,.grid,.stats,.herosplit{grid-template-columns:1fr}nav{width:100%;gap:10px}h1{max-width:none}.panel,.card,.result,.step,.testimonial,.workspace{padding:18px}}
+    @media(max-width:640px){body{font-size:15px}.wrap{padding:12px 12px 24px}header{padding:12px;border-radius:16px}.navlink{display:none}.actions{display:grid;grid-template-columns:1fr}.actions .btn,.plancta,.btn{width:100%}.mediaframe img{height:220px}.storycard img,.step img{height:150px}.highlight::after{top:12px;right:-44px;font-size:.66rem;padding:5px 38px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="#top"><div class="logo"></div><div><div><b>MyCommercePartner</b></div><div style="font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)">eBay seller optimization</div></div></a>
+      <nav>
+        <a class="navlink" href="#optimizer">Optimizer</a>
+        <a class="navlink" href="#testimonials">Reviews</a>
+        <a class="navlink" href="#pricing">Pricing</a>
+        <a class="navlink" href="/faq">FAQ</a>
+        <a class="btn ghost" href="#authInline">Log in</a>
+        <a class="btn primary" href="#authInline">Sign up</a>
+      </nav>
+    </header>
+
+    <section class="hero" id="top">
+      <div class="panel" style="display:grid;gap:18px;align-content:start;background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(255,248,239,.94))">
+        <span class="eyebrow">Built for eBay seller growth</span>
+        <h1>Turn weak eBay listings into clearer, higher-converting listings faster.</h1>
+        <p class="sub">MyCommercePartner helps eBay sellers improve titles, item specifics, and buyer-facing copy so listings are easier to find, easier to trust, and easier to buy from.</p>
+        <div class="chips"><div class="chip">2 free optimizations after sign-up</div><div class="chip">Best for electronics, parts, and reseller inventory</div></div>
+        <div class="actions"><a class="btn primary" href="#authInline">Try 2 Free Optimizations</a><a class="btn ghost" href="mailto:hello@mycommercepartner.com?subject=Listing%20Conversion%20Audit%20Request">Start with the $49 Audit</a><a class="btn ghost" href="#choose-path">See the Best Way to Start</a></div>
+        <div class="stats"><div class="stat"><b>3 min</b><div>Typical listing refresh cycle</div></div><div class="stat"><b>500+</b><div>Listings optimized by sellers</div></div><div class="stat"><b>$49</b><div>Fastest paid entry point</div></div></div>
+        <div class="card" style="padding:16px 18px;background:linear-gradient(135deg,rgba(229,122,59,.10),rgba(255,208,102,.18))"><b style="display:block;margin-bottom:8px">Start where your risk feels lowest</b><p>Want to test the tool first? Use your <strong>2 free optimizations</strong>. Want the fastest paid path? Start with the <strong>$49 Listing Conversion Audit</strong> and get a prioritized fix list for 10 listings.</p></div>
+      </div>
+      <div class="panel dark" style="display:grid;gap:14px;align-content:start">
+        <div class="row" style="justify-content:space-between;align-items:center"><h3 style="font:2rem/1.05 Georgia,serif">Built for real seller workflow</h3><div class="chip" style="background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.14)">Live workspace</div></div>
+        <p style="color:rgba(243,246,242,.8)">A seller-focused view of how stronger listing operations look when workflow, product prep, and presentation all work together.</p>
+        <div class="mediaframe"><img src="assets/dashboard-hero.png" alt="Ecommerce dashboard on laptop showing product and sales performance"></div>
+        <div class="herosplit"><div class="storycard"><img src="assets/seller-workspace.png" alt="Seller managing inventory and listings from a home office"><b>Review listings faster</b><p>Use a cleaner process for catalog work, shipping prep, and optimization without rewriting everything from scratch.</p></div><div class="storycard"><img src="assets/listing-prep.png" alt="Preparing headphones for an online listing with product photography setup"><b>Improve one product or a whole batch</b><p>Strong enough for single-listing fixes, repeatable enough for inventory-heavy stores.</p></div></div>
+      </div>
+    </section>
+
+    <section class="section" id="choose-path">
+      <div class="section-header"><span class="section-label">Choose Your Best Starting Point</span><h2>Start the way that fits your business best</h2><p>Whether you want to test the tool, buy a quick audit, or get hands-on help, there is a clean next step.</p></div>
+      <div class="pricing">
+        <div class="card"><h3>Try It Free</h3><p class="muted">Best if you want to test the optimizer before paying.</p><div class="price">Free</div><ul><li>2 free optimizations after sign-up</li><li>No credit card required</li><li>Fastest way to try the workflow</li></ul><a class="plancta" href="#authInline">Unlock My 2 Free Optimizations</a></div>
+        <div class="card highlight"><h3>Start with the Audit</h3><p class="muted">Best if you want the fastest paid path to clearer next actions.</p><div class="price">$49</div><ul><li>10-listing conversion audit</li><li>Prioritized improvement report</li><li>Low-risk first purchase</li></ul><a class="plancta" href="mailto:hello@mycommercepartner.com?subject=Listing%20Conversion%20Audit%20Request">Request My Audit</a></div>
+        <div class="card"><h3>Get Hands-On Help</h3><p class="muted">Best if you already know you want rewrite or store optimization support.</p><div class="price">Custom</div><ul><li>Rewrite packages</li><li>Store tune-up support</li><li>Built for repeatable inventory</li></ul><a class="plancta" href="mailto:hello@mycommercepartner.com?subject=Rewrite%20Package%20Inquiry">Ask About Services</a></div>
+      </div>
+    </section>
+
+    <section class="section" id="authInline">
+      <div class="card">
+        <div class="section-header"><span class="section-label">Create Account or Log In</span><h2>Unlock your 2 free optimizations</h2><p>Create an account or log in below. This is the primary signup/login path on both mobile and desktop.</p></div>
+        <div class="auth-grid">
+          <div class="card"><h3>Create account</h3><form id="inlineSignupForm" class="auth-form"><div><label for="inlineSignupName">Full name</label><input id="inlineSignupName" type="text" placeholder="Alex Morgan"></div><div><label for="inlineSignupEmail">Email address</label><input id="inlineSignupEmail" type="email" placeholder="you@store.com"></div><div><label for="inlineSignupPassword">Password</label><input id="inlineSignupPassword" type="password" placeholder="Create a password"></div><button class="btn primary" type="submit">Create account</button></form></div>
+          <div class="card"><h3>Log in</h3><form id="inlineLoginForm" class="auth-form"><div><label for="inlineLoginEmail">Email address</label><input id="inlineLoginEmail" type="email" placeholder="you@store.com"></div><div><label for="inlineLoginPassword">Password</label><input id="inlineLoginPassword" type="password" placeholder="Enter your password"></div><button class="btn primary" type="submit">Log in</button></form></div>
+          <div class="card"><h3>What happens next</h3><p>Once you create an account or log in, your 2 free optimizations are tied to that account so you can keep your work and continue later.</p><div id="inlineAuthStatus" class="status">Use the forms here to create an account or log in. No popup required.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section"><div class="card"><div class="section-header"><span class="section-label">Proof of Value</span><h2>What a stronger listing looks like in practice</h2><p>Better keyword order, clearer condition details, and stronger trust signals help the right buyers decide faster.</p></div><div class="results" style="grid-template-columns:1fr 1fr"><div class="result"><h3>Before</h3><p class="muted">A rough listing that leaves buyers with too many questions.</p><div class="box">Title: Apple iPhone 13 Pro Max 256GB Sierra Blue Unlocked Good Condition
+
+Description: Tested and fully working iPhone 13 Pro Max. Unlocked and ready for any carrier. Shows normal signs of wear from use. Includes phone and charging cable only.</div></div><div class="result"><h3>After</h3><p class="muted">A cleaner listing structure built to improve clicks, trust, and conversion.</p><div class="box">Title: Apple iPhone 13 Pro Max Unlocked 256GB Sierra Blue 89% Battery A2484
+
+Why it works:
+- stronger keyword order for search
+- battery health disclosed up front
+- exact identifier included for qualified buyers
+- clearer trust signals before checkout</div></div></div></div></section>
+
+    <section class="section"><div class="section-header"><span class="section-label">How It Works</span><h2>Three steps to a stronger listing</h2><p>From rough draft to publish-ready copy — no guesswork, no rewriting from scratch.</p></div><div class="howitworks"><div class="step"><div class="chip">Step 1</div><img src="assets/listing-prep.png" alt="Preparing a product for listing photography"><h3>Paste your listing details</h3><p class="muted">Drop in your current title, condition, price, description, and any item specifics you have.</p></div><div class="step"><div class="chip">Step 2</div><img src="assets/seller-workspace.png" alt="Seller reviewing listing data in a workspace"><h3>Let the optimizer analyze</h3><p class="muted">MyCommercePartner scores your listing for SEO, conversion, and completeness.</p></div><div class="step"><div class="chip">Step 3</div><img src="assets/dashboard-hero.png" alt="Dashboard showing improved listing performance metrics"><h3>Apply and watch results improve</h3><p class="muted">Use the stronger title, bullets, and description to help more buyers convert.</p></div></div></section>
+
+    <section class="section"><div class="section-header"><span class="section-label">Best Fit</span><h2>Built for sellers who need better listings fast</h2><p>Best for resellers and inventory-heavy stores that want stronger listing performance without rewriting every page from scratch.</p></div><div class="results" style="grid-template-columns:1fr 1fr"><div class="card"><h3>Best for</h3><ul><li>eBay resellers with aging or underperforming inventory</li><li>Electronics, parts, used goods, and repeatable SKU catalogs</li><li>Sellers who want faster listing improvement without rewriting from scratch</li><li>Stores that need better SEO, buyer trust, and conversion clarity</li></ul></div><div class="card"><h3>Probably not ideal for</h3><ul><li>Casual one-off sellers with only a few listings per year</li><li>Teams looking for full marketplace automation or full-service agency execution only</li><li>Sellers who do not want to touch listing details at all</li><li>Businesses that need deep marketplace management beyond listing optimization</li></ul></div></div></section>
+
+    <section class="section" id="optimizer"><div class="tool"><div class="workspace"><div class="row" style="justify-content:space-between;align-items:flex-start;margin-bottom:14px"><div><h2 style="font:1.95rem/1 Georgia,serif">Listing Optimizer Workspace</h2><p class="muted" style="margin-top:8px">Paste the basics of a listing and generate a stronger version with a prioritized action plan.</p></div><div class="chip">Live preview</div></div><div id="trialNotice" class="status" style="background:#fff3e6;border-color:rgba(229,122,59,.22);color:#8a4b22">Create an account or log in below to unlock 2 free listing optimizations, then choose a plan when you're ready to keep going.</div><div class="grid"><div class="full"><label for="title">Current title</label><input id="title" value="Apple iPhone 13 Pro Max 256GB Sierra Blue Unlocked Good Condition"></div><div><label for="brand">Brand name</label><input id="brand" value="Apple"></div><div><label for="category">Category</label><select id="category"><option>Cell Phones & Smartphones</option><option>Fashion</option><option>Laptops & Netbooks</option><option>Auto Parts</option></select></div><div><label for="condition">Condition</label><select id="condition"><option>Used - Good</option><option>New</option><option>Open Box</option><option>Seller Refurbished</option></select></div><div><label for="price">Price</label><input id="price" value="649.99"></div><div><label for="shipping">Shipping promise</label><input id="shipping" value="Free 2-day shipping, 30-day returns"></div><div class="full"><label for="sku">SKU / Custom Label</label><input id="sku" value="A2484"></div><div class="full"><label for="specifics">Item specifics</label><textarea id="specifics">Brand: Apple
+Model: iPhone 13 Pro Max
+Storage: 256GB
+Carrier: Unlocked
+Color: Sierra Blue
+Battery Health: 89%
+Included: Charging cable</textarea></div><div class="full"><label for="description">Current description</label><textarea id="description">Tested and fully working iPhone 13 Pro Max. Unlocked and ready for any carrier. Shows normal signs of wear from use. Battery health is 89 percent. Includes phone and charging cable only. Ships fast from California.</textarea></div><div class="full"><label for="goals">Seller goals</label><textarea id="goals">Increase click-through rate, communicate condition more clearly, rank better for unlocked iPhone searches, and reduce buyer questions about battery health.</textarea></div></div><div class="row" style="margin-top:12px"><a class="btn primary" href="#authInline">Create account or log in to generate</a><button class="btn ghost" id="sample" type="button">Load Another Example</button></div></div><div class="card"><h3>What we focus on for you</h3><ul><li>Making your title easier to find in search</li><li>Filling in missing specifics that cost visibility</li><li>Building more trust through clearer condition details</li><li>Reinforcing shipping and returns so buyers feel safer</li><li>Cleaning up the description so it is easier to scan and buy from</li></ul></div></div></section>
+
+    <section class="section" id="testimonials"><div class="section-header"><span class="section-label">Seller Stories</span><h2>Real sellers, stronger listings</h2><p>eBay sellers using MyCommercePartner to save time, tighten listing quality, and surface missed conversion issues faster.</p></div><div class="testimonials"><div class="testimonial"><div class="chip">★★★★★</div><p>“We used it on a batch of older electronics listings and immediately found weak titles and missing specifics we had overlooked. It saved us hours of manual cleanup.”</p><div class="muted">Marcus T. — Electronics reseller, 1,200+ listings</div></div><div class="testimonial"><div class="chip">★★★★★</div><p>“The specifics recommendations helped us qualify listings better for filtered search. That alone made the tool feel more useful than generic copy help.”</p><div class="muted">Priya S. — Vintage clothing seller, eBay Top Rated</div></div><div class="testimonial"><div class="chip">★★★★★</div><p>“We needed a repeatable system for similar inventory. This gave us cleaner structure, faster rewrites, and less second-guessing across batches.”</p><div class="muted">Daniel R. — Auto parts seller, 800+ monthly listings</div></div></div></section>
+
+    <section class="section" id="pricing"><div class="section-header"><span class="section-label">Pricing</span><h2>Simple monthly credit plans</h2><p>Start with your 2 free optimizations, then move into a plan once the workflow proves itself.</p></div><div class="pricing"><div class="card"><h3>Starter</h3><p class="muted">For solo sellers improving a smaller catalog.</p><div class="price">$39<span style="font:.95rem 'Segoe UI';color:var(--muted)"> / month</span></div><ul><li>50 credits per month</li><li>Title, specifics, and description suggestions</li><li>Single workspace</li></ul><a class="plancta" href="#authInline">Start with Starter</a></div><div class="card highlight"><h3>Growth</h3><p class="muted">For active stores that optimize inventory every week.</p><div class="price">$99<span style="font:.95rem 'Segoe UI';color:var(--muted)"> / month</span></div><ul><li>250 credits per month</li><li>Saved templates and reusable prompts</li><li>Bulk workflow queue and exports</li><li>Enhanced A+ Content Description support</li></ul><a class="plancta" href="#authInline">Choose Growth</a></div><div class="card"><h3>Enterprise</h3><p class="muted">For larger reseller teams and higher listing volume.</p><div class="price">$249<span style="font:.95rem 'Segoe UI';color:var(--muted)"> / month</span></div><ul><li>800 credits per month</li><li>Team seats and approvals</li><li>Built for higher-volume optimization</li></ul><a class="plancta" href="#authInline">Launch with Enterprise</a></div></div></section>
+
+    <div class="footer-note">© <span id="year"></span> MyCommercePartner. Built for sellers who want stronger listings and faster conversion improvements.</div>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const examples = [
+      {
+        title:'Apple iPhone 13 Pro Max 256GB Sierra Blue Unlocked Good Condition',
+        brand:'Apple', category:'Cell Phones & Smartphones', condition:'Used - Good', price:'649.99', shipping:'Free 2-day shipping, 30-day returns', sku:'A2484',
+        specifics:'Brand: Apple\nModel: iPhone 13 Pro Max\nStorage: 256GB\nCarrier: Unlocked\nColor: Sierra Blue\nBattery Health: 89%\nIncluded: Charging cable',
+        description:'Tested and fully working iPhone 13 Pro Max. Unlocked and ready for any carrier. Shows normal signs of wear from use. Battery health is 89 percent. Includes phone and charging cable only. Ships fast from California.',
+        goals:'Increase click-through rate, communicate condition more clearly, rank better for unlocked iPhone searches, and reduce buyer questions about battery health.'
+      },
+      {
+        title:'Nike Air Max 90 Men Size 10 White Black Used Good',
+        brand:'Nike', category:'Fashion', condition:'Used - Good', price:'79.99', shipping:'Free shipping, 30-day returns', sku:'AM90-10-WB',
+        specifics:'Brand: Nike\nModel: Air Max 90\nDepartment: Men\nSize: 10\nColor: White / Black\nIncluded: Shoes only',
+        description:'Used Nike Air Max 90 in good condition. Clean overall with normal wear. Ships quickly and packed with care.',
+        goals:'Improve title clarity, communicate condition better, and make the listing easier for mobile buyers to trust.'
+      }
+    ];
+    let i = 0;
+    document.getElementById('sample').addEventListener('click', () => {
+      i = (i + 1) % examples.length;
+      const ex = examples[i];
+      ['title','brand','category','condition','price','shipping','sku','specifics','description','goals'].forEach(k => {
+        const el = document.getElementById(k);
+        if (el) el.value = ex[k];
+      });
+    });
+
+    function normalizeEmail(v){return String(v||'').trim().toLowerCase()}
+    function readUsers(){try{return JSON.parse(localStorage.getItem('mcpUsers')||'[]')}catch{return []}}
+    function writeUsers(users){localStorage.setItem('mcpUsers', JSON.stringify(users))}
+    function writeSession(user){if(user){localStorage.setItem('mcpSession', JSON.stringify(user))}else{localStorage.removeItem('mcpSession')}}
+
+    const status = document.getElementById('inlineAuthStatus');
+    document.getElementById('inlineSignupForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('inlineSignupName').value.trim();
+      const email = normalizeEmail(document.getElementById('inlineSignupEmail').value);
+      const password = document.getElementById('inlineSignupPassword').value;
+      if(!name || !email || !password){status.textContent='Please complete every sign-up field.'; return}
+      const users = readUsers();
+      if(users.some(u => u.email === email)){status.textContent='That email already has an account. Try logging in instead.'; return}
+      const user = {name,email,password,createdAt:new Date().toISOString()};
+      users.push(user); writeUsers(users); writeSession(user);
+      status.textContent='Account created. Your 2 free optimizations are now unlocked.';
+      e.target.reset();
+      document.getElementById('trialNotice').textContent = 'Account active. You can now continue through the optimization workflow.';
+    });
+
+    document.getElementById('inlineLoginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = normalizeEmail(document.getElementById('inlineLoginEmail').value);
+      const password = document.getElementById('inlineLoginPassword').value;
+      const user = readUsers().find(u => u.email === email && u.password === password);
+      if(!user){status.textContent='We could not match that email and password.'; return}
+      writeSession(user);
+      status.textContent='You are logged in. Your 2 free optimizations are available on this account.';
+      e.target.reset();
+      document.getElementById('trialNotice').textContent = 'Logged in. You can now continue through the optimization workflow.';
+    });
+  </script>
+</body>
+</html>
