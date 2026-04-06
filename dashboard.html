@@ -304,7 +304,6 @@
       enterprise: 'https://buy.stripe.com/4gMeVc94I4xvfbE9wudUY02',
       audit49:    'https://buy.stripe.com/14AaEWep22pnaVoaAydUY03'
     };
-    // Wire Stripe links
     [['planCtaStarter',STRIPE.starter],['planCtaGrowth',STRIPE.growth],['planCtaEnterprise',STRIPE.enterprise]].forEach(([id,url])=>{
       const el=document.getElementById(id); if(el&&!url.startsWith('STRIPE_LINK_')) el.href=url;
     });
@@ -312,7 +311,6 @@
     document.querySelectorAll('a[href="https://buy.stripe.com/00w28qep2aVT3sW0ZYdUY00"]').forEach(a=>{ if(!STRIPE.starter.startsWith('STRIPE_LINK_')) a.href=STRIPE.starter; });
     document.querySelectorAll('a[href="https://buy.stripe.com/dRm7sKgxaaVTd3weQOdUY01"]').forEach(a=>{ if(!STRIPE.growth.startsWith('STRIPE_LINK_')) a.href=STRIPE.growth; });
     document.querySelectorAll('a[href="https://buy.stripe.com/4gMeVc94I4xvfbE9wudUY02"]').forEach(a=>{ if(!STRIPE.enterprise.startsWith('STRIPE_LINK_')) a.href=STRIPE.enterprise; });
-    // ─────────────────────────────────────────────────────────────────────
 
     document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -326,32 +324,57 @@
     }
     function readSaved(){try{return JSON.parse(localStorage.getItem('mcpSavedDrafts')||'[]')}catch(e){return []}}
     function writeSaved(d){localStorage.setItem('mcpSavedDrafts',JSON.stringify(d))}
+    function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
     const session = readSession();
     if(!session){ window.location.href='index.html#authInline'; }
 
-    // Populate UI with real user data
-    function initDashboard(){
-      if(!session) return;
-      const name = session.name || 'Seller';
+    // ─── Sync fresh data from server ─────────────────────────────────────────
+    async function syncFromServer() {
+      if(!session || !session.accessToken) return;
+      try {
+        const resp = await fetch('/api/auth/me', {
+          headers: { Authorization: `Bearer ${session.accessToken}` }
+        });
+        if(!resp.ok) return;
+        const data = await resp.json();
+        if(data.user) {
+          const updated = Object.assign({}, session, data.user);
+          writeSession(updated);
+          return updated;
+        }
+      } catch(e) {}
+      return null;
+    }
+
+    // ─── Populate UI ─────────────────────────────────────────────────────────
+    function initDashboard(s){
+      s = s || session;
+      if(!s) return;
+      const name = s.name || 'Seller';
       const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-      const plan = session.plan || 'free';
-      const credits = session.credits !== undefined ? session.credits : 2;
+      const plan = (s.plan||'free').toLowerCase();
       const planLabel = {free:'Free',starter:'Starter',growth:'Growth',enterprise:'Enterprise'}[plan]||'Free';
       const planMax = {free:2,starter:50,growth:250,enterprise:800}[plan]||2;
+
+      // Credits: use creditsRemaining if available, fall back to legacy credits field
+      const credits = s.creditsRemaining !== undefined ? s.creditsRemaining
+                    : s.credits !== undefined ? s.credits : 2;
+      const listingsOptimized = s.listingsOptimized || 0;
       const pct = Math.round((credits/planMax)*100);
 
       document.getElementById('welcomeMsg').textContent = 'Welcome back, ' + name.split(' ')[0] + '.';
       document.getElementById('avatarInitials').textContent = initials;
       document.getElementById('profileName').textContent = name;
-      document.getElementById('profileEmail').textContent = session.email || '—';
+      document.getElementById('profileEmail').textContent = s.email || '—';
       document.getElementById('profilePlanLabel').textContent = planLabel + ' plan • Active workspace';
-      document.getElementById('profileJoined').textContent = session.createdAt ? new Date(session.createdAt).toLocaleDateString('en-US',{month:'long',year:'numeric'}) : '—';
+      document.getElementById('profileJoined').textContent = s.createdAt ? new Date(s.createdAt).toLocaleDateString('en-US',{month:'long',year:'numeric'}) : '—';
 
       document.getElementById('statPlan').textContent = planLabel;
       document.getElementById('statCredits').textContent = credits;
+      document.getElementById('statListings').textContent = listingsOptimized;
       document.getElementById('creditLabel').textContent = credits + ' credit' + (credits===1?'':'s') + ' remaining';
-      document.getElementById('creditBar').style.width = pct + '%';
+      document.getElementById('creditBar').style.width = Math.min(pct,100) + '%';
       document.getElementById('creditMax').textContent = planMax + (plan==='free'?' free credits':' monthly credits');
       document.getElementById('creditNote').textContent = plan==='free'
         ? 'You have ' + credits + ' free optimization credit' + (credits===1?'':'s') + '. Upgrade to get more.'
@@ -361,7 +384,8 @@
       const drafts = readSaved();
       document.getElementById('statDrafts').textContent = drafts.length;
       if(drafts.length > 0){
-        document.getElementById('savedDraftsList').innerHTML = drafts.map((d,i)=>`
+        const list = document.getElementById('savedDraftsList');
+        if(list) list.innerHTML = drafts.map((d,i)=>`
           <div class="preview-item" style="margin-bottom:10px">
             <strong>${escHtml(d.title||'Untitled listing')}</strong>
             <p class="sub" style="font-size:.83rem">${escHtml(d.category||'')} · Saved ${new Date(d.savedAt||Date.now()).toLocaleDateString()}</p>
@@ -379,9 +403,9 @@
       }
     }
 
-    function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-    initDashboard();
+    // Init with cached session, then refresh from server
+    initDashboard(session);
+    syncFromServer().then(fresh => { if(fresh) initDashboard(fresh); });
 
     // Logout
     document.getElementById('logoutBtn').addEventListener('click', function(e){
@@ -390,64 +414,132 @@
       window.location.href='index.html';
     });
 
-    // Optimizer
-    function handleOptimize(e){
+    // ─── Optimizer — calls real /api/optimize endpoint ────────────────────────
+    async function handleOptimize(e){
       e.preventDefault();
-      const session2 = readSession();
-      if(!session2){ window.location.href='index.html#authInline'; return; }
-      const credits = session2.credits !== undefined ? session2.credits : 2;
+      const s = readSession();
+      if(!s){ window.location.href='index.html#authInline'; return; }
+
+      const credits = s.creditsRemaining !== undefined ? s.creditsRemaining : s.credits !== undefined ? s.credits : 2;
       if(credits <= 0){
         alert('You are out of credits. Please upgrade your plan to continue optimizing listings.');
         document.getElementById('billing').scrollIntoView({behavior:'smooth'});
         return;
       }
-      const title = document.getElementById('optTitle').value.trim();
-      const category = document.getElementById('optCategory').value;
-      const condition = document.getElementById('optCondition').value;
+
+      const title       = document.getElementById('optTitle').value.trim();
+      const category    = document.getElementById('optCategory').value;
+      const condition   = document.getElementById('optCondition').value;
       const description = document.getElementById('optDescription').value.trim();
-      const specifics = document.getElementById('optSpecifics').value.trim();
-      const price = document.getElementById('optPrice').value.trim();
+      const specifics   = document.getElementById('optSpecifics').value.trim();
+      const brand       = document.getElementById('optBrand') ? document.getElementById('optBrand').value.trim() : '';
+      const sku         = document.getElementById('optSku') ? document.getElementById('optSku').value.trim() : '';
+      const shipping    = document.getElementById('optShipping') ? document.getElementById('optShipping').value.trim() : 'Calculated shipping';
+      const goals       = document.getElementById('optGoals') ? document.getElementById('optGoals').value.trim() : '';
 
-      // Deduct credit
-      session2.credits = credits - 1;
-      saveUser(session2);
-      document.getElementById('statCredits').textContent = session2.credits;
-      document.getElementById('creditLabel').textContent = session2.credits + ' credit' + (session2.credits===1?'':'s') + ' remaining';
+      // Show loading state
+      const btn = e.target.querySelector('button[type="submit"]');
+      const origText = btn.textContent;
+      btn.textContent = 'Optimizing...';
+      btn.disabled = true;
 
-      // Generate enhanced listing suggestions
-      const words = title.split(' ');
-      const enhancedTitle = title + (condition && !title.toLowerCase().includes(condition.toLowerCase().split('—')[0].trim()) ? ' — ' + condition : '');
-      const output = `
-        <div style="margin-bottom:14px">
-          <strong style="display:block;margin-bottom:6px">Enhanced title suggestion:</strong>
-          <div style="padding:12px 14px;border-radius:12px;background:#fff;border:1px solid rgba(47,126,106,.2);font-weight:600">${escHtml(enhancedTitle)}</div>
-        </div>
-        <div style="margin-bottom:14px">
-          <strong style="display:block;margin-bottom:6px">Improvement checklist:</strong>
-          <ul style="padding-left:18px;margin:0">
-            ${!condition ? '<li style="color:#b45309">Add condition to your title and description for better buyer trust</li>' : '<li style="color:#1f5c4b">✓ Condition noted — good for buyer trust</li>'}
-            ${words.length < 8 ? '<li style="color:#b45309">Title is too short — eBay allows up to 80 characters, use more keywords</li>' : '<li style="color:#1f5c4b">✓ Title length is good</li>'}
-            ${!specifics ? '<li style="color:#b45309">No item specifics provided — these significantly affect search visibility</li>' : '<li style="color:#1f5c4b">✓ Item specifics included</li>'}
-            ${!description || description.length < 80 ? '<li style="color:#b45309">Description is too brief — add benefit-focused bullets and key details</li>' : '<li style="color:#1f5c4b">✓ Description has good length</li>'}
-            ${!price ? '<li>Consider including your asking price in notes for audit comparison</li>' : ''}
-          </ul>
-        </div>
-        ${description ? `<div><strong style="display:block;margin-bottom:6px">Enhanced description structure:</strong><div style="padding:12px 14px;border-radius:12px;background:#fff;border:1px solid rgba(47,126,106,.2)"><p style="margin-bottom:8px"><strong>${escHtml(title)}</strong></p><ul style="padding-left:18px;margin:0">${description.split('\n').filter(l=>l.trim()).slice(0,5).map(l=>`<li>${escHtml(l.replace(/^[-•*]\s*/,''))}</li>`).join('')}</ul></div></div>` : ''}
-      `;
-      document.getElementById('workspaceOutput').innerHTML = output;
-      document.getElementById('workspaceResult').style.display = 'block';
-      document.getElementById('workspaceResult').scrollIntoView({behavior:'smooth'});
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if(s.accessToken) headers['Authorization'] = `Bearer ${s.accessToken}`;
 
-      // Track in activity
-      const activity = document.getElementById('activityList');
-      const newEntry = document.createElement('div');
-      newEntry.innerHTML = `<strong>Just now</strong><br><span class="muted">Optimized: ${escHtml(title.slice(0,50))}${title.length>50?'…':''}</span>`;
-      activity.insertBefore(newEntry, activity.firstChild);
+        const resp = await fetch('/api/optimize', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ title, category, condition, description, specifics, brand, sku, shipping, goals })
+        });
 
-      document.getElementById('statListings').textContent = parseInt(document.getElementById('statListings').textContent||0) + 1;
+        const data = await resp.json();
 
-      // Save as pending draft
-      window._currentDraft = { title, category, condition, description, specifics, price, savedAt: new Date().toISOString() };
+        if(!resp.ok){
+          if(data.trialLimited){ alert('Trial limit reached — upgrade to keep optimizing.'); document.getElementById('billing').scrollIntoView({behavior:'smooth'}); return; }
+          if(data.creditsLimited){ alert('Monthly credits used up — upgrade your plan for more.'); document.getElementById('billing').scrollIntoView({behavior:'smooth'}); return; }
+          alert(data.error || 'Something went wrong. Please try again.');
+          return;
+        }
+
+        // Update session credits from server response
+        if(data.user){
+          const updated = Object.assign({}, s, {
+            creditsRemaining: data.user.creditsRemaining,
+            creditsUsed: data.user.creditsUsed,
+            trialUsed: data.user.trialUsed,
+            listingsOptimized: (s.listingsOptimized||0) + 1
+          });
+          saveUser(updated);
+          document.getElementById('statCredits').textContent = data.user.creditsRemaining !== undefined ? data.user.creditsRemaining : (credits - 1);
+          document.getElementById('statListings').textContent = updated.listingsOptimized;
+          document.getElementById('creditLabel').textContent = (data.user.creditsRemaining||0) + ' credit' + ((data.user.creditsRemaining||0)===1?'':'s') + ' remaining';
+        } else {
+          const newCredits = data.trialRemaining !== null ? data.trialRemaining : credits - 1;
+          const updated = Object.assign({}, s, { credits: newCredits, listingsOptimized: (s.listingsOptimized||0) + 1 });
+          saveUser(updated);
+          document.getElementById('statCredits').textContent = newCredits;
+          document.getElementById('statListings').textContent = updated.listingsOptimized;
+          document.getElementById('creditLabel').textContent = newCredits + ' credit' + (newCredits===1?'':'s') + ' remaining';
+        }
+
+        // Render rich output
+        const scores = data.scores || {};
+        const scoreColor = (n) => n >= 85 ? '#16a34a' : n >= 70 ? '#d97706' : '#dc2626';
+        const output = `
+          <div style="margin-bottom:20px;padding:16px 20px;background:#f0fdf4;border:1px solid #86efac;border-radius:12px">
+            <strong style="display:block;margin-bottom:8px;color:#166534">Listing Score</strong>
+            <div style="display:flex;gap:24px;flex-wrap:wrap">
+              <span style="color:${scoreColor(scores.seo||0)}"><strong>${scores.seo||0}</strong> SEO</span>
+              <span style="color:${scoreColor(scores.conv||0)}"><strong>${scores.conv||0}</strong> Conversion</span>
+              <span style="color:${scoreColor(scores.all||0)}"><strong>${scores.all||0}</strong> Overall</span>
+            </div>
+          </div>
+          ${data.title ? `<div style="margin-bottom:16px">
+            <strong style="display:block;margin-bottom:6px">Optimized Title</strong>
+            <div style="padding:12px 16px;border-radius:10px;background:#fff;border:1px solid #c7d2fe;font-weight:600;color:#1e1b4b">${escHtml(data.title)}</div>
+            <div style="font-size:12px;color:#6b7280;margin-top:4px">${data.title.length} / 80 characters</div>
+          </div>` : ''}
+          ${data.bullets ? `<div style="margin-bottom:16px">
+            <strong style="display:block;margin-bottom:6px">Bullet Points</strong>
+            <div style="padding:12px 16px;border-radius:10px;background:#fff;border:1px solid #e5e7eb;white-space:pre-line;font-size:14px;color:#374151">${escHtml(data.bullets)}</div>
+          </div>` : ''}
+          ${data.description ? `<div style="margin-bottom:16px">
+            <strong style="display:block;margin-bottom:6px">Full Description</strong>
+            <div style="padding:12px 16px;border-radius:10px;background:#fff;border:1px solid #e5e7eb;white-space:pre-line;font-size:14px;color:#374151;max-height:220px;overflow-y:auto">${escHtml(data.description)}</div>
+          </div>` : ''}
+          ${data.specifics ? `<div style="margin-bottom:16px">
+            <strong style="display:block;margin-bottom:6px">Item Specifics</strong>
+            <div style="padding:12px 16px;border-radius:10px;background:#fff;border:1px solid #e5e7eb;white-space:pre-line;font-size:13px;color:#374151">${escHtml(data.specifics)}</div>
+          </div>` : ''}
+          ${data.actions ? `<div style="margin-bottom:16px">
+            <strong style="display:block;margin-bottom:8px">Action Items</strong>
+            <div style="padding:12px 16px;border-radius:10px;background:#fffbeb;border:1px solid #fde68a;white-space:pre-line;font-size:14px;color:#92400e">${escHtml(data.actions)}</div>
+          </div>` : ''}
+        `;
+
+        document.getElementById('workspaceOutput').innerHTML = output;
+        document.getElementById('workspaceResult').style.display = 'block';
+        document.getElementById('workspaceResult').scrollIntoView({behavior:'smooth'});
+
+        // Save draft
+        window._currentDraft = { title, category, condition, description, specifics, brand, sku, optimizedTitle: data.title, savedAt: new Date().toISOString() };
+
+        // Update activity
+        const activity = document.getElementById('activityList');
+        if(activity){
+          const newEntry = document.createElement('div');
+          newEntry.innerHTML = `<strong>Just now</strong><br><span class="muted">Optimized: ${escHtml(title.slice(0,50))}${title.length>50?'…':''}</span>`;
+          activity.insertBefore(newEntry, activity.firstChild);
+        }
+
+      } catch(err) {
+        alert('Something went wrong. Please check your connection and try again.');
+        console.error(err);
+      } finally {
+        btn.textContent = origText;
+        btn.disabled = false;
+      }
     }
 
     function saveToWorkspace(){
@@ -455,7 +547,7 @@
       const drafts = readSaved();
       drafts.unshift(window._currentDraft);
       writeSaved(drafts.slice(0,20));
-      document.getElementById('statDrafts').textContent = drafts.length + 1 <= 20 ? drafts.length + 1 : 20;
+      document.getElementById('statDrafts').textContent = Math.min((readSaved().length), 20);
       alert('Saved to your drafts!');
     }
 
