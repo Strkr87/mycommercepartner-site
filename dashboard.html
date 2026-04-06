@@ -9,14 +9,25 @@
     :root{--bg:#f7f1e8;--ink:#173029;--muted:#61716a;--line:rgba(23,48,41,.12);--accent:#e57a3b;--accent2:#19443a;--soft:#fffdf9;--shadow:0 16px 36px rgba(23,48,41,.08);--shadow-soft:0 8px 18px rgba(23,48,41,.05);--r:20px;--max:1180px}
     *{box-sizing:border-box} body{margin:0;font:16px/1.6 Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#fbf7f1,#f3e9dc)} a{color:inherit} h1,h2,h3,p{margin:0}
     .wrap{max-width:var(--max);margin:auto;padding:20px 16px 40px} header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 16px;background:#fffdf9;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-soft)}
-    .brand{display:flex;gap:12px;align-items:center;text-decoration:none}.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ffbc73)} nav{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.navlink,.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:700}.navlink{color:var(--muted)} .btn{padding:12px 16px;border-radius:999px;border:1px solid transparent;cursor:pointer}.primary{background:#173029;color:#fff}.ghost{background:#fff;border-color:var(--line);color:var(--ink)}
+    .brand{display:flex;gap:12px;align-items:center;text-decoration:none}.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ffbc73)} nav{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.navlink,.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:700}.navlink{color:var(--muted)} .btn{padding:12px 16px;border-radius:999px;border:1px solid transparent;cursor:pointer}.primary{background:#173029;color:#fff}.ghost{background:#fff;border-color:var(--line);color:var(--ink)}.danger{background:#fff;border-color:#e57a3b;color:#a04020}
     .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:20px}.panel,.card{background:#fffdf9;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:24px}.eyebrow{display:inline-block;padding:6px 12px;border-radius:999px;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#fff3e6;color:#a45426}
     h1{margin-top:14px;font:clamp(2.3rem,4.6vw,4rem)/1 Georgia,serif}.sub{margin-top:12px;color:var(--muted)} .summary,.main,.projects,.actions{display:grid;gap:18px}.summary{grid-template-columns:repeat(4,1fr);margin-top:18px}.stat{padding:18px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)} .stat big{display:block;font:700 1.7rem/1 Georgia,serif;margin-bottom:6px}
     .main{grid-template-columns:1.35fr .65fr;margin-top:24px}.projects .project{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;padding:18px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)} .thumb{width:62px;height:62px;border-radius:16px;background:linear-gradient(135deg,#e9e1d6,#fff);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:1.4rem}.tag{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;font-size:.78rem;font-weight:700;background:#f3eee6;color:#6e5d49}
     .action-list{display:grid;gap:12px}.action-item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;padding:16px 18px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)} .icon{width:40px;height:40px;border-radius:14px;background:#173029;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem}.action-copy{display:grid;gap:4px}.action-cta{white-space:nowrap;align-self:center}
-    .progress{height:12px;border-radius:999px;background:#eee7dd;overflow:hidden;margin-top:10px}.progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#f3a367);width:68%}.credit-meter{margin-top:16px;padding:16px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)}.credit-scale{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-top:8px}
+    .progress{height:12px;border-radius:999px;background:#eee7dd;overflow:hidden;margin-top:10px}.progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#f3a367)}.credit-meter{margin-top:16px;padding:16px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-soft)}.credit-scale{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-top:8px}
     .mini-list{margin-top:14px;display:grid;gap:10px}.mini-list div{padding:12px 14px;border-radius:14px;background:#fff;border:1px solid var(--line)}.dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px}.metric-card,.billing-card,.activity-card,.profile-card,.alerts-card,.preview-card{background:#fffdf9;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:22px}.metric-card h3,.billing-card h3,.activity-card h3,.profile-card h3,.alerts-card h3,.preview-card h3{font:1.3rem/1.2 Georgia,serif;margin-bottom:10px}.metric-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.mini-stat{padding:14px;border-radius:16px;background:#fff;border:1px solid var(--line)}.mini-stat strong{display:block;font-size:1.25rem;margin-bottom:4px}.activity-list{display:grid;gap:10px;margin-top:14px}.activity-list div{padding:12px 14px;border-radius:14px;background:#fff;border:1px solid var(--line)}.profile-top{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}.avatar{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,var(--accent),#f3a367);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:700}.chart{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:150px;margin-top:18px}.bar{border-radius:12px 12px 6px 6px;background:linear-gradient(180deg,#f4c6a2,var(--accent));min-height:40px}.preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.preview-item{padding:14px;border-radius:16px;background:#fff;border:1px solid var(--line)}.preview-image{height:120px;border-radius:14px;background:linear-gradient(135deg,#ece3d7,#fff);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:10px}.alert-list{display:grid;gap:10px;margin-top:14px}.alert{padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:#fff}.alert strong{display:block;margin-bottom:4px}
-    @media(max-width:960px){.hero,.main,.summary,.dashboard-grid{grid-template-columns:1fr 1fr}} @media(max-width:720px){header,.hero,.main,.summary,.dashboard-grid{grid-template-columns:1fr;display:grid}.summary{grid-template-columns:1fr 1fr}} @media(max-width:560px){.summary{grid-template-columns:1fr}}
+    /* Optimizer workspace */
+    .workspace-form{display:grid;gap:14px;margin-top:18px} .workspace-form label{display:block;font-size:.88rem;font-weight:700;margin-bottom:4px} .workspace-form input,.workspace-form textarea,.workspace-form select{width:100%;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:#fff;color:var(--ink);font:inherit} .workspace-form textarea{min-height:110px;resize:vertical} .workspace-form .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px} .workspace-result{display:none;margin-top:18px;padding:18px;border-radius:18px;background:#eef8f4;border:1px solid rgba(47,126,106,.18);color:#1f5c4b}
+    /* Audit offer section */
+    .audit-offer{background:#20453d;color:#f6f8f6;border-radius:var(--r);padding:28px;margin-top:24px}
+    .audit-offer h2{font:1.8rem/1.1 Georgia,serif;color:#f6f8f6}
+    .audit-offer p{color:rgba(246,248,246,.82);margin-top:8px}
+    .audit-offer ul{color:rgba(246,248,246,.82);padding-left:18px;margin:14px 0}
+    .audit-offer .btn{background:var(--accent);color:#fff;margin-top:14px}
+    /* Plan upgrade cards */
+    .plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .plan-card{padding:18px;border-radius:18px;background:#fff;border:1px solid var(--line)}.plan-card.current{border-color:var(--accent)}.plan-card h4{font:1.1rem/1.2 Georgia,serif;margin-bottom:4px}.plan-price{font:1.5rem/1 Georgia,serif;margin:.5rem 0}.plan-cta{display:block;width:100%;padding:10px;border-radius:12px;border:none;background:#173029;color:#fff;font:inherit;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;margin-top:12px}.plan-cta.current-plan{background:#f3eee6;color:var(--muted);cursor:default}
+    @media(max-width:960px){.hero,.main,.summary,.dashboard-grid{grid-template-columns:1fr 1fr}} @media(max-width:720px){header,.hero,.main,.summary,.dashboard-grid{grid-template-columns:1fr;display:grid}.summary{grid-template-columns:1fr 1fr}} @media(max-width:560px){.summary{grid-template-columns:1fr}.plan-grid{grid-template-columns:1fr}.workspace-form .row2{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -29,34 +40,35 @@
         <a class="navlink" href="about.html">About</a>
         <a class="btn ghost" href="#billing">Plans</a>
         <a class="btn primary" href="#optimizerWorkspace">Optimize Listing</a>
+        <a class="btn danger" id="logoutBtn" href="#">Log out</a>
       </nav>
     </header>
 
     <section class="hero">
       <div class="panel">
         <span class="eyebrow">Dashboard</span>
-        <h1>Welcome back, seller.</h1>
+        <h1 id="welcomeMsg">Welcome back.</h1>
         <p class="sub">Track credits, review recent listing work, and jump back into optimization without hunting through your workflow.</p>
         <div class="summary">
-          <div class="stat"><big>Growth</big><div>Current plan</div></div>
-          <div class="stat"><big>172</big><div>Credits remaining</div></div>
-          <div class="stat"><big>48</big><div>Listings improved this month</div></div>
-          <div class="stat"><big>3</big><div>Drafts ready to review</div></div>
+          <div class="stat"><big id="statPlan">Free</big><div>Current plan</div></div>
+          <div class="stat"><big id="statCredits">2</big><div>Credits remaining</div></div>
+          <div class="stat"><big id="statListings">0</big><div>Listings improved</div></div>
+          <div class="stat"><big id="statDrafts">0</big><div>Drafts ready</div></div>
         </div>
       </div>
       <div class="panel">
         <h3 style="font:1.45rem/1.2 Georgia,serif">Usage this month</h3>
         <p class="sub">Your account is active and ready for more listing work.</p>
         <div class="credit-meter">
-          <strong>172 credits remaining</strong>
-          <div class="progress"><span></span></div>
-          <div class="credit-scale"><span>0</span><span>250 monthly credits</span></div>
+          <strong id="creditLabel">2 credits remaining</strong>
+          <div class="progress"><span id="creditBar" style="width:100%"></span></div>
+          <div class="credit-scale"><span>0</span><span id="creditMax">2 free credits</span></div>
         </div>
-        <p class="sub" style="margin-top:10px">68% of monthly credits used</p>
+        <p class="sub" style="margin-top:10px" id="creditNote">You have 2 free optimization credits to get started.</p>
         <div class="mini-list">
-          <div><strong>Next recommended step:</strong> finish the 3 draft listings waiting for final review.</div>
-          <div><strong>Best quick win:</strong> run a batch on stale electronics inventory before your next listing cycle.</div>
-          <div><strong>Need more help?</strong> start a $49 audit or move into a higher monthly plan.</div>
+          <div><strong>Next step:</strong> optimize your first listing using the workspace below.</div>
+          <div><strong>Quick win:</strong> run a batch on your top 5 listings to find weak titles fast.</div>
+          <div><strong>Need more?</strong> <a href="#billing" style="color:var(--accent);font-weight:700">View plans</a> or <a href="#auditOffer" style="color:var(--accent);font-weight:700">get the $49 audit</a>.</div>
         </div>
       </div>
     </section>
@@ -65,37 +77,8 @@
       <div class="projects">
         <div class="card">
           <h2 style="font:1.5rem/1.2 Georgia,serif">Recent listing projects</h2>
-          <div class="project" style="margin-top:16px">
-            <div class="thumb">📱</div>
-            <div>
-              <strong>Apple iPhone 13 Pro Max 256GB Unlocked Sierra Blue</strong>
-              <p class="sub">Title, bullet points, and enhanced product description drafted.</p>
-            </div>
-            <div class="tag">Ready to review</div>
-          </div>
-          <div class="project">
-            <div class="thumb">👟</div>
-            <div>
-              <strong>Nike Air Max 90 Men Size 10 White Black</strong>
-              <p class="sub">Condition and bullet cleanup complete. Description still needs final polish.</p>
-            </div>
-            <div class="tag">In progress</div>
-          </div>
-          <div class="project">
-            <div class="thumb">🎧</div>
-            <div>
-              <strong>Vintage Sony Walkman Cassette Player</strong>
-              <p class="sub">Audit recommendations generated with missing specifics flagged.</p>
-            </div>
-            <div class="tag">Audit ready</div>
-          </div>
-          <div class="project">
-            <div class="thumb">🚗</div>
-            <div>
-              <strong>OEM Auto Part Listing Batch</strong>
-              <p class="sub">Keyword structure and compatibility formatting improved across the batch.</p>
-            </div>
-            <div class="tag">Completed</div>
+          <div id="projectsList" style="margin-top:16px">
+            <p class="muted" style="padding:18px;text-align:center">No listing projects yet. <a href="#optimizerWorkspace" style="color:var(--accent);font-weight:700">Optimize your first listing →</a></p>
           </div>
         </div>
       </div>
@@ -105,7 +88,7 @@
           <h2 style="font:1.5rem/1.2 Georgia,serif">Quick actions</h2>
           <div class="action-list" style="margin-top:16px">
             <div class="action-item"><div class="icon">✍</div><div class="action-copy"><strong>Optimize a new listing</strong><p class="sub">Start a fresh listing workflow and generate stronger titles, bullets, and descriptions.</p></div><a class="btn ghost action-cta" href="#optimizerWorkspace">Open workspace</a></div>
-            <div class="action-item"><div class="icon">🔎</div><div class="action-copy"><strong>Request a $49 audit</strong><p class="sub">Get a prioritized review of 10 listings if you want faster paid insight.</p></div><a class="btn ghost action-cta" href="#auditOffer">Request audit</a></div>
+            <div class="action-item"><div class="icon">🔎</div><div class="action-copy"><strong>Request a $49 audit</strong><p class="sub">Get a prioritized review of 10 listings with faster paid insight.</p></div><a class="btn ghost action-cta" href="#auditOffer">Get audit</a></div>
             <div class="action-item"><div class="icon">📈</div><div class="action-copy"><strong>Upgrade your plan</strong><p class="sub">Increase monthly credits if you are optimizing larger batches consistently.</p></div><a class="btn ghost action-cta" href="#billing">View plans</a></div>
             <div class="action-item"><div class="icon">🗂</div><div class="action-copy"><strong>Review saved drafts</strong><p class="sub">Jump back into listings that already have suggested copy waiting.</p></div><a class="btn ghost action-cta" href="#savedDrafts">See drafts</a></div>
           </div>
@@ -118,31 +101,44 @@
         <h3>Performance snapshot</h3>
         <p class="sub">A quick look at current seller momentum across your listing workflow.</p>
         <div class="metric-row">
-          <div class="mini-stat"><strong>12%</strong><span class="muted">Higher click-through on optimized titles</span></div>
-          <div class="mini-stat"><strong>31</strong><span class="muted">Listings with stronger specifics added</span></div>
-          <div class="mini-stat"><strong>7</strong><span class="muted">Listings ready for final publish</span></div>
-          <div class="mini-stat"><strong>4</strong><span class="muted">Listings flagged for audit priority</span></div>
+          <div class="mini-stat"><strong id="metricCTR">—</strong><span class="muted">Avg click-through improvement</span></div>
+          <div class="mini-stat"><strong id="metricSpecifics">—</strong><span class="muted">Listings with stronger specifics</span></div>
+          <div class="mini-stat"><strong id="metricReady">—</strong><span class="muted">Listings ready to publish</span></div>
+          <div class="mini-stat"><strong id="metricAudit">—</strong><span class="muted">Flagged for audit priority</span></div>
         </div>
       </div>
 
       <div class="billing-card" id="billing">
-        <h3>Billing & plan</h3>
-        <p class="sub">Keep track of your current plan, renewal cycle, and upgrade opportunities.</p>
-        <div class="mini-list">
-          <div><strong>Current plan:</strong> Growth</div>
-          <div><strong>Renewal:</strong> May 2, 2026</div>
-          <div><strong>Credits remaining:</strong> 172</div>
-          <div><strong>Suggested upgrade trigger:</strong> if you consistently optimize more than 250 listings per month</div>
+        <h3>Billing &amp; plan</h3>
+        <p class="sub">Manage your current plan and upgrade to unlock more credits.</p>
+        <div class="plan-grid">
+          <div class="plan-card" id="planCardStarter">
+            <h4>Starter</h4>
+            <div class="plan-price">$39<span style="font:.85rem Arial;color:var(--muted)">/mo</span></div>
+            <div style="font-size:.82rem;color:var(--muted)">50 credits/month</div>
+            <a class="plan-cta" href="STRIPE_LINK_STARTER" id="planCtaStarter">Upgrade to Starter</a>
+          </div>
+          <div class="plan-card" id="planCardGrowth">
+            <h4>Growth</h4>
+            <div class="plan-price">$99<span style="font:.85rem Arial;color:var(--muted)">/mo</span></div>
+            <div style="font-size:.82rem;color:var(--muted)">250 credits/month</div>
+            <a class="plan-cta" href="STRIPE_LINK_GROWTH" id="planCtaGrowth">Upgrade to Growth</a>
+          </div>
+          <div class="plan-card" id="planCardEnterprise">
+            <h4>Enterprise</h4>
+            <div class="plan-price">$249<span style="font:.85rem Arial;color:var(--muted)">/mo</span></div>
+            <div style="font-size:.82rem;color:var(--muted)">800 credits/month</div>
+            <a class="plan-cta" href="STRIPE_LINK_ENTERPRISE" id="planCtaEnterprise">Upgrade to Enterprise</a>
+          </div>
         </div>
+        <p class="sub" style="margin-top:10px;font-size:.83rem">Payments processed securely via Stripe. Cancel any time.</p>
       </div>
 
       <div class="activity-card">
         <h3>Recent activity</h3>
-        <p class="sub">A quick timeline of what’s been happening in your account.</p>
-        <div class="activity-list">
-          <div><strong>Today</strong><br><span class="muted">Enhanced iPhone listing draft completed and saved for review.</span></div>
-          <div><strong>Yesterday</strong><br><span class="muted">10-listing conversion audit requested for electronics inventory.</span></div>
-          <div><strong>2 days ago</strong><br><span class="muted">Auto parts batch updated with cleaner compatibility formatting.</span></div>
+        <p class="sub">A quick timeline of what's been happening in your account.</p>
+        <div class="activity-list" id="activityList">
+          <div><strong>Account created</strong><br><span class="muted">Welcome! Your 2 free optimization credits are ready to use.</span></div>
         </div>
       </div>
 
@@ -150,91 +146,325 @@
         <h3>Recommended next steps</h3>
         <p class="sub">The fastest opportunities to keep momentum going.</p>
         <div class="activity-list">
-          <div><strong>Finish draft reviews</strong><br><span class="muted">You have 3 listings waiting for final approval and publish.</span></div>
-          <div><strong>Run another batch</strong><br><span class="muted">Your account still has enough credits for a meaningful optimization pass.</span></div>
-          <div><strong>Use the audit offer</strong><br><span class="muted">Best for inventory that needs faster prioritization before rewriting at scale.</span></div>
+          <div><strong>Use your free credits</strong><br><span class="muted">Paste a listing into the workspace below and see the difference.</span></div>
+          <div><strong>Try the $49 audit</strong><br><span class="muted">Best for getting a prioritized fix list across 10 listings fast.</span></div>
+          <div><strong>Pick a monthly plan</strong><br><span class="muted">When you are ready to optimize consistently, choose a plan below.</span></div>
         </div>
       </div>
 
       <div class="profile-card">
         <h3>Account profile</h3>
         <div class="profile-top" style="margin-top:14px">
-          <div class="avatar">KM</div>
+          <div class="avatar" id="avatarInitials">?</div>
           <div>
-            <strong>Ken M</strong><br>
-            <span class="muted">Growth plan • Active seller workspace</span>
+            <strong id="profileName">Seller</strong><br>
+            <span class="muted" id="profilePlanLabel">Free plan • Active workspace</span>
           </div>
         </div>
         <div class="mini-list">
-          <div><strong>Email:</strong> seller@example.com</div>
+          <div><strong>Email:</strong> <span id="profileEmail">—</span></div>
           <div><strong>Workspace status:</strong> Active</div>
-          <div><strong>Next billing action:</strong> Manage plan or upgrade before next cycle if volume increases</div>
+          <div><strong>Member since:</strong> <span id="profileJoined">—</span></div>
         </div>
       </div>
 
       <div class="metric-card">
         <h3>Listing performance trend</h3>
-        <p class="sub">A simple visual snapshot of recent optimization performance momentum.</p>
+        <p class="sub">Visual snapshot of recent optimization momentum.</p>
         <div class="chart">
-          <div class="bar" style="height:44%"></div>
-          <div class="bar" style="height:56%"></div>
-          <div class="bar" style="height:63%"></div>
-          <div class="bar" style="height:70%"></div>
-          <div class="bar" style="height:68%"></div>
-          <div class="bar" style="height:82%"></div>
-          <div class="bar" style="height:88%"></div>
+          <div class="bar" style="height:20%"></div>
+          <div class="bar" style="height:20%"></div>
+          <div class="bar" style="height:20%"></div>
+          <div class="bar" style="height:20%"></div>
+          <div class="bar" style="height:20%"></div>
+          <div class="bar" style="height:20%"></div>
+          <div class="bar" style="height:20%"></div>
         </div>
-      </div>
-
-      <div class="billing-card">
-        <h3>Subscription management</h3>
-        <p class="sub">Review your current plan and the next upgrade path.</p>
-        <div class="mini-list">
-          <div><strong>Current plan:</strong> Growth</div>
-          <div><strong>Renewal date:</strong> May 2, 2026</div>
-          <div><strong>Upgrade option:</strong> Enterprise if monthly volume continues increasing</div>
-          <div><strong>Best next action:</strong> Keep current plan unless you exceed your credit cap consistently</div>
-        </div>
+        <p class="sub" style="text-align:center;font-size:.82rem;margin-top:8px">Optimize more listings to build your trend line</p>
       </div>
 
       <div class="preview-card" id="savedDrafts">
-        <h3>Listing previews</h3>
-        <p class="sub">Quick visual access to listings currently in your workflow.</p>
-        <div class="preview-grid">
-          <div class="preview-item"><div class="preview-image">📱</div><strong>iPhone 13 Pro Max</strong><p class="sub">Enhanced listing draft ready</p></div>
-          <div class="preview-item"><div class="preview-image">👟</div><strong>Nike Air Max 90</strong><p class="sub">Description still in progress</p></div>
+        <h3>Saved drafts</h3>
+        <p class="sub">Quick access to listings currently in your workflow.</p>
+        <div id="savedDraftsList" style="margin-top:14px">
+          <p class="muted" style="text-align:center;padding:18px">No saved drafts yet. Start optimizing a listing to save your work.</p>
         </div>
       </div>
 
-      <div class="alerts-card" id="auditOffer">
-        <h3>Notifications & alerts</h3>
+      <div class="alerts-card">
+        <h3>Notifications &amp; alerts</h3>
         <p class="sub">Important things that need attention soon.</p>
-        <div class="alert-list">
-          <div class="alert"><strong>3 drafts waiting for review</strong><span class="muted">Finishing these first is the fastest path to momentum.</span></div>
-          <div class="alert"><strong>4 listings flagged for audit priority</strong><span class="muted">These are the strongest candidates for the $49 audit offer.</span></div>
-          <div class="alert"><strong>Credit usage is healthy</strong><span class="muted">You still have room for another meaningful optimization batch this cycle.</span></div>
+        <div class="alert-list" id="alertsList">
+          <div class="alert"><strong>2 free credits available</strong><span class="muted">Use them to optimize your first listings and see the improvement.</span></div>
+          <div class="alert"><strong>$49 audit available</strong><span class="muted">Get a 10-listing conversion audit with prioritized action items.</span></div>
         </div>
       </div>
     </section>
 
+    <!-- AUDIT OFFER SECTION -->
+    <div class="audit-offer" id="auditOffer">
+      <span style="display:inline-block;padding:6px 12px;border-radius:999px;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.15);color:#f6f8f6">$49 Listing Audit</span>
+      <h2 style="margin-top:12px">Get a 10-listing conversion audit</h2>
+      <p>We review 10 of your listings and return a prioritized fix list covering weak titles, missing specifics, trust gaps, and conversion bottlenecks. Delivered within 24–48 hours.</p>
+      <ul>
+        <li>Weak title identification and suggested rewrites</li>
+        <li>Missing item specifics flagged by category</li>
+        <li>Buyer trust issues surfaced and prioritized</li>
+        <li>Actionable next steps ranked by impact</li>
+      </ul>
+      <a class="btn" style="display:inline-flex;align-items:center;border-radius:14px;padding:14px 24px;font-size:1rem" href="STRIPE_LINK_AUDIT_49">Get the $49 Audit — Pay Now</a>
+      <p style="color:rgba(246,248,246,.6);font-size:.83rem;margin-top:10px">Secure checkout via Stripe. One-time payment, no subscription.</p>
+    </div>
+
+    <!-- OPTIMIZER WORKSPACE -->
     <section class="card" id="optimizerWorkspace" style="margin-top:24px">
       <span class="eyebrow">Optimizer Workspace</span>
       <h2 style="font:1.8rem/1.2 Georgia,serif;margin-top:12px">Start a new listing optimization</h2>
-      <p class="sub" style="margin-top:10px">This keeps you inside the dashboard experience while you prepare the next listing to optimize.</p>
-      <div class="mini-list" style="margin-top:18px">
-        <div><strong>Step 1:</strong> Paste your current title and product details.</div>
-        <div><strong>Step 2:</strong> Add condition notes, specifics, and any missing context.</div>
-        <div><strong>Step 3:</strong> Generate improved title, description, and conversion-focused listing structure.</div>
-      </div>
-      <div style="margin-top:18px;display:flex;gap:12px;flex-wrap:wrap">
-        <a class="btn primary" href="#savedDrafts">Continue with saved drafts</a>
-        <a class="btn ghost" href="#auditOffer">Need a manual audit first?</a>
+      <p class="sub" style="margin-top:10px">Paste your current listing details below. The optimizer will analyze your title, description, and item specifics and suggest stronger copy.</p>
+
+      <form class="workspace-form" id="optimizerForm" onsubmit="handleOptimize(event)">
+        <div>
+          <label for="optTitle">Current listing title *</label>
+          <input id="optTitle" type="text" placeholder="e.g. Apple iPhone 13 Pro Max 256GB Sierra Blue Unlocked" required>
+        </div>
+        <div class="row2">
+          <div>
+            <label for="optCategory">Category</label>
+            <select id="optCategory">
+              <option value="">Select category...</option>
+              <option>Cell Phones &amp; Smartphones</option>
+              <option>Clothing, Shoes &amp; Accessories</option>
+              <option>Computers/Tablets &amp; Networking</option>
+              <option>Consumer Electronics</option>
+              <option>Sporting Goods</option>
+              <option>Toys &amp; Hobbies</option>
+              <option>Collectibles</option>
+              <option>Auto Parts &amp; Accessories</option>
+              <option>Home &amp; Garden</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="optCondition">Condition</label>
+            <select id="optCondition">
+              <option value="">Select condition...</option>
+              <option>New</option>
+              <option>New with tags</option>
+              <option>New without tags</option>
+              <option>New with defects</option>
+              <option>Pre-owned — Excellent</option>
+              <option>Pre-owned — Good</option>
+              <option>Pre-owned — Fair</option>
+              <option>For parts or not working</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label for="optDescription">Current description / bullet points</label>
+          <textarea id="optDescription" placeholder="Paste your existing description, bullet points, or any key product details here..."></textarea>
+        </div>
+        <div>
+          <label for="optSpecifics">Item specifics (optional)</label>
+          <textarea id="optSpecifics" placeholder="e.g. Brand: Apple, Model: iPhone 13 Pro Max, Storage: 256GB, Color: Sierra Blue, Carrier: Unlocked" style="min-height:70px"></textarea>
+        </div>
+        <div>
+          <label for="optPrice">Asking price (optional)</label>
+          <input id="optPrice" type="text" placeholder="e.g. $549">
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn primary" type="submit" style="border-radius:14px;padding:14px 28px">Analyze &amp; Optimize</button>
+          <button class="btn ghost" type="reset" style="border-radius:14px;padding:14px 22px" onclick="clearWorkspace()">Clear</button>
+        </div>
+      </form>
+
+      <div class="workspace-result" id="workspaceResult">
+        <strong>✓ Analysis complete — your optimized listing</strong>
+        <div id="workspaceOutput" style="margin-top:14px"></div>
+        <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn primary" style="border-radius:14px;padding:12px 22px" onclick="saveToWorkspace()">Save to drafts</button>
+          <button class="btn ghost" style="border-radius:14px;padding:12px 18px" onclick="clearWorkspace()">Start another</button>
+          <a class="btn ghost" style="border-radius:14px;padding:12px 18px" href="#auditOffer">Get a full 10-listing audit</a>
+        </div>
       </div>
     </section>
+
+    <div class="footer" style="margin-top:28px;color:var(--muted);font-size:.9rem">
+      © <span id="year"></span> MyCommercePartner &nbsp;·&nbsp;
+      <a href="mailto:hello@mycommercepartner.com" style="color:var(--muted)">hello@mycommercepartner.com</a> &nbsp;·&nbsp;
+      <a href="index.html" style="color:var(--muted)">Home</a> &nbsp;·&nbsp;
+      <a href="faq.html" style="color:var(--muted)">FAQ</a>
+    </div>
   </div>
+
   <script>
+    // ─── STRIPE PAYMENT LINKS ──────────────────────────────────────────────
+    const STRIPE = {
+      starter:    'STRIPE_LINK_STARTER',
+      growth:     'STRIPE_LINK_GROWTH',
+      enterprise: 'STRIPE_LINK_ENTERPRISE',
+      audit49:    'STRIPE_LINK_AUDIT_49'
+    };
+    // Wire Stripe links
+    [['planCtaStarter',STRIPE.starter],['planCtaGrowth',STRIPE.growth],['planCtaEnterprise',STRIPE.enterprise]].forEach(([id,url])=>{
+      const el=document.getElementById(id); if(el&&!url.startsWith('STRIPE_LINK_')) el.href=url;
+    });
+    document.querySelectorAll('a[href="STRIPE_LINK_AUDIT_49"]').forEach(a=>{ if(!STRIPE.audit49.startsWith('STRIPE_LINK_')) a.href=STRIPE.audit49; });
+    document.querySelectorAll('a[href="STRIPE_LINK_STARTER"]').forEach(a=>{ if(!STRIPE.starter.startsWith('STRIPE_LINK_')) a.href=STRIPE.starter; });
+    document.querySelectorAll('a[href="STRIPE_LINK_GROWTH"]').forEach(a=>{ if(!STRIPE.growth.startsWith('STRIPE_LINK_')) a.href=STRIPE.growth; });
+    document.querySelectorAll('a[href="STRIPE_LINK_ENTERPRISE"]').forEach(a=>{ if(!STRIPE.enterprise.startsWith('STRIPE_LINK_')) a.href=STRIPE.enterprise; });
+    // ─────────────────────────────────────────────────────────────────────
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
     function readSession(){try{return JSON.parse(localStorage.getItem('mcpSession')||'null')}catch(e){return null}}
-    if(!readSession()){ window.location.href='index.html#authInline'; }
+    function writeSession(u){if(u){localStorage.setItem('mcpSession',JSON.stringify(u))}else{localStorage.removeItem('mcpSession')}}
+    function readUsers(){try{return JSON.parse(localStorage.getItem('mcpUsers')||'[]')}catch(e){return []}}
+    function saveUser(updated){
+      const users=readUsers(); const idx=users.findIndex(u=>u.email===updated.email);
+      if(idx>-1){users[idx]=updated; localStorage.setItem('mcpUsers',JSON.stringify(users));}
+      writeSession(updated);
+    }
+    function readSaved(){try{return JSON.parse(localStorage.getItem('mcpSavedDrafts')||'[]')}catch(e){return []}}
+    function writeSaved(d){localStorage.setItem('mcpSavedDrafts',JSON.stringify(d))}
+
+    const session = readSession();
+    if(!session){ window.location.href='index.html#authInline'; }
+
+    // Populate UI with real user data
+    function initDashboard(){
+      if(!session) return;
+      const name = session.name || 'Seller';
+      const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+      const plan = session.plan || 'free';
+      const credits = session.credits !== undefined ? session.credits : 2;
+      const planLabel = {free:'Free',starter:'Starter',growth:'Growth',enterprise:'Enterprise'}[plan]||'Free';
+      const planMax = {free:2,starter:50,growth:250,enterprise:800}[plan]||2;
+      const pct = Math.round((credits/planMax)*100);
+
+      document.getElementById('welcomeMsg').textContent = 'Welcome back, ' + name.split(' ')[0] + '.';
+      document.getElementById('avatarInitials').textContent = initials;
+      document.getElementById('profileName').textContent = name;
+      document.getElementById('profileEmail').textContent = session.email || '—';
+      document.getElementById('profilePlanLabel').textContent = planLabel + ' plan • Active workspace';
+      document.getElementById('profileJoined').textContent = session.createdAt ? new Date(session.createdAt).toLocaleDateString('en-US',{month:'long',year:'numeric'}) : '—';
+
+      document.getElementById('statPlan').textContent = planLabel;
+      document.getElementById('statCredits').textContent = credits;
+      document.getElementById('creditLabel').textContent = credits + ' credit' + (credits===1?'':'s') + ' remaining';
+      document.getElementById('creditBar').style.width = pct + '%';
+      document.getElementById('creditMax').textContent = planMax + (plan==='free'?' free credits':' monthly credits');
+      document.getElementById('creditNote').textContent = plan==='free'
+        ? 'You have ' + credits + ' free optimization credit' + (credits===1?'':'s') + '. Upgrade to get more.'
+        : Math.round((1-(credits/planMax))*100) + '% of monthly credits used.';
+
+      // Saved drafts
+      const drafts = readSaved();
+      document.getElementById('statDrafts').textContent = drafts.length;
+      if(drafts.length > 0){
+        document.getElementById('savedDraftsList').innerHTML = drafts.map((d,i)=>`
+          <div class="preview-item" style="margin-bottom:10px">
+            <strong>${escHtml(d.title||'Untitled listing')}</strong>
+            <p class="sub" style="font-size:.83rem">${escHtml(d.category||'')} · Saved ${new Date(d.savedAt||Date.now()).toLocaleDateString()}</p>
+          </div>`).join('');
+      }
+
+      // Billing plan highlight
+      const planCards = {free:null,starter:'planCardStarter',growth:'planCardGrowth',enterprise:'planCardEnterprise'};
+      const planCtaIds = {starter:'planCtaStarter',growth:'planCtaGrowth',enterprise:'planCtaEnterprise'};
+      if(planCards[plan]){
+        const card = document.getElementById(planCards[plan]);
+        if(card) card.classList.add('current');
+        const cta = document.getElementById(planCtaIds[plan]);
+        if(cta){ cta.textContent='Current plan'; cta.classList.add('current-plan'); cta.removeAttribute('href'); }
+      }
+    }
+
+    function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    initDashboard();
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', function(e){
+      e.preventDefault();
+      writeSession(null);
+      window.location.href='index.html';
+    });
+
+    // Optimizer
+    function handleOptimize(e){
+      e.preventDefault();
+      const session2 = readSession();
+      if(!session2){ window.location.href='index.html#authInline'; return; }
+      const credits = session2.credits !== undefined ? session2.credits : 2;
+      if(credits <= 0){
+        alert('You are out of credits. Please upgrade your plan to continue optimizing listings.');
+        document.getElementById('billing').scrollIntoView({behavior:'smooth'});
+        return;
+      }
+      const title = document.getElementById('optTitle').value.trim();
+      const category = document.getElementById('optCategory').value;
+      const condition = document.getElementById('optCondition').value;
+      const description = document.getElementById('optDescription').value.trim();
+      const specifics = document.getElementById('optSpecifics').value.trim();
+      const price = document.getElementById('optPrice').value.trim();
+
+      // Deduct credit
+      session2.credits = credits - 1;
+      saveUser(session2);
+      document.getElementById('statCredits').textContent = session2.credits;
+      document.getElementById('creditLabel').textContent = session2.credits + ' credit' + (session2.credits===1?'':'s') + ' remaining';
+
+      // Generate enhanced listing suggestions
+      const words = title.split(' ');
+      const enhancedTitle = title + (condition && !title.toLowerCase().includes(condition.toLowerCase().split('—')[0].trim()) ? ' — ' + condition : '');
+      const output = `
+        <div style="margin-bottom:14px">
+          <strong style="display:block;margin-bottom:6px">Enhanced title suggestion:</strong>
+          <div style="padding:12px 14px;border-radius:12px;background:#fff;border:1px solid rgba(47,126,106,.2);font-weight:600">${escHtml(enhancedTitle)}</div>
+        </div>
+        <div style="margin-bottom:14px">
+          <strong style="display:block;margin-bottom:6px">Improvement checklist:</strong>
+          <ul style="padding-left:18px;margin:0">
+            ${!condition ? '<li style="color:#b45309">Add condition to your title and description for better buyer trust</li>' : '<li style="color:#1f5c4b">✓ Condition noted — good for buyer trust</li>'}
+            ${words.length < 8 ? '<li style="color:#b45309">Title is too short — eBay allows up to 80 characters, use more keywords</li>' : '<li style="color:#1f5c4b">✓ Title length is good</li>'}
+            ${!specifics ? '<li style="color:#b45309">No item specifics provided — these significantly affect search visibility</li>' : '<li style="color:#1f5c4b">✓ Item specifics included</li>'}
+            ${!description || description.length < 80 ? '<li style="color:#b45309">Description is too brief — add benefit-focused bullets and key details</li>' : '<li style="color:#1f5c4b">✓ Description has good length</li>'}
+            ${!price ? '<li>Consider including your asking price in notes for audit comparison</li>' : ''}
+          </ul>
+        </div>
+        ${description ? `<div><strong style="display:block;margin-bottom:6px">Enhanced description structure:</strong><div style="padding:12px 14px;border-radius:12px;background:#fff;border:1px solid rgba(47,126,106,.2)"><p style="margin-bottom:8px"><strong>${escHtml(title)}</strong></p><ul style="padding-left:18px;margin:0">${description.split('\n').filter(l=>l.trim()).slice(0,5).map(l=>`<li>${escHtml(l.replace(/^[-•*]\s*/,''))}</li>`).join('')}</ul></div></div>` : ''}
+      `;
+      document.getElementById('workspaceOutput').innerHTML = output;
+      document.getElementById('workspaceResult').style.display = 'block';
+      document.getElementById('workspaceResult').scrollIntoView({behavior:'smooth'});
+
+      // Track in activity
+      const activity = document.getElementById('activityList');
+      const newEntry = document.createElement('div');
+      newEntry.innerHTML = `<strong>Just now</strong><br><span class="muted">Optimized: ${escHtml(title.slice(0,50))}${title.length>50?'…':''}</span>`;
+      activity.insertBefore(newEntry, activity.firstChild);
+
+      document.getElementById('statListings').textContent = parseInt(document.getElementById('statListings').textContent||0) + 1;
+
+      // Save as pending draft
+      window._currentDraft = { title, category, condition, description, specifics, price, savedAt: new Date().toISOString() };
+    }
+
+    function saveToWorkspace(){
+      if(!window._currentDraft) return;
+      const drafts = readSaved();
+      drafts.unshift(window._currentDraft);
+      writeSaved(drafts.slice(0,20));
+      document.getElementById('statDrafts').textContent = drafts.length + 1 <= 20 ? drafts.length + 1 : 20;
+      alert('Saved to your drafts!');
+    }
+
+    function clearWorkspace(){
+      document.getElementById('optimizerForm').reset();
+      document.getElementById('workspaceResult').style.display='none';
+      document.getElementById('workspaceOutput').innerHTML='';
+      window._currentDraft = null;
+    }
   </script>
 </body>
 </html>
