@@ -116,19 +116,19 @@
             <h4>Starter</h4>
             <div class="plan-price">$39<span style="font:.85rem Arial;color:var(--muted)">/mo</span></div>
             <div style="font-size:.82rem;color:var(--muted)">50 credits/month</div>
-            <a class="plan-cta" href="STRIPE_LINK_STARTER" id="planCtaStarter">Upgrade to Starter</a>
+            <a class="plan-cta" href="https://buy.stripe.com/00w28qep2aVT3sW0ZYdUY00" id="planCtaStarter">Upgrade to Starter</a>
           </div>
           <div class="plan-card" id="planCardGrowth">
             <h4>Growth</h4>
             <div class="plan-price">$99<span style="font:.85rem Arial;color:var(--muted)">/mo</span></div>
             <div style="font-size:.82rem;color:var(--muted)">250 credits/month</div>
-            <a class="plan-cta" href="STRIPE_LINK_GROWTH" id="planCtaGrowth">Upgrade to Growth</a>
+            <a class="plan-cta" href="https://buy.stripe.com/dRm7sKgxaaVTd3weQOdUY01" id="planCtaGrowth">Upgrade to Growth</a>
           </div>
           <div class="plan-card" id="planCardEnterprise">
             <h4>Enterprise</h4>
             <div class="plan-price">$249<span style="font:.85rem Arial;color:var(--muted)">/mo</span></div>
             <div style="font-size:.82rem;color:var(--muted)">800 credits/month</div>
-            <a class="plan-cta" href="STRIPE_LINK_ENTERPRISE" id="planCtaEnterprise">Upgrade to Enterprise</a>
+            <a class="plan-cta" href="https://buy.stripe.com/4gMeVc94I4xvfbE9wudUY02" id="planCtaEnterprise">Upgrade to Enterprise</a>
           </div>
         </div>
         <p class="sub" style="margin-top:10px;font-size:.83rem">Payments processed securely via Stripe. Cancel any time.</p>
@@ -212,7 +212,7 @@
         <li>Buyer trust issues surfaced and prioritized</li>
         <li>Actionable next steps ranked by impact</li>
       </ul>
-      <a class="btn" style="display:inline-flex;align-items:center;border-radius:14px;padding:14px 24px;font-size:1rem" href="STRIPE_LINK_AUDIT_49">Get the $49 Audit — Pay Now</a>
+      <a class="btn" style="display:inline-flex;align-items:center;border-radius:14px;padding:14px 24px;font-size:1rem" href="https://buy.stripe.com/14AaEWep22pnaVoaAydUY03">Get the $49 Audit — Pay Now</a>
       <p style="color:rgba(246,248,246,.6);font-size:.83rem;margin-top:10px">Secure checkout via Stripe. One-time payment, no subscription.</p>
     </div>
 
@@ -299,19 +299,19 @@
   <script>
     // ─── STRIPE PAYMENT LINKS ──────────────────────────────────────────────
     const STRIPE = {
-      starter:    'STRIPE_LINK_STARTER',
-      growth:     'STRIPE_LINK_GROWTH',
-      enterprise: 'STRIPE_LINK_ENTERPRISE',
-      audit49:    'STRIPE_LINK_AUDIT_49'
+      starter:    'https://buy.stripe.com/00w28qep2aVT3sW0ZYdUY00',
+      growth:     'https://buy.stripe.com/dRm7sKgxaaVTd3weQOdUY01',
+      enterprise: 'https://buy.stripe.com/4gMeVc94I4xvfbE9wudUY02',
+      audit49:    'https://buy.stripe.com/14AaEWep22pnaVoaAydUY03'
     };
     // Wire Stripe links
     [['planCtaStarter',STRIPE.starter],['planCtaGrowth',STRIPE.growth],['planCtaEnterprise',STRIPE.enterprise]].forEach(([id,url])=>{
       const el=document.getElementById(id); if(el&&!url.startsWith('STRIPE_LINK_')) el.href=url;
     });
-    document.querySelectorAll('a[href="STRIPE_LINK_AUDIT_49"]').forEach(a=>{ if(!STRIPE.audit49.startsWith('STRIPE_LINK_')) a.href=STRIPE.audit49; });
-    document.querySelectorAll('a[href="STRIPE_LINK_STARTER"]').forEach(a=>{ if(!STRIPE.starter.startsWith('STRIPE_LINK_')) a.href=STRIPE.starter; });
-    document.querySelectorAll('a[href="STRIPE_LINK_GROWTH"]').forEach(a=>{ if(!STRIPE.growth.startsWith('STRIPE_LINK_')) a.href=STRIPE.growth; });
-    document.querySelectorAll('a[href="STRIPE_LINK_ENTERPRISE"]').forEach(a=>{ if(!STRIPE.enterprise.startsWith('STRIPE_LINK_')) a.href=STRIPE.enterprise; });
+    document.querySelectorAll('a[href="https://buy.stripe.com/14AaEWep22pnaVoaAydUY03"]').forEach(a=>{ if(!STRIPE.audit49.startsWith('STRIPE_LINK_')) a.href=STRIPE.audit49; });
+    document.querySelectorAll('a[href="https://buy.stripe.com/00w28qep2aVT3sW0ZYdUY00"]').forEach(a=>{ if(!STRIPE.starter.startsWith('STRIPE_LINK_')) a.href=STRIPE.starter; });
+    document.querySelectorAll('a[href="https://buy.stripe.com/dRm7sKgxaaVTd3weQOdUY01"]').forEach(a=>{ if(!STRIPE.growth.startsWith('STRIPE_LINK_')) a.href=STRIPE.growth; });
+    document.querySelectorAll('a[href="https://buy.stripe.com/4gMeVc94I4xvfbE9wudUY02"]').forEach(a=>{ if(!STRIPE.enterprise.startsWith('STRIPE_LINK_')) a.href=STRIPE.enterprise; });
     // ─────────────────────────────────────────────────────────────────────
 
     document.getElementById('year').textContent = new Date().getFullYear();
