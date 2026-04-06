@@ -425,5 +425,65 @@ Used iPhone 13 Pro Max in good condition. It works well and is unlocked. Has nor
       setTimeout(()=>{ window.location.href='mailto:hello@mycommercepartner.com?subject=New+Subscriber&body='+encodeURIComponent(email); }, 800);
     }
   </script>
+
+  <!-- ─── Contact Section ──────────────────────────────────────────────────── -->
+  <section id="contact" style="padding:80px 20px;background:#f7f8ff">
+    <div style="max-width:600px;margin:0 auto;text-align:center">
+      <div style="display:inline-block;padding:6px 14px;border-radius:999px;font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#ede9fe;color:#5b21b6;margin-bottom:16px">Contact</div>
+      <h2 style="font:clamp(1.8rem,3.5vw,2.6rem)/1.2 Georgia,serif;color:#1a1a2e;margin:0 0 16px">Got a question?</h2>
+      <p style="color:#4a5568;font-size:1.05rem;line-height:1.7;margin:0 0 40px">We're a small team and we actually read every message. Drop us a line and we'll get back to you within 24 hours.</p>
+      <form id="contactForm" style="text-align:left">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div>
+            <label style="display:block;font-weight:600;font-size:.9rem;color:#1a1a2e;margin-bottom:6px" for="contactName">Your name</label>
+            <input id="contactName" type="text" required placeholder="Ken MacIntyre" style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;background:#fff;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="display:block;font-weight:600;font-size:.9rem;color:#1a1a2e;margin-bottom:6px" for="contactEmail">Email address</label>
+            <input id="contactEmail" type="email" required placeholder="you@example.com" style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;background:#fff;box-sizing:border-box">
+          </div>
+        </div>
+        <div style="margin-bottom:20px">
+          <label style="display:block;font-weight:600;font-size:.9rem;color:#1a1a2e;margin-bottom:6px" for="contactMessage">Message</label>
+          <textarea id="contactMessage" required rows="5" placeholder="What can we help you with?" style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;background:#fff;resize:vertical;box-sizing:border-box"></textarea>
+        </div>
+        <div style="text-align:center">
+          <button type="submit" id="contactSubmitBtn" style="background:#1a1a2e;color:#fff;border:none;padding:14px 36px;border-radius:999px;font-size:1rem;font-weight:700;cursor:pointer;transition:opacity .2s">Send Message</button>
+        </div>
+        <div id="contactSuccess" style="display:none;margin-top:20px;padding:16px;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;text-align:center;color:#166534;font-weight:600">✓ Message sent! We'll get back to you within 24 hours.</div>
+        <div id="contactError" style="display:none;margin-top:20px;padding:16px;background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;text-align:center;color:#dc2626">Something went wrong. Please try again or email us directly at hello@mycommercepartner.com</div>
+      </form>
+      <script>
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const btn = document.getElementById('contactSubmitBtn');
+          const name = document.getElementById('contactName').value.trim();
+          const email = document.getElementById('contactEmail').value.trim();
+          const message = document.getElementById('contactMessage').value.trim();
+          btn.textContent = 'Sending...'; btn.disabled = true;
+          document.getElementById('contactSuccess').style.display = 'none';
+          document.getElementById('contactError').style.display = 'none';
+          try {
+            const resp = await fetch('/api/contact', {
+              method: 'POST',
+              headers: {'Content-Type':'application/json'},
+              body: JSON.stringify({name, email, message})
+            });
+            if(resp.ok) {
+              document.getElementById('contactSuccess').style.display = 'block';
+              e.target.reset();
+            } else {
+              document.getElementById('contactError').style.display = 'block';
+            }
+          } catch(err) {
+            document.getElementById('contactError').style.display = 'block';
+          } finally {
+            btn.textContent = 'Send Message'; btn.disabled = false;
+          }
+        });
+      </script>
+    </div>
+  </section>
+
 </body>
 </html>
