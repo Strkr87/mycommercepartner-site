@@ -360,8 +360,6 @@ Used iPhone 13 Pro Max in good condition. It works well and is unlocked. Has nor
     document.getElementById('recentCount').textContent = '🔥 ' + (base+bonus);
 
     function normalizeEmail(v){return String(v||'').trim().toLowerCase()}
-    function readUsers(){try{return JSON.parse(localStorage.getItem('mcpUsers')||'[]')}catch(e){return []}}
-    function writeUsers(users){localStorage.setItem('mcpUsers', JSON.stringify(users))}
     function readSession(){try{return JSON.parse(localStorage.getItem('mcpSession')||'null')}catch(e){return null}}
     function writeSession(user){if(user){localStorage.setItem('mcpSession', JSON.stringify(user))}else{localStorage.removeItem('mcpSession')}}
     function updateAuthUI(){
@@ -376,6 +374,32 @@ Used iPhone 13 Pro Max in good condition. It works well and is unlocked. Has nor
       if(readSession()){ window.location.href='dashboard.html'; }
       else { document.getElementById('authInline').scrollIntoView({behavior:'smooth'}); }
     }
+    async function apiJson(url, body){
+      const resp = await fetch(url, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(body)
+      });
+      const data = await resp.json().catch(()=>({}));
+      return { resp, data };
+    }
+    function mapSessionFromAuth(data, fallbackName){
+      const user = data && data.user ? data.user : {};
+      const session = data && data.session ? data.session : {};
+      return {
+        id: user.id,
+        name: user.name || fallbackName || user.email || 'Seller',
+        email: user.email || '',
+        plan: (user.plan || 'free').toLowerCase(),
+        trialUsed: Number(user.trialUsed || data?.trialUsed || 0),
+        creditsUsed: Number(user.creditsUsed || 0),
+        creditsRemaining: user.creditsRemaining !== undefined ? Number(user.creditsRemaining) : 2,
+        creditsLimit: user.creditsLimit !== undefined ? Number(user.creditsLimit) : 2,
+        createdAt: user.createdAt || new Date().toISOString(),
+        accessToken: session.accessToken || '',
+        refreshToken: session.refreshToken || ''
+      };
+    }
     const authMessage = document.getElementById('authMessage');
     const authStatus = { set textContent(v){ if(authMessage){ authMessage.style.display='block'; authMessage.textContent=v; } } };
 
@@ -385,31 +409,41 @@ Used iPhone 13 Pro Max in good condition. It works well and is unlocked. Has nor
       if(!readSession()) { e.preventDefault(); document.getElementById('authInline').scrollIntoView({behavior:'smooth'}); }
     });
 
-    document.getElementById('signupForm').addEventListener('submit', function(e){
+    document.getElementById('signupForm').addEventListener('submit', async function(e){
       e.preventDefault();
       const name = document.getElementById('signupName').value.trim();
       const email = normalizeEmail(document.getElementById('signupEmail').value);
       const password = document.getElementById('signupPassword').value;
       if(!name || !email || !password){ authStatus.textContent = 'Please complete every sign-up field.'; return; }
-      const users = readUsers();
-      if(users.some(u => u.email === email)){ authStatus.textContent = 'That email already has an account. Try logging in instead.'; return; }
-      const user = {name,email,password,createdAt:new Date().toISOString(),plan:'free',credits:2};
-      users.push(user); writeUsers(users); writeSession(user); updateAuthUI();
-      authStatus.textContent = 'Account created. Your 2 free optimizations are now unlocked.';
-      this.reset();
-      window.location.href='dashboard.html';
+      try {
+        const { resp, data } = await apiJson('/api/auth/signup', { name, email, password, plan: 'free' });
+        if(!resp.ok){ authStatus.textContent = data.error || 'Unable to create account.'; return; }
+        const session = mapSessionFromAuth(data, name);
+        writeSession(session); updateAuthUI();
+        authStatus.textContent = 'Account created. Your 2 free optimizations are now unlocked.';
+        this.reset();
+        window.location.href='dashboard.html';
+      } catch(err) {
+        authStatus.textContent = 'Sign-up failed. Please try again.';
+      }
     });
 
-    document.getElementById('loginForm').addEventListener('submit', function(e){
+    document.getElementById('loginForm').addEventListener('submit', async function(e){
       e.preventDefault();
       const email = normalizeEmail(document.getElementById('loginEmail').value);
       const password = document.getElementById('loginPassword').value;
-      const user = readUsers().find(u => u.email === email && u.password === password);
-      if(!user){ authStatus.textContent = 'We could not match that email and password.'; return; }
-      writeSession(user); updateAuthUI();
-      authStatus.textContent = 'You are logged in. Your optimizations are available on this account.';
-      this.reset();
-      window.location.href='dashboard.html';
+      if(!email || !password){ authStatus.textContent = 'Please enter your email and password.'; return; }
+      try {
+        const { resp, data } = await apiJson('/api/auth/login', { email, password });
+        if(!resp.ok){ authStatus.textContent = data.error || 'We could not match that email and password.'; return; }
+        const session = mapSessionFromAuth(data);
+        writeSession(session); updateAuthUI();
+        authStatus.textContent = 'You are logged in. Your optimizations are available on this account.';
+        this.reset();
+        window.location.href='dashboard.html';
+      } catch(err) {
+        authStatus.textContent = 'Login failed. Please try again.';
+      }
     });
 
     function handleEmailCapture(e){
