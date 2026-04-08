@@ -28,6 +28,12 @@ const PLAN_INFO = {
   Enterprise: { credits: 800, price: '$249/mo' },
 };
 
+function addDays(iso, days) {
+  const d = new Date(iso || Date.now());
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString();
+}
+
 // ─── Email helper ────────────────────────────────────────────────────────────
 async function sendEmail({ to, subject, html }) {
   if (!RESEND_API_KEY) {
@@ -287,11 +293,19 @@ async function handleCheckoutCompleted(session) {
     full_name: profile.full_name,
     trial_used: Number(profile.trial_used || 0),
     credits_used: Number(profile.credits_used || 0),
+    listings_optimized: Number(profile.listings_optimized || 0),
+    signup_at: profile.signup_at || null,
+    stripe_customer_id: session.customer || profile.stripe_customer_id || null,
+    stripe_subscription_id: session.subscription || profile.stripe_subscription_id || null,
   };
 
   if (kind === 'plan' && planName) {
+    const now = new Date().toISOString();
     updated.plan = planName;
     updated.bonus_credits = Number(profile.bonus_credits || 0);
+    updated.credits_used = 0;
+    updated.billing_period_started_at = now;
+    updated.billing_period_ends_at = addDays(now, 30);
     console.log(`[webhook] upgrading ${email} → ${planName}`);
 
     const info = PLAN_INFO[planName] || { credits: 0, price: '' };
@@ -303,6 +317,8 @@ async function handleCheckoutCompleted(session) {
   } else if (kind === 'topup' || kind === 'audit' || kind === 'dfy') {
     updated.plan = profile.plan || null;
     updated.bonus_credits = Number(profile.bonus_credits || 0) + topupCreds;
+    updated.billing_period_started_at = profile.billing_period_started_at || null;
+    updated.billing_period_ends_at = profile.billing_period_ends_at || null;
     console.log(`[webhook] adding ${topupCreds} bonus credits to ${email} (${kind})`);
 
     await sendEmail({
@@ -338,6 +354,12 @@ async function handleSubscriptionDeleted(subscription) {
     trial_used: Number(profile.trial_used || 0),
     credits_used: Number(profile.credits_used || 0),
     bonus_credits: Number(profile.bonus_credits || 0),
+    listings_optimized: Number(profile.listings_optimized || 0),
+    signup_at: profile.signup_at || null,
+    stripe_customer_id: profile.stripe_customer_id || null,
+    stripe_subscription_id: null,
+    billing_period_started_at: null,
+    billing_period_ends_at: null,
   });
 
   await sendEmail({
@@ -362,6 +384,34 @@ async function handlePaymentFailed(invoice) {
       html: paymentFailedEmail({ name: profile?.full_name || '', amount }),
     });
   }
+}
+
+async function handleInvoicePaid(invoice) {
+  const subscriptionId = invoice.subscription;
+  if (!subscriptionId) return;
+  const { ok, data: subscription } = await stripeGet(`/v1/subscriptions/${encodeURIComponent(subscriptionId)}`);
+  if (!ok) return;
+  const email = invoice.customer_email || subscription.customer_email || '';
+  let profile = null;
+  if (email) profile = await getProfileByEmail(email);
+  if (!profile && subscription.metadata?.user_id) profile = await getProfileById(subscription.metadata.user_id);
+  if (!profile) return;
+  const now = new Date().toISOString();
+  await upsertProfile({
+    id: profile.id,
+    email: profile.email,
+    full_name: profile.full_name,
+    plan: subscription.metadata?.plan || profile.plan || null,
+    trial_used: Number(profile.trial_used || 0),
+    credits_used: 0,
+    bonus_credits: Number(profile.bonus_credits || 0),
+    listings_optimized: Number(profile.listings_optimized || 0),
+    signup_at: profile.signup_at || null,
+    stripe_customer_id: subscription.customer || profile.stripe_customer_id || null,
+    stripe_subscription_id: subscription.id || profile.stripe_subscription_id || null,
+    billing_period_started_at: now,
+    billing_period_ends_at: addDays(now, 30)
+  });
 }
 
 // ─── Main handler ────────────────────────────────────────────────────────────
@@ -415,6 +465,9 @@ module.exports = async (req, res) => {
         break;
       case 'invoice.payment_failed':
         await handlePaymentFailed(event.data.object);
+        break;
+      case 'invoice.paid':
+        await handleInvoicePaid(event.data.object);
         break;
       default:
         break;

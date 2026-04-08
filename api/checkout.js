@@ -50,7 +50,11 @@ module.exports = async (req, res) => {
     "metadata[user_id]": user.id,
     "metadata[plan]": plan,
     "metadata[email]": user.email,
-    "metadata[current_plan]": profile?.plan || ""
+    "metadata[current_plan]": profile?.plan || "",
+    "metadata[kind]": "plan",
+    "subscription_data[metadata][user_id]": user.id,
+    "subscription_data[metadata][plan]": plan,
+    "subscription_data[metadata][email]": user.email
   });
 
   if (!response.ok || !data?.url) {

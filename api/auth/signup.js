@@ -98,6 +98,7 @@ module.exports = async (req, res) => {
     plan: plan || null,
     trial_used: 0,
     credits_used: 0,
+    bonus_credits: 0,
     listings_optimized: 0,
     signup_at: new Date().toISOString()
   });

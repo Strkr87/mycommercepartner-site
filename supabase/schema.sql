@@ -6,6 +6,12 @@ create table if not exists public.profiles (
   trial_used integer not null default 0,
   credits_used integer not null default 0,
   bonus_credits integer not null default 0,
+  listings_optimized integer not null default 0,
+  signup_at timestamptz,
+  billing_period_started_at timestamptz,
+  billing_period_ends_at timestamptz,
+  stripe_customer_id text,
+  stripe_subscription_id text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -15,6 +21,33 @@ add column if not exists credits_used integer not null default 0;
 
 alter table public.profiles
 add column if not exists bonus_credits integer not null default 0;
+
+alter table public.profiles
+add column if not exists listings_optimized integer not null default 0;
+
+alter table public.profiles
+add column if not exists signup_at timestamptz;
+
+alter table public.profiles
+add column if not exists billing_period_started_at timestamptz;
+
+alter table public.profiles
+add column if not exists billing_period_ends_at timestamptz;
+
+alter table public.profiles
+add column if not exists stripe_customer_id text;
+
+alter table public.profiles
+add column if not exists stripe_subscription_id text;
+
+create table if not exists public.pending_upgrades (
+  email text primary key,
+  kind text,
+  plan text,
+  topup_credits integer not null default 0,
+  stripe_session_id text,
+  created_at timestamptz not null default now()
+);
 
 create table if not exists public.guest_trials (
   fingerprint text primary key,
@@ -47,6 +80,7 @@ execute function public.set_profiles_updated_at();
 
 alter table public.profiles enable row level security;
 alter table public.guest_trials enable row level security;
+alter table public.pending_upgrades enable row level security;
 
 drop policy if exists "Users can view their own profile" on public.profiles;
 create policy "Users can view their own profile"
@@ -69,6 +103,13 @@ with check (auth.uid() = id);
 drop policy if exists "Service role manages guest trials" on public.guest_trials;
 create policy "Service role manages guest trials"
 on public.guest_trials
+for all
+using (auth.role() = 'service_role')
+with check (auth.role() = 'service_role');
+
+drop policy if exists "Service role manages pending upgrades" on public.pending_upgrades;
+create policy "Service role manages pending upgrades"
+on public.pending_upgrades
 for all
 using (auth.role() = 'service_role')
 with check (auth.role() = 'service_role');

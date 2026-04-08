@@ -1,5 +1,5 @@
 const TRIAL_LIMIT = 2;
-const { authEnabled, getUserFromToken, getProfile, upsertProfile, planCreditLimit } = require("../lib/platform");
+const { authEnabled, getUserFromToken, getProfile, upsertProfile, applyCreditUse, creditState, ensureBillingPeriod } = require("../lib/platform");
 
 function pick(rx, s) {
   return (s.match(rx) || [, ""])[1];
@@ -212,10 +212,11 @@ module.exports = async (req, res) => {
     const profilePlan = remoteProfile?.plan || "";
     const hasPlan = Boolean(profilePlan || req.headers["x-user-plan"]);
     const used = remoteProfile ? Number(remoteProfile.trial_used || 0) : 0;
-    const creditsUsed = Number(remoteProfile?.credits_used || 0);
-    const bonusCredits = Number(remoteProfile?.bonus_credits || 0);
-    const creditsLimit = planCreditLimit(profilePlan || String(req.headers["x-user-plan"] || "")) + bonusCredits;
-    const creditsRemaining = creditsLimit ? Math.max(0, creditsLimit - creditsUsed) : 0;
+    const state = creditState(remoteProfile || { plan: profilePlan || String(req.headers["x-user-plan"] || "") });
+    const creditsUsed = state.creditsUsed;
+    const bonusCredits = state.bonusCredits;
+    const creditsLimit = state.planLimit + state.bonusCredits;
+    const creditsRemaining = state.totalCreditsRemaining;
 
     if (!remoteUser && !hasPlan) {
       res.status(401).json({ error: "Create an account to unlock your 2 free optimizations", authRequired: true, trialLimit: TRIAL_LIMIT });
@@ -226,7 +227,7 @@ module.exports = async (req, res) => {
       res.status(402).json({ error: "Trial limit reached", trialLimited: true, trialUsed: used, trialRemaining: 0 });
       return;
     }
-    if (hasPlan && creditsLimit && creditsUsed >= creditsLimit) {
+    if (hasPlan && creditsRemaining <= 0) {
       res.status(402).json({
         error: "Credit limit reached",
         creditsLimited: true,
@@ -242,7 +243,8 @@ module.exports = async (req, res) => {
           creditsUsed,
           bonusCredits,
           creditsLimit,
-          creditsRemaining: 0
+          creditsRemaining: 0,
+          monthlyCreditsRemaining: state.monthlyCreditsRemaining
         } : null
       });
       return;
@@ -250,7 +252,9 @@ module.exports = async (req, res) => {
 
     const result = buildResult(req.body || {});
     const nextUsed = hasPlan ? used : used + 1;
-    const nextCreditsUsed = hasPlan && creditsLimit ? creditsUsed + 1 : creditsUsed;
+    const nextCreditState = hasPlan ? applyCreditUse(remoteProfile || { plan: profilePlan }) : null;
+    const nextCreditsUsed = nextCreditState ? nextCreditState.nextCreditsUsed : creditsUsed;
+    const nextBonusCredits = nextCreditState ? nextCreditState.nextBonusCredits : bonusCredits;
     if (!hasPlan && remoteUser && remoteProfile) {
       await upsertProfile({
         id: remoteUser.id,
@@ -259,9 +263,12 @@ module.exports = async (req, res) => {
         plan: profilePlan || null,
         trial_used: nextUsed,
         credits_used: creditsUsed,
-        bonus_credits: bonusCredits
+        bonus_credits: bonusCredits,
+        listings_optimized: Number(remoteProfile.listings_optimized || 0) + 1,
+        signup_at: remoteProfile.signup_at || null
       });
     } else if (hasPlan && remoteUser && remoteProfile) {
+      const billingPeriod = ensureBillingPeriod(remoteProfile);
       await upsertProfile({
         id: remoteUser.id,
         email: remoteUser.email,
@@ -269,7 +276,13 @@ module.exports = async (req, res) => {
         plan: profilePlan || null,
         trial_used: used,
         credits_used: nextCreditsUsed,
-        bonus_credits: bonusCredits
+        bonus_credits: nextBonusCredits,
+        listings_optimized: Number(remoteProfile.listings_optimized || 0) + 1,
+        signup_at: remoteProfile.signup_at || null,
+        stripe_customer_id: remoteProfile.stripe_customer_id || null,
+        stripe_subscription_id: remoteProfile.stripe_subscription_id || null,
+        billing_period_started_at: state.shouldResetPeriod ? billingPeriod.billing_period_started_at : (remoteProfile.billing_period_started_at || billingPeriod.billing_period_started_at),
+        billing_period_ends_at: state.shouldResetPeriod ? billingPeriod.billing_period_ends_at : (remoteProfile.billing_period_ends_at || billingPeriod.billing_period_ends_at)
       });
     }
     res.setHeader("X-Trial-Used", String(nextUsed));
@@ -277,9 +290,9 @@ module.exports = async (req, res) => {
     result.trialRemaining = hasPlan ? null : Math.max(0, TRIAL_LIMIT - nextUsed);
     result.trialLimited = false;
     result.creditsUsed = hasPlan ? nextCreditsUsed : creditsUsed;
-    result.bonusCredits = bonusCredits;
+    result.bonusCredits = nextBonusCredits;
     result.creditsLimit = creditsLimit;
-    result.creditsRemaining = hasPlan && creditsLimit ? Math.max(0, creditsLimit - nextCreditsUsed) : creditsRemaining;
+    result.creditsRemaining = hasPlan && nextCreditState ? nextCreditState.nextTotalCreditsRemaining : creditsRemaining;
     result.creditsLimited = false;
     if (remoteUser && remoteProfile) {
       result.user = {
@@ -289,9 +302,11 @@ module.exports = async (req, res) => {
         plan: profilePlan,
         trialUsed: nextUsed,
         creditsUsed: hasPlan ? nextCreditsUsed : creditsUsed,
-        bonusCredits,
+        bonusCredits: hasPlan ? nextBonusCredits : bonusCredits,
         creditsLimit,
-        creditsRemaining: hasPlan && creditsLimit ? Math.max(0, creditsLimit - nextCreditsUsed) : creditsRemaining
+        creditsRemaining: hasPlan && nextCreditState ? nextCreditState.nextTotalCreditsRemaining : creditsRemaining,
+        monthlyCreditsRemaining: hasPlan && nextCreditState ? nextCreditState.nextMonthlyCreditsRemaining : state.monthlyCreditsRemaining,
+        listingsOptimized: Number(remoteProfile.listings_optimized || 0) + 1
       };
     }
     res.status(200).json(result);

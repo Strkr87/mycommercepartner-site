@@ -6,7 +6,9 @@ const {
   getProfile,
   upsertProfile,
   serializeUser,
-  stripeGet
+  stripeGet,
+  ensureBillingPeriod,
+  isoNow
 } = require("../lib/platform");
 
 module.exports = async (req, res) => {
@@ -52,6 +54,17 @@ module.exports = async (req, res) => {
   const existing = await getProfile(user.id);
   const kind = data.metadata?.kind || "plan";
   const topupCredits = Number(data.metadata?.topup_credits || 0);
+  const now = isoNow();
+  const billingPeriod = kind === "plan"
+    ? ensureBillingPeriod({
+        plan: data.metadata?.plan || existing?.plan || null,
+        billing_period_started_at: now,
+        billing_period_ends_at: data.subscription ? null : existing?.billing_period_ends_at || null
+      }, now)
+    : {
+        billing_period_started_at: existing?.billing_period_started_at || null,
+        billing_period_ends_at: existing?.billing_period_ends_at || null
+      };
   const profile = await upsertProfile({
     id: user.id,
     email: user.email,
@@ -59,7 +72,13 @@ module.exports = async (req, res) => {
     plan: kind === "topup" ? existing?.plan || null : data.metadata?.plan || existing?.plan || null,
     trial_used: Number(existing?.trial_used || 0),
     credits_used: Number(existing?.credits_used || 0),
-    bonus_credits: Number(existing?.bonus_credits || 0) + (kind === "topup" ? topupCredits : 0)
+    bonus_credits: Number(existing?.bonus_credits || 0) + (kind === "topup" ? topupCredits : 0),
+    listings_optimized: Number(existing?.listings_optimized || 0),
+    signup_at: existing?.signup_at || null,
+    stripe_customer_id: data.customer || existing?.stripe_customer_id || null,
+    stripe_subscription_id: data.subscription || existing?.stripe_subscription_id || null,
+    billing_period_started_at: billingPeriod.billing_period_started_at,
+    billing_period_ends_at: billingPeriod.billing_period_ends_at
   });
 
   json(res, 200, {

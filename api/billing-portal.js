@@ -25,6 +25,8 @@ module.exports = async (req, res) => {
     return;
   }
 
+  const profile = await require("../lib/platform").getProfile(user.id);
+
   const { origin = "" } = req.body || {};
   const siteOrigin = String(origin || "").replace(/\/$/, "");
   if (!siteOrigin) {
@@ -32,7 +34,9 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const customer = await findStripeCustomerByEmail(user.email);
+  const customer = profile?.stripe_customer_id
+    ? { id: profile.stripe_customer_id }
+    : await findStripeCustomerByEmail(user.email);
   if (!customer?.id) {
     json(res, 404, { error: "No billing account was found for this customer yet" });
     return;
