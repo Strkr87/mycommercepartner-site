@@ -27,7 +27,7 @@
     h1,h2,h3,p{margin:0}
     .wrap{max-width:var(--max);margin:0 auto;padding:20px 16px 48px}
     .hero,.stats,.cards,.steps,.proof-strip,.contact-grid,.pricing,.faq-grid{display:grid;gap:16px}
-    header{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;padding:14px 18px;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+    header{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;padding:14px 18px;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);position:relative}
     .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
     .logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#ffbd78)}
     .brand-kicker{font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
@@ -35,6 +35,11 @@
     .navlink,.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:999px;font-weight:700}
     .navlink{padding:8px 0;color:var(--muted)}
     .btn{padding:13px 18px;border:1px solid transparent;cursor:pointer}
+    .menu-toggle{display:none;align-items:center;justify-content:center;width:46px;height:46px;border-radius:14px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+    .menu-toggle .bars{display:block;width:18px;height:2px;background:currentColor;position:relative;border-radius:999px}
+    .menu-toggle .bars::before,.menu-toggle .bars::after{content:"";position:absolute;left:0;width:18px;height:2px;background:currentColor;border-radius:999px}
+    .menu-toggle .bars::before{top:-6px}
+    .menu-toggle .bars::after{top:6px}
     .primary{background:var(--accent);color:#fff}
     .ghost{background:#fff;border-color:var(--line)}
     .dark-btn{background:var(--accent-dark);color:#fff}
@@ -92,10 +97,23 @@
       .cards,.steps,.pricing,.stats{grid-template-columns:1fr 1fr}
     }
     @media (max-width:720px){
+      .wrap{padding:14px 12px 36px}
       header,.cards,.steps,.pricing,.stats,.faq-grid{grid-template-columns:1fr}
-      nav{justify-content:flex-start}
+      header{grid-template-columns:1fr auto;padding:12px 14px}
+      .menu-toggle{display:inline-flex}
+      nav{display:none;position:absolute;left:12px;right:12px;top:calc(100% + 10px);padding:14px;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);flex-direction:column;align-items:stretch;justify-content:flex-start;z-index:20}
+      nav.open{display:flex}
+      .navlink,.btn{width:100%}
+      .navlink{padding:10px 12px;border-radius:14px;background:#fff}
       .actions{display:grid}
       .btn{width:100%}
+      h1{font-size:2.25rem;line-height:1.06}
+      h2{font-size:1.7rem;line-height:1.12}
+      .panel,.card,.package,.proof-metric,.faq-item,.contact-card{padding:18px}
+      .section{margin-top:24px}
+      .proof-strip{gap:12px}
+      .proof-metric .reassurance,.reassurance{margin-top:12px;padding:14px 15px}
+      textarea{min-height:120px}
     }
   </style>
 </head>
@@ -109,7 +127,10 @@
           <div class="brand-kicker">Done-for-you conversion upgrades</div>
         </div>
       </a>
-      <nav>
+      <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="siteNav" aria-label="Open menu">
+        <span class="bars"></span>
+      </button>
+      <nav id="siteNav">
         <a class="navlink" href="#services">Services</a>
         <a class="navlink" href="#packages">Packages</a>
         <a class="navlink" href="#faq">FAQ</a>
@@ -326,6 +347,27 @@
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    const menuToggle = document.getElementById('menuToggle');
+    const siteNav = document.getElementById('siteNav');
+    function closeMenu(){
+      siteNav.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+      menuToggle.setAttribute('aria-label', 'Open menu');
+    }
+    if (menuToggle && siteNav) {
+      menuToggle.addEventListener('click', function(){
+        const isOpen = siteNav.classList.toggle('open');
+        menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        menuToggle.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+      });
+      siteNav.querySelectorAll('a').forEach(function(link){
+        link.addEventListener('click', closeMenu);
+      });
+      window.addEventListener('resize', function(){
+        if (window.innerWidth > 720) closeMenu();
+      });
+    }
 
     document.getElementById('contactForm').addEventListener('submit', async function(e) {
       e.preventDefault();
