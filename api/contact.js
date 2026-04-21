@@ -52,7 +52,7 @@ module.exports = async (req, res) => {
       body: JSON.stringify({
         from: FROM_EMAIL,
         to: email.trim(),
-        subject: "Got your message — we'll be in touch soon",
+        subject: "Got your site review request — we'll follow up within 24 hours",
         html: `<!DOCTYPE html>
 <html>
 <head>
@@ -74,8 +74,9 @@ module.exports = async (req, res) => {
     <div class="h"><h1>MyCommercePartner</h1></div>
     <div class="b">
       <h2>Thanks, ${name.trim().split(' ')[0]}!</h2>
-      <p>We got your message and will get back to you within 24 hours.</p>
-      <p>In the meantime, feel free to explore the dashboard and try your free optimization credits.</p>
+      <p>We got your site review request and will follow up within 24 hours with the clearest next step.</p>
+      <p>If a Basic Upgrade is enough, we’ll recommend that instead of pushing you into a bigger package.</p>
+      <p>If you need to add anything before we reply, just respond to this email.</p>
     </div>
     <div class="ft">
       <p>MyCommercePartner &nbsp;·&nbsp; <a href="https://mycommercepartner.com">mycommercepartner.com</a></p>

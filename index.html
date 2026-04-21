@@ -148,6 +148,7 @@
           <a class="btn primary" href="#contact">Request Your Site Review</a>
           <a class="btn ghost" href="#packages">See Packages</a>
         </div>
+        <div class="reassurance" style="margin-top:14px">Send your URL today and we’ll reply within 24 hours with the clearest next step — including when Basic is enough.</div>
         <div class="stats">
           <div class="stat"><b>Done for you</b><div>We handle the audit, rewrite, and implementation work.</div></div>
           <div class="stat"><b>Clear price</b><div>Simple packages with a clear starting point and no vague process.</div></div>
@@ -333,9 +334,9 @@
               <label for="contactMessage">Website URL and project details</label>
               <textarea id="contactMessage" required placeholder="Example: https://example.com — We need a better homepage, a clearer quote form, and a site that feels easier to trust on mobile."></textarea>
             </div>
-            <button type="submit" id="contactSubmitBtn" class="btn primary" style="width:100%;border-radius:16px">Send Request</button>
-            <div class="muted" style="font-size:.95rem">We’ll review your submission and point you toward the clearest next step.</div>
-            <div id="contactSuccess" class="status ok">✓ Message sent. We’ll review it and follow up shortly.</div>
+            <button type="submit" id="contactSubmitBtn" class="btn primary" style="width:100%;border-radius:16px">Get My Review</button>
+            <div class="muted" style="font-size:.95rem">Most site review replies go out within 24 hours. If Basic is enough, we’ll say so.</div>
+            <div id="contactSuccess" class="status ok">✓ Request sent. We’ll review the site and follow up within 24 hours.</div>
             <div id="contactError" class="status err">Something went wrong. Please try again or email hello@mycommercepartner.com directly.</div>
           </form>
         </div>
@@ -398,7 +399,7 @@
       } catch(err) {
         error.style.display = 'block';
       } finally {
-        btn.textContent = 'Send Request';
+        btn.textContent = 'Get My Review';
         btn.disabled = false;
       }
     });
