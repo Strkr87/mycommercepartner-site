@@ -26,7 +26,7 @@
     a{color:inherit}
     h1,h2,h3,p{margin:0}
     .wrap{max-width:var(--max);margin:0 auto;padding:20px 16px 48px}
-    .grid,.hero,.stats,.cards,.steps,.proof-grid,.contact-grid,.mini-cards,.pricing{display:grid;gap:16px}
+    .hero,.stats,.cards,.steps,.proof-strip,.contact-grid,.pricing,.faq-grid{display:grid;gap:16px}
     header{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;padding:14px 18px;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
     .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
     .logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#ffbd78)}
@@ -38,36 +38,30 @@
     .primary{background:var(--accent);color:#fff}
     .ghost{background:#fff;border-color:var(--line)}
     .dark-btn{background:var(--accent-dark);color:#fff}
-    .hero{grid-template-columns:1.08fr .92fr;margin-top:18px}
-    .panel,.card,.proof-card,.package,.contact-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
-    .panel,.card,.proof-card,.package{padding:24px}
-    .panel-dark{background:var(--accent-dark);color:#f4f7f5;border:none}
+    .hero{grid-template-columns:1fr;margin-top:18px}
+    .panel,.card,.package,.contact-card,.proof-metric,.faq-item{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .panel,.card,.package,.proof-metric,.faq-item{padding:24px}
     .eyebrow{display:inline-block;padding:6px 12px;border-radius:999px;background:var(--soft);color:#a45426;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-    .eyebrow.inverse{background:rgba(255,255,255,.12);color:#f4f7f5}
     h1{margin-top:14px;font:clamp(2.5rem,5vw,4.7rem)/1.02 Georgia,serif;letter-spacing:-.045em}
     h2{font:clamp(1.85rem,3.4vw,2.8rem)/1.06 Georgia,serif;letter-spacing:-.03em}
     h3{font:1.25rem/1.25 Georgia,serif}
     .sub,.muted{color:var(--muted)}
-    .panel-dark .sub,.panel-dark .muted{color:rgba(244,247,245,.82)}
     .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
     .stats{grid-template-columns:repeat(3,1fr);margin-top:18px}
     .stat{padding:14px 16px;border-radius:18px;background:#fff;border:1px solid var(--line)}
-    .stat b{display:block;font-size:1.35rem;margin-bottom:4px}
-    .bullet-list,.simple-list{margin:14px 0 0;padding-left:18px}
-    .bullet-list li,.simple-list li{margin-bottom:8px}
-    .mini-cards{margin-top:18px}
-    .mini-card{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;padding:16px;border-radius:18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
-    .mini-icon{width:40px;height:40px;border-radius:14px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-weight:700}
+    .stat b{display:block;font-size:1.15rem;margin-bottom:4px}
+    .simple-list{margin:14px 0 0;padding-left:18px}
+    .simple-list li{margin-bottom:8px}
     .section{margin-top:34px}
     .section-header{text-align:center;margin-bottom:24px}
     .section-header p{max-width:62ch;margin:10px auto 0;color:var(--muted)}
     .cards{grid-template-columns:repeat(4,1fr)}
     .card p{margin-top:10px;color:var(--muted)}
-    .proof-grid{grid-template-columns:1fr 1fr}
+    .proof-strip{grid-template-columns:1.2fr .8fr .8fr}
     .proof-shot{border-radius:18px;border:1px solid var(--line);overflow:hidden;background:#f3efe8}
     .proof-shot img{width:100%;height:auto}
     .proof-label{display:inline-block;margin-bottom:10px;padding:6px 10px;border-radius:999px;background:#f2eee7;color:#7b6959;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-    .proof-card ul{margin:14px 0 0;padding-left:18px}
+    .proof-metric b{display:block;font-size:1.2rem;margin-bottom:6px}
     .steps{grid-template-columns:repeat(4,1fr)}
     .step-num{width:40px;height:40px;border-radius:14px;background:var(--soft);display:flex;align-items:center;justify-content:center;color:#a45426;font-weight:700;margin-bottom:12px}
     .pricing{grid-template-columns:repeat(3,1fr)}
@@ -77,25 +71,28 @@
     .price{font:2.25rem/1 Georgia,serif}
     .price span{font:.95rem Arial,sans-serif;color:var(--muted)}
     .package .btn{width:100%;margin-top:auto;border-radius:16px}
+    .faq-grid{grid-template-columns:1fr 1fr}
+    .faq-item p{margin-top:10px;color:var(--muted)}
     .support-box{padding:24px;border-radius:var(--radius);background:linear-gradient(135deg,#173029,#234d42);color:#f4f7f5;display:grid;grid-template-columns:1.25fr .75fr;gap:20px;align-items:center}
     .support-box p{color:rgba(244,247,245,.82);margin-top:10px}
     .support-box .price{color:#fff}
     .contact-grid{grid-template-columns:1fr 1fr}
-    .contact-card{padding:28px}
+    .contact-card{padding:28px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
     .contact-form{display:grid;gap:14px}
     label{display:block;font-size:.9rem;font-weight:700;margin-bottom:6px}
     input,textarea,select{width:100%;padding:13px 14px;border-radius:14px;border:1px solid var(--line);background:#fff;color:var(--ink);font:inherit}
     textarea{min-height:150px;resize:vertical}
+    .reassurance{margin-top:14px;padding:16px 18px;border-radius:18px;background:#f6f1e8;border:1px solid var(--line);color:var(--ink)}
     .status{display:none;padding:14px 16px;border-radius:16px;font-weight:600}
     .status.ok{background:#edf8f2;border:1px solid rgba(36,131,91,.18);color:#1f5c4b}
     .status.err{background:#fff0f0;border:1px solid rgba(208,67,67,.18);color:#a33434}
     .footer{margin-top:28px;color:var(--muted);font-size:.92rem}
     @media (max-width:980px){
-      .hero,.proof-grid,.contact-grid,.support-box{grid-template-columns:1fr}
+      .proof-strip,.contact-grid,.support-box,.faq-grid{grid-template-columns:1fr}
       .cards,.steps,.pricing,.stats{grid-template-columns:1fr 1fr}
     }
     @media (max-width:720px){
-      header,.cards,.steps,.pricing,.stats{grid-template-columns:1fr}
+      header,.cards,.steps,.pricing,.stats,.faq-grid{grid-template-columns:1fr}
       nav{justify-content:flex-start}
       .actions{display:grid}
       .btn{width:100%}
@@ -115,9 +112,9 @@
       <nav>
         <a class="navlink" href="#services">Services</a>
         <a class="navlink" href="#packages">Packages</a>
-        <a class="navlink" href="#examples">Examples</a>
+        <a class="navlink" href="#faq">FAQ</a>
         <a class="navlink" href="#contact">Contact</a>
-        <a class="btn primary" href="#contact">Request a Site Review</a>
+        <a class="btn primary" href="#contact">Request Your Site Review</a>
       </nav>
     </header>
 
@@ -125,86 +122,57 @@
       <div class="panel">
         <span class="eyebrow">Done-for-you upgrades for product businesses</span>
         <h1>We fix outdated websites so more visitors trust you, ask for a quote, and buy.</h1>
-        <p class="sub" style="margin-top:14px">MyCommercePartner reviews your current site, finds the pages that feel weak or confusing, and improves them for you — from homepage messaging to product-page clarity to quote-form cleanup.</p>
+        <p class="sub" style="margin-top:14px;max-width:760px">We review your current site, identify what is making people hesitate, and improve it for you — from homepage messaging to product-page trust to quote-form cleanup.</p>
         <div class="actions">
-          <a class="btn primary" href="#packages">See Packages</a>
-          <a class="btn ghost" href="#contact">Request a Site Review</a>
+          <a class="btn primary" href="#contact">Request Your Site Review</a>
+          <a class="btn ghost" href="#packages">See Packages</a>
         </div>
         <div class="stats">
           <div class="stat"><b>Done for you</b><div>We handle the audit, rewrite, and implementation work.</div></div>
           <div class="stat"><b>Clear price</b><div>Simple packages with a clear starting point and no vague process.</div></div>
-          <div class="stat"><b>More next steps</b><div>Make it easier for visitors to trust your site and take action.</div></div>
+          <div class="stat"><b>Works with existing platforms</b><div>Wix, Shopify, and other live sites can usually be improved without starting over.</div></div>
         </div>
       </div>
-      <div class="panel panel-dark">
-        <span class="eyebrow inverse">What we improve</span>
-        <h2 style="margin-top:12px;color:#f4f7f5">The parts of the site that usually cost you leads or sales</h2>
-        <div class="mini-cards">
-          <div class="mini-card">
-            <div class="mini-icon">1</div>
-            <div><strong>Homepage clarity</strong><div class="muted">Visitors understand what you sell faster and know what to do next.</div></div>
-          </div>
-          <div class="mini-card">
-            <div class="mini-icon">2</div>
-            <div><strong>Product-page conversion</strong><div class="muted">Product pages answer key questions, reduce hesitation, and make buying feel safer.</div></div>
-          </div>
-          <div class="mini-card">
-            <div class="mini-icon">3</div>
-            <div><strong>Quote and inquiry flow</strong><div class="muted">Quote forms become easier to complete and more likely to bring in serious inquiries.</div></div>
-          </div>
-          <div class="mini-card">
-            <div class="mini-icon">4</div>
-            <div><strong>Mobile confidence</strong><div class="muted">Cleaner scanning, easier action buttons, and less clutter on smaller screens.</div></div>
-          </div>
+    </section>
+
+    <section class="section" id="proof">
+      <div class="proof-strip">
+        <div class="proof-metric">
+          <span class="proof-label">Before and after</span>
+          <div class="proof-shot"><img src="assets/generic-before-example.png" alt="Generic example of an outdated product-business homepage before redesign"></div>
+          <ul class="simple-list">
+            <li>Harder to scan than it should be</li>
+            <li>Too many competing actions</li>
+            <li>Trust points show up too late</li>
+          </ul>
+        </div>
+        <div class="proof-metric">
+          <span class="proof-label">Why this converts better</span>
+          <b>Clearer first impression</b>
+          <p class="muted">Visitors understand what you sell faster and know where to click next.</p>
+          <b style="margin-top:14px">Stronger trust earlier</b>
+          <p class="muted">Important proof and reassurance show up before people start drifting away.</p>
+        </div>
+        <div class="proof-metric">
+          <span class="proof-label">Best fit</span>
+          <b>Great for Wix, Shopify, and quote-led product sites</b>
+          <p class="muted">Especially useful when the site feels outdated, too passive, or too confusing before the next step.</p>
+          <div class="reassurance">We can usually improve your existing platform instead of forcing a full rebuild.</div>
         </div>
       </div>
     </section>
 
     <section class="section" id="services">
       <div class="section-header">
-        <span class="eyebrow">What you can hire us for</span>
-        <h2>Practical upgrades that make your site easier to trust, easier to understand, and easier to act on</h2>
-        <p>Best fit for ecommerce brands, wholesalers, industrial suppliers, and product-based businesses with outdated pages, weak messaging, or too much confusion before the next step.</p>
+        <span class="eyebrow">What we improve first</span>
+        <h2>The areas that usually make buyers hesitate or leave</h2>
+        <p>Built for ecommerce brands, wholesalers, industrial suppliers, and product-based businesses that need clearer pages and better next-step flow.</p>
       </div>
       <div class="cards">
-        <div class="card"><h3>Homepage restructuring</h3><p>Clarify the offer, clean up the layout, strengthen section flow, and make your best action obvious.</p></div>
-        <div class="card"><h3>Product-page rewrites</h3><p>Improve headlines, feature-benefit copy, trust blocks, FAQs, and buyer-facing presentation.</p></div>
-        <div class="card"><h3>Quote-flow upgrades</h3><p>Replace weak contact paths with cleaner forms, stronger buttons, and better next-step guidance.</p></div>
-        <div class="card"><h3>Implementation support</h3><p>We don’t stop at ideas. We handle the changes and help get the improved version live.</p></div>
-      </div>
-    </section>
-
-    <section class="section" id="examples">
-      <div class="section-header">
-        <span class="eyebrow">Before and after direction</span>
-        <h2>From cluttered and passive to clear and conversion-focused</h2>
-        <p>We help businesses move from vague, cluttered pages into clearer pages that feel easier to trust and easier to act on.</p>
-      </div>
-      <div class="proof-grid">
-        <div class="proof-card">
-          <span class="proof-label">Before</span>
-          <div class="proof-shot"><img src="assets/generic-before-example.png" alt="Generic example of an outdated product-business homepage before redesign"></div>
-          <ul>
-            <li>The main offer is present, but the page still feels harder to scan than it should.</li>
-            <li>Calls to action compete with each other instead of pointing visitors toward one next step.</li>
-            <li>Useful selling points exist, but they are not packaged in a way that builds trust quickly.</li>
-          </ul>
-        </div>
-        <div class="proof-card">
-          <span class="proof-label">After direction</span>
-          <h3 style="margin-bottom:10px">What the improved version should feel like</h3>
-          <ul class="simple-list">
-            <li>Visitors quickly understand what you sell and why to trust you.</li>
-            <li>The page makes it easier to compare options and choose a next step.</li>
-            <li>Proof appears where people usually hesitate or drop off.</li>
-            <li>Quote requests become easier to complete and more useful for your team.</li>
-            <li>Mobile visitors can scan faster and finish the next step more easily.</li>
-          </ul>
-          <div style="margin-top:18px;padding:18px;border-radius:18px;background:#f6f1e8;border:1px solid var(--line)">
-            <strong>Good fit examples:</strong>
-            <p class="muted" style="margin-top:8px">Wix sites that need a conversion upgrade, Shopify product pages that need stronger buyer messaging, service sites with weak inquiry flow, and industrial or wholesale sites that need better quote capture.</p>
-          </div>
-        </div>
+        <div class="card"><h3>Homepage restructuring</h3><p>Clarify the offer, clean up the layout, and make the next step obvious fast.</p></div>
+        <div class="card"><h3>Product-page trust</h3><p>Improve buyer-facing copy, FAQs, proof, and trust sections that reduce hesitation.</p></div>
+        <div class="card"><h3>Quote-flow upgrades</h3><p>Replace weak forms and mixed signals with cleaner paths to serious inquiries.</p></div>
+        <div class="card"><h3>Mobile cleanup</h3><p>Make the site easier to scan and easier to act on from smaller screens.</p></div>
       </div>
     </section>
 
@@ -215,8 +183,8 @@
         <p>You send the site. We review it, recommend the right package, make the changes for you, and help you move toward launch.</p>
       </div>
       <div class="steps">
-        <div class="card"><div class="step-num">1</div><h3>Send your site</h3><p class="muted">Share your URL and tell us what feels underpowered, outdated, or hard to sell from.</p></div>
-        <div class="card"><div class="step-num">2</div><h3>Get the upgrade plan</h3><p class="muted">We identify the biggest conversion problems and recommend the clearest package.</p></div>
+        <div class="card"><div class="step-num">1</div><h3>Send your site</h3><p class="muted">Share your URL and tell us what feels outdated, weak, or hard to sell from.</p></div>
+        <div class="card"><div class="step-num">2</div><h3>Get the upgrade plan</h3><p class="muted">We identify the biggest conversion problems and recommend the simplest package that fits.</p></div>
         <div class="card"><div class="step-num">3</div><h3>We implement it</h3><p class="muted">Copy, structure, CTA flow, trust sections, and page cleanup get handled for you.</p></div>
         <div class="card"><div class="step-num">4</div><h3>Review and launch</h3><p class="muted">You approve the improved version, then we help finalize the next step toward go-live.</p></div>
       </div>
@@ -225,39 +193,39 @@
     <section class="section" id="packages">
       <div class="section-header">
         <span class="eyebrow">Packages</span>
-        <h2>Clear packages for businesses that want done-for-you help now</h2>
-        <p>Start with the simplest version that fits your current problem. If the work needs to go deeper, we can expand from there.</p>
+        <h2>Choose the level that matches the problem you need fixed first</h2>
+        <p>Each package is designed to move a weak or confusing site toward clearer trust, stronger next steps, and better inquiry quality.</p>
       </div>
       <div class="pricing">
         <div class="package">
           <h3>Basic Upgrade</h3>
-          <p class="muted">Best for a focused first-phase improvement on one important page or flow.</p>
+          <p class="muted">Best if one important page is holding the whole site back.</p>
           <div class="price">$750 <span>one-time</span></div>
           <ul class="simple-list">
-            <li>Homepage or primary-page cleanup</li>
-            <li>Stronger CTA buttons and section flow</li>
-            <li>One quote or contact form improvement</li>
-            <li>Done-for-you implementation on the agreed upgrade</li>
+            <li>Clarify the main page or customer path</li>
+            <li>Improve CTA visibility and page flow</li>
+            <li>Fix one quote or contact step</li>
+            <li>Done-for-you implementation included</li>
           </ul>
           <a class="btn dark-btn" href="https://buy.stripe.com/5kQ8wOa8M2pnd3w8sqdUY08">Start with Basic</a>
         </div>
         <div class="package highlight">
           <div class="badge">Recommended</div>
           <h3>Growth Upgrade</h3>
-          <p class="muted">Best for businesses that need a stronger homepage, clearer structure, and better conversion path.</p>
+          <p class="muted">Best if the site needs a stronger homepage, clearer structure, and a better path from interest to inquiry.</p>
           <div class="price">$1,500 <span>one-time</span></div>
           <ul class="simple-list">
             <li>Stronger homepage restructure</li>
-            <li>Improved messaging and hierarchy</li>
+            <li>Clearer messaging and trust placement</li>
             <li>Cleaner path from interest to inquiry</li>
-            <li>Lead/quote flow improvement</li>
+            <li>Better lead or quote flow</li>
             <li>Implementation and mobile cleanup</li>
           </ul>
-          <a class="btn primary" href="#contact">Ask About Growth</a>
+          <a class="btn primary" href="#contact">Request Growth Review</a>
         </div>
         <div class="package">
           <h3>Premium Upgrade</h3>
-          <p class="muted">Best for a more polished upgrade with deeper page cleanup and stronger customer guidance.</p>
+          <p class="muted">Best if you need a more polished upgrade with stronger proof, stronger guidance, and a smoother buyer experience.</p>
           <div class="price">$2,250 <span>one-time</span></div>
           <ul class="simple-list">
             <li>Full premium homepage direction</li>
@@ -265,15 +233,29 @@
             <li>Guided inquiry or assistant-style support</li>
             <li>More refined done-for-you implementation</li>
           </ul>
-          <a class="btn dark-btn" href="#contact">Ask About Premium</a>
+          <a class="btn dark-btn" href="#contact">Request Premium Review</a>
         </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="section-header">
+        <span class="eyebrow">FAQ</span>
+        <h2>Common questions before getting started</h2>
+        <p>These are the things most businesses want to know before they hand over a site for review.</p>
+      </div>
+      <div class="faq-grid">
+        <div class="faq-item"><h3>Can you work on my existing Wix or Shopify site?</h3><p>Usually, yes. We often improve what is already there before recommending a full rebuild.</p></div>
+        <div class="faq-item"><h3>Do I need to know which package fits first?</h3><p>No. If you are not sure, send the site and we’ll recommend the simplest package that makes sense.</p></div>
+        <div class="faq-item"><h3>Is copy included?</h3><p>Yes. Messaging, calls to action, trust copy, and page cleanup are part of the work when they are needed.</p></div>
+        <div class="faq-item"><h3>What if I only need one page fixed?</h3><p>That is exactly what the Basic package is for. It works well as a first conversion-focused improvement.</p></div>
       </div>
     </section>
 
     <section class="section">
       <div class="support-box">
         <div>
-          <span class="eyebrow inverse">Ongoing support</span>
+          <span class="eyebrow" style="background:rgba(255,255,255,.15);color:#f4f7f5">Ongoing support</span>
           <h2 style="margin-top:12px;color:#fff">Keep improving after the first upgrade</h2>
           <p>Once the main rebuild is done, ongoing support can cover edits, CTA tweaks, form changes, small landing-page improvements, and follow-up conversion fixes.</p>
         </div>
@@ -304,6 +286,7 @@
             <strong>Good to know</strong>
             <p class="muted" style="margin-top:8px">We can improve sites that already exist on platforms like Wix or Shopify, or recommend a cleaner rebuild path when the current platform is getting in the way.</p>
           </div>
+          <div class="reassurance">No obligation. If a smaller fix is enough, we’ll tell you that instead of pushing a bigger package.</div>
         </div>
         <div class="contact-card">
           <form id="contactForm" class="contact-form">
@@ -330,6 +313,7 @@
               <textarea id="contactMessage" required placeholder="Example: https://example.com — We need a better homepage, a clearer quote form, and a site that feels easier to trust on mobile."></textarea>
             </div>
             <button type="submit" id="contactSubmitBtn" class="btn primary" style="width:100%;border-radius:16px">Send Request</button>
+            <div class="muted" style="font-size:.95rem">We’ll review your submission and point you toward the clearest next step.</div>
             <div id="contactSuccess" class="status ok">✓ Message sent. We’ll review it and follow up shortly.</div>
             <div id="contactError" class="status err">Something went wrong. Please try again or email hello@mycommercepartner.com directly.</div>
           </form>
