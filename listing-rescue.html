@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Listing Rescue | MyCommercePartner</title>
+  <meta name="description" content="Listing Rescue helps eBay sellers improve stale listings, tighten titles, and buy extra rescue credits without a subscription.">
+  <style>
+    :root{--bg:#f6f1e8;--panel:#fffdf9;--ink:#173029;--muted:#5f6f69;--line:rgba(23,48,41,.12);--accent:#e57a3b;--accent-dark:#19443a;--soft:#fff7ed;--shadow:0 18px 42px rgba(23,48,41,.08);--radius:22px;--max:1120px}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font:16px/1.65 Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#fbf8f3,#f2e6d8)} a{color:inherit} h1,h2,h3,p{margin:0}
+    .wrap{max-width:var(--max);margin:0 auto;padding:20px 16px 48px}.section,.hero{margin-top:22px}.hero,.grid,.steps,.faq-grid,.cta-grid{display:grid;gap:16px}.hero{grid-template-columns:1.1fr .9fr}.panel,.card,.faq-item{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px}
+    header{position:sticky;top:12px;z-index:25;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;padding:14px 18px;background:rgba(255,253,249,.86);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}.brand{display:flex;align-items:center;gap:12px;text-decoration:none}.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#ffbd78)}.brand-kicker{font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+    nav{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:flex-end}.navlink,.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:999px;font-weight:700}.navlink{padding:8px 0;color:var(--muted)}.btn{padding:13px 18px;border:1px solid transparent;cursor:pointer;transition:.18s ease}.btn:hover{transform:translateY(-1px)}.primary{background:var(--accent);color:#fff}.ghost{background:#fff;border-color:var(--line)}.dark-btn{background:var(--accent-dark);color:#fff}.menu-toggle{display:none;align-items:center;justify-content:center;width:46px;height:46px;border-radius:14px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}.menu-toggle span{display:block;width:18px;height:2px;background:currentColor;position:relative;border-radius:999px}.menu-toggle span::before,.menu-toggle span::after{content:"";position:absolute;left:0;width:18px;height:2px;background:currentColor;border-radius:999px}.menu-toggle span::before{top:-6px}.menu-toggle span::after{top:6px}
+    .eyebrow{display:inline-block;padding:6px 12px;border-radius:999px;background:var(--soft);color:#a45426;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}h1{margin-top:14px;font:clamp(2.5rem,5vw,4.6rem)/1.02 Georgia,serif;letter-spacing:-.045em}h2{font:clamp(1.85rem,3.4vw,2.8rem)/1.06 Georgia,serif;letter-spacing:-.03em}h3{font:1.2rem/1.25 Georgia,serif}.sub,.muted{color:var(--muted)}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.simple-list{margin:14px 0 0;padding-left:18px}.simple-list li{margin-bottom:8px}
+    .grid{grid-template-columns:repeat(3,1fr)}.steps{grid-template-columns:repeat(4,1fr)}.step-num{width:40px;height:40px;border-radius:14px;background:var(--soft);display:flex;align-items:center;justify-content:center;color:#a45426;font-weight:700;margin-bottom:12px}.cta-grid{grid-template-columns:1fr 1fr}.title-sample{display:grid;grid-template-columns:.9fr 1.1fr;gap:16px;align-items:stretch}.sample-title{padding:18px;border-radius:18px;background:#fff;border:1px solid var(--line)}.sample-title strong{display:block;margin-bottom:8px}.sample-title p{color:var(--muted);font-size:.96rem}.sample-title.clean{background:linear-gradient(180deg,#fffdf9,#fff7ed);border-color:rgba(229,122,59,.28)}.price{font:2.4rem/1 Georgia,serif;margin-top:14px}.price span{font:.95rem Arial,sans-serif;color:var(--muted)}.highlight{border-color:rgba(229,122,59,.36);background:linear-gradient(180deg,#fffdf9,#fff7ed)}.check-band{display:grid;grid-template-columns:1.05fr repeat(3,1fr);gap:14px;align-items:stretch}.check-card{padding:20px;border-radius:20px;background:#fff;border:1px solid var(--line);box-shadow:0 10px 24px rgba(23,48,41,.055)}.check-card strong{display:block;font:1.12rem/1.2 Georgia,serif;margin-bottom:8px}.check-card p{color:var(--muted);font-size:.94rem}.faq-grid{grid-template-columns:1fr 1fr}.faq-item p{margin-top:10px;color:var(--muted)}.footer{margin-top:28px;color:var(--muted);font-size:.92rem}
+    @media (max-width:980px){.hero,.cta-grid,.faq-grid,.steps,.grid,.check-band,.title-sample{grid-template-columns:1fr 1fr}.check-band .panel{grid-column:1/-1}} @media (max-width:720px){.wrap{padding:14px 12px 36px}header{grid-template-columns:1fr auto;top:8px}.menu-toggle{display:inline-flex}nav{display:none;position:absolute;left:12px;right:12px;top:calc(100% + 10px);padding:14px;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);flex-direction:column;align-items:stretch;z-index:20}nav.open{display:flex}.navlink,.btn{width:100%}.navlink{padding:10px 12px;border-radius:14px;background:#fff}.hero,.cta-grid,.faq-grid,.steps,.grid,.check-band,.title-sample{grid-template-columns:1fr}.actions{display:grid}.btn{width:100%}h1{font-size:2.25rem;line-height:1.06}h2{font-size:1.7rem;line-height:1.12}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="index.html">
+        <div class="logo"></div>
+        <div>
+          <div><strong>MyCommercePartner</strong></div>
+          <div class="brand-kicker">Listing rescue</div>
+        </div>
+      </a>
+      <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="siteNav" aria-label="Open menu"><span></span></button>
+      <nav id="siteNav">
+        <a class="navlink" href="index.html">Home</a>
+        <a class="navlink" href="website-reviews.html">Website Reviews</a>
+        <a class="navlink" href="listing-rescue.html">Listing Rescue</a>
+        <a class="navlink" href="about.html">About</a>
+        <a class="navlink" href="faq.html">FAQ</a>
+        <a class="btn primary" href="dashboard.html">Start checking listings</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="panel highlight">
+        <span class="eyebrow">For eBay sellers</span>
+        <h1>Rescue stale listings without committing to a monthly plan first.</h1>
+        <p class="sub" style="margin-top:14px;max-width:760px">Listing Rescue is for sellers who want better listing performance fast. Start with free credits, then grab the $59 Rescue Pack when you want 20 more listing fixes right away.</p>
+        <div class="price">$59 <span>one-time for 20 listing rescues</span></div>
+        <div class="actions">
+          <a class="btn primary" href="dashboard.html">Get the Rescue Pack</a>
+          <a class="btn ghost" href="dashboard.html#optimizerWorkspace">Try the optimizer first</a>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Best fit</h3>
+        <ul class="simple-list">
+          <li>Sellers with stale inventory or weak older listings</li>
+          <li>Teams relisting old stock and wanting faster fixes</li>
+          <li>People who want instant utility instead of a long sales process</li>
+          <li>Sellers who prefer a one-time purchase before a monthly plan</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid">
+        <div class="card"><h3>Tighter titles</h3><p class="muted" style="margin-top:10px">Spot weak title structure fast and get a clearer rewrite.</p></div>
+        <div class="card"><h3>Better listing copy</h3><p class="muted" style="margin-top:10px">Improve description clarity, buyer confidence, and missing details.</p></div>
+        <div class="card"><h3>Faster next step</h3><p class="muted" style="margin-top:10px">Move through stale listings quickly instead of guessing what to fix first.</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="check-band">
+        <div class="panel highlight">
+          <span class="eyebrow">What gets checked</span>
+          <h2 style="margin-top:12px">Know what is hurting the listing before you rewrite it.</h2>
+          <p class="sub" style="margin-top:10px">Each rescue looks at the parts buyers scan first, so older listings become easier to find, trust, and act on.</p>
+        </div>
+        <div class="check-card"><strong>Search fit</strong><p>Title keywords, order, and important product terms that help the right buyer find the listing.</p></div>
+        <div class="check-card"><strong>Buyer confidence</strong><p>Missing details, vague claims, and description gaps that can make shoppers pause.</p></div>
+        <div class="check-card"><strong>Purchase clarity</strong><p>Condition notes, specifics, and selling points that help buyers decide faster.</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="panel title-sample">
+        <div>
+          <span class="eyebrow">Quick title lift</span>
+          <h2 style="margin-top:12px">See the kind of cleanup a stale listing may need.</h2>
+          <p class="sub" style="margin-top:10px">Small wording changes can make the product easier to scan without making the listing feel stuffed or spammy.</p>
+        </div>
+        <div class="title-sample">
+          <div class="sample-title"><strong>Before</strong><p>Vintage lamp good condition works</p></div>
+          <div class="sample-title clean"><strong>Cleaner title</strong><p>Vintage Brass Table Lamp with Shade — Working Bedside or Desk Light</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div style="text-align:center;margin-bottom:24px">
+        <span class="eyebrow">How it works</span>
+        <h2 style="margin-top:12px">Simple path from listing trouble to listing cleanup</h2>
+      </div>
+      <div class="steps">
+        <div class="card"><div class="step-num">1</div><h3>Open the dashboard</h3><p class="muted" style="margin-top:10px">Sign in and use your free credits to check your first listings.</p></div>
+        <div class="card"><div class="step-num">2</div><h3>Check a listing</h3><p class="muted" style="margin-top:10px">Paste your title, description, and item specifics into the optimizer.</p></div>
+        <div class="card"><div class="step-num">3</div><h3>Grab more rescues</h3><p class="muted" style="margin-top:10px">Buy the $59 Rescue Pack when you want 20 extra listing fixes right away.</p></div>
+        <div class="card"><div class="step-num">4</div><h3>Keep improving</h3><p class="muted" style="margin-top:10px">Work through older listings and move into a monthly plan later if it fits.</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="cta-grid">
+        <div class="card highlight">
+          <span class="eyebrow">Rescue Pack</span>
+          <h2 style="margin-top:12px">20 Listing Rescue Pack</h2>
+          <p class="sub" style="margin-top:10px">Best if you want immediate extra credits without a subscription.</p>
+          <div class="price">$59 <span>one-time</span></div>
+          <ul class="simple-list">
+            <li>20 extra listing rescues ready to use</li>
+            <li>Use them right away after checkout</li>
+            <li>Good for stale inventory and relists</li>
+            <li>No contract</li>
+          </ul>
+          <a class="btn primary" style="margin-top:12px" href="dashboard.html">Buy the $59 Rescue Pack</a>
+        </div>
+        <div class="card">
+          <span class="eyebrow">Monthly option</span>
+          <h2 style="margin-top:12px">Need ongoing listing support?</h2>
+          <p class="sub" style="margin-top:10px">If you optimize listings regularly, use the Rescue Pack first and move into a monthly plan later when the volume justifies it.</p>
+          <ul class="simple-list">
+            <li>Starter plan for steady monthly use</li>
+            <li>Growth plan for larger listing batches</li>
+            <li>Use the dashboard to choose what fits</li>
+          </ul>
+          <a class="btn ghost" style="margin-top:12px" href="dashboard.html#billing">See monthly plans</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div style="text-align:center;margin-bottom:24px">
+        <span class="eyebrow">Common questions</span>
+        <h2 style="margin-top:12px">Questions sellers usually ask first</h2>
+      </div>
+      <div class="faq-grid">
+        <div class="faq-item"><h3>Do I need a subscription to start?</h3><p>No. The Rescue Pack exists specifically so you can buy a one-time batch first.</p></div>
+        <div class="faq-item"><h3>Where do I actually buy it?</h3><p>Open the dashboard, complete checkout, and your 20 rescues are available immediately.</p></div>
+        <div class="faq-item"><h3>What if I want to test it first?</h3><p>Use the free listing checks before buying the Rescue Pack.</p></div>
+        <div class="faq-item"><h3>What if I optimize listings every month?</h3><p>Then the dashboard plans may make more sense once the listing checks fit how you sell.</p></div>
+      </div>
+    </section>
+
+    <div class="footer">© <span id="year"></span> MyCommercePartner · <a href="mailto:hello@mycommercepartner.com">hello@mycommercepartner.com</a> · <a href="index.html">Home</a> · <a href="website-reviews.html">Website Reviews</a></div>
+  </div>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const menuToggle = document.getElementById('menuToggle');
+    const siteNav = document.getElementById('siteNav');
+    function closeMenu(){
+      siteNav.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+      menuToggle.setAttribute('aria-label', 'Open menu');
+    }
+    if (menuToggle && siteNav) {
+      menuToggle.addEventListener('click', function(){
+        const isOpen = siteNav.classList.toggle('open');
+        menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        menuToggle.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+      });
+      siteNav.querySelectorAll('a').forEach(function(link){ link.addEventListener('click', closeMenu); });
+      window.addEventListener('resize', function(){ if (window.innerWidth > 720) closeMenu(); });
+    }
+  </script>
+</body>
+</html>

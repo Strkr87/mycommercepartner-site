@@ -123,7 +123,13 @@ function purchaseConfirmationEmail({ name, planName, credits, price }) {
 
 function topupConfirmationEmail({ name, credits, kind }) {
   const displayName = name ? name.split(' ')[0] : 'there';
-  const kindLabel = kind === 'audit' ? 'Listing Audit' : kind === 'dfy' ? 'Done-For-You Package' : 'Credit Pack';
+  const kindLabel = kind === 'audit'
+    ? 'Listing Audit'
+    : kind === 'dfy'
+      ? 'Done-For-You Package'
+      : kind === 'rescue'
+        ? 'Listing Rescue Pack'
+        : 'Credit Pack';
   return emailBase(`
     <h2>Purchase confirmed, ${displayName}! ✅</h2>
     <p>Your <strong>${kindLabel}</strong> purchase was successful.</p>
@@ -314,7 +320,7 @@ async function handleCheckoutCompleted(session) {
       subject: `You're on the ${planName} plan — welcome! 🎉`,
       html: purchaseConfirmationEmail({ name: userName, planName, credits: info.credits, price: info.price }),
     });
-  } else if (kind === 'topup' || kind === 'audit' || kind === 'dfy') {
+  } else if (kind === 'topup' || kind === 'audit' || kind === 'dfy' || kind === 'rescue') {
     updated.plan = profile.plan || null;
     updated.bonus_credits = Number(profile.bonus_credits || 0) + topupCreds;
     updated.billing_period_started_at = profile.billing_period_started_at || null;

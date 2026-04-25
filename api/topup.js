@@ -5,12 +5,7 @@ const {
   getUserFromToken,
   stripeRequest
 } = require("../lib/platform");
-
-const TOPUP_OPTIONS = {
-  100: 5900,
-  250: 12900,
-  500: 22900
-};
+const { resolveOneTimeOffer } = require("../lib/offers");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
@@ -31,9 +26,8 @@ module.exports = async (req, res) => {
   }
 
   const { credits = 0, origin = "" } = req.body || {};
-  const topupCredits = Number(credits || 0);
-  const amount = TOPUP_OPTIONS[topupCredits];
-  if (!amount) {
+  const offer = resolveOneTimeOffer(credits);
+  if (!offer) {
     json(res, 400, { error: "Unknown credit pack selected" });
     return;
   }
@@ -50,14 +44,14 @@ module.exports = async (req, res) => {
     cancel_url: `${siteOrigin}/?checkout=cancelled`,
     customer_email: user.email,
     "line_items[0][price_data][currency]": "usd",
-    "line_items[0][price_data][product_data][name]": `${topupCredits} Credit Top-Up`,
-    "line_items[0][price_data][product_data][description]": `Extra listing optimization credits for MyCommercePartner`,
-    "line_items[0][price_data][unit_amount]": String(amount),
+    "line_items[0][price_data][product_data][name]": offer.name,
+    "line_items[0][price_data][product_data][description]": offer.description,
+    "line_items[0][price_data][unit_amount]": String(offer.amount),
     "line_items[0][quantity]": "1",
     "metadata[user_id]": user.id,
     "metadata[email]": user.email,
-    "metadata[kind]": "topup",
-    "metadata[topup_credits]": String(topupCredits)
+    "metadata[kind]": offer.kind,
+    "metadata[topup_credits]": String(offer.credits)
   });
 
   if (!response.ok || !data?.url) {
