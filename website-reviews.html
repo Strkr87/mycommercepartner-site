@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Website Reviews | MyCommercePartner</title>
-  <meta name="description" content="Website reviews and done-for-you conversion upgrades for businesses that need clearer messaging, stronger trust, and better inquiry flow.">
+  <meta name="description" content="Website reviews and done-for-you conversion upgrades for teams that need clearer page copy, stronger trust, and better inquiry flow.">
   <style>
     :root{
       --bg:#f4efe8;
@@ -37,7 +37,7 @@
     a{color:inherit}
     h1,h2,h3,p{margin:0}
     .wrap{max-width:var(--max);margin:0 auto;padding:20px 16px 56px}
-    .section{margin-top:34px}
+    .section{margin-top:34px;scroll-margin-top:110px}
     header,.hero-shell,.proof-band,.package,.feature-card,.faq-item,.contact-card,.process-card,.insight-card,.final-shell{
       border:1px solid var(--line);
       border-radius:var(--radius);
@@ -112,8 +112,8 @@
 
     .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
     .package{display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden}
-    .package.highlight{background:linear-gradient(180deg,#fffdf9,#fff4e9);border-color:rgba(204,110,60,.26)}
-    .badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:999px;white-space:nowrap}
+    .package.highlight{background:linear-gradient(180deg,#fffdf9,#fff4e9);border-color:rgba(204,110,60,.26);padding-top:44px}
+    .badge{position:absolute;top:16px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:999px;white-space:nowrap}
     .price{font:2.2rem/1 Georgia, serif}.price span{font:.95rem Arial,sans-serif;color:var(--muted)}
     .package ul{margin:0;padding-left:18px;color:var(--muted)}
     .package li{margin-bottom:8px}
@@ -138,6 +138,8 @@
     .status{display:none;padding:14px 16px;border-radius:16px;font-weight:600}
     .status.ok{background:#edf8f2;border:1px solid rgba(36,131,91,.18);color:#1f5c4b}
     .status.err{background:#fff0f0;border:1px solid rgba(208,67,67,.18);color:#a33434}
+    .contact-note{margin-top:18px;padding:16px;border-radius:18px;background:#fff;border:1px solid var(--line)}
+    .contact-note strong{display:block;margin-bottom:4px}
 
     .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
     .faq-item p{margin-top:10px;color:var(--muted)}
@@ -202,7 +204,7 @@
             <div>
               <span class="eyebrow">Website reviews</span>
               <h1>Get a clearer path from first impression to inquiry.</h1>
-              <p class="sub hero-lead">This page is for businesses whose website feels outdated, weak, confusing, or too passive. We review what is slowing trust and next-step action, then recommend the simplest fix that makes sense.</p>
+              <p class="sub hero-lead">For websites that feel outdated, weak, confusing, or too passive. We review what is slowing trust and next-step action, then show the simplest fix that makes sense.</p>
               <div class="hero-actions">
                 <a class="btn primary" href="#contact">Request your site review</a>
                 <a class="btn ghost" href="#packages">See packages</a>
@@ -230,7 +232,7 @@
               <div class="signal-list">
                 <div class="insight-card">
                   <strong>Your homepage feels flat</strong>
-                  <div>Visitors land, scan a little, and leave without enough confidence or direction.</div>
+                  <div>Visitors land, scan a little, and leave without enough confidence to take the next step.</div>
                 </div>
                 <div class="insight-card">
                   <strong>Your trust shows up too late</strong>
@@ -247,7 +249,7 @@
               <div class="proof-labels" style="margin-top:14px">
                 <span style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:#fff">Wix</span>
                 <span style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:#fff">Shopify</span>
-                <span style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:#fff">Quote-led sites</span>
+                <span style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:#fff">Quote request sites</span>
               </div>
             </div>
           </div>
@@ -300,7 +302,7 @@
       <div class="section-header">
         <span class="eyebrow">Packages</span>
         <h2>Choose the level that matches what needs fixing first.</h2>
-        <p>Each package is focused on clearer messaging, stronger trust, and a better path to inquiry.</p>
+        <p>Each package is focused on clearer page copy, stronger trust, and a better path to inquiry.</p>
       </div>
       <div class="pricing">
         <div class="package">
@@ -313,7 +315,7 @@
             <li>Fix one contact or quote step</li>
             <li>Done-for-you implementation included</li>
           </ul>
-          <a class="btn ghost" href="#contact">Start with Basic</a>
+          <a class="btn ghost package-jump checkout-package" href="#contact" data-package="Basic Upgrade" data-checkout-package="basic">Buy Basic Upgrade</a>
         </div>
         <div class="package highlight">
           <div class="badge">Recommended</div>
@@ -326,19 +328,19 @@
             <li>Cleaner path from interest to inquiry</li>
             <li>Implementation and mobile cleanup</li>
           </ul>
-          <a class="btn warm" href="#contact">Request Growth Review</a>
+          <a class="btn warm package-jump checkout-package" href="#contact" data-package="Growth Upgrade" data-checkout-package="growth">Buy Growth Upgrade</a>
         </div>
         <div class="package">
           <h3>Premium Upgrade</h3>
-          <p class="muted">Best if you need a more polished buyer experience and stronger proof throughout.</p>
+          <p class="muted">Best if you need a more polished buyer path and stronger proof throughout.</p>
           <div class="price">$2,250 <span>one-time</span></div>
           <ul>
-            <li>Premium homepage direction</li>
+            <li>Premium homepage structure</li>
             <li>Stronger proof and trust sections</li>
             <li>More guided inquiry path</li>
             <li>More refined done-for-you implementation</li>
           </ul>
-          <a class="btn ghost" href="#contact">Request Premium Review</a>
+          <a class="btn ghost package-jump checkout-package" href="#contact" data-package="Premium Upgrade" data-checkout-package="premium">Buy Premium Upgrade</a>
         </div>
       </div>
     </section>
@@ -354,7 +356,7 @@
               <div>Share your URL and what feels weak or outdated right now.</div>
             </div>
             <div class="step">
-              <strong>2. Get the recommendation</strong>
+              <strong>2. See the clearest next fix</strong>
               <div>We point to the clearest next fix and the simplest package that fits.</div>
             </div>
             <div class="step">
@@ -363,7 +365,7 @@
             </div>
             <div class="step">
               <strong>4. Review and launch</strong>
-              <div>You approve the revised direction and move toward go-live.</div>
+              <div>You approve the updated page path and move toward go-live.</div>
             </div>
           </div>
         </div>
@@ -381,7 +383,7 @@
             </div>
             <div class="check">
               <strong>What feels weak right now</strong>
-              <div class="muted">Outdated design, weak trust, confusing flow, or unclear messaging.</div>
+              <div class="muted">Outdated design, weak trust, confusing flow, or unclear page copy.</div>
             </div>
           </div>
         </div>
@@ -398,20 +400,29 @@
             <span>Clear next step</span>
             <span>No vague process</span>
             <span>Simple package fit</span>
+            <span>Email backup included</span>
+          </div>
+          <div class="contact-note">
+            <strong>What happens after you send it</strong>
+            <p class="sub">We check the page, reply with the clearest next step, and use your details only to respond to the request.</p>
           </div>
         </div>
         <div class="contact-card">
           <form class="contact-form" id="contactForm">
             <div>
               <label for="contactName">Your name</label>
-              <input id="contactName" name="contactName" placeholder="Ken MacIntyre" required>
+              <input id="contactName" name="contactName" placeholder="Your name" required>
             </div>
             <div>
               <label for="contactEmail">Email address</label>
               <input id="contactEmail" type="email" name="contactEmail" placeholder="you@example.com" required>
             </div>
             <div>
-              <label for="contactPackage">Best-fit package</label>
+              <label for="contactSiteUrl">Website URL</label>
+              <input id="contactSiteUrl" type="url" name="contactSiteUrl" placeholder="https://yourwebsite.com" required>
+            </div>
+            <div>
+              <label for="contactPackage">Package interest</label>
               <select id="contactPackage" name="contactPackage">
                 <option value="Not sure yet">Not sure yet</option>
                 <option value="Basic Upgrade">Basic Upgrade</option>
@@ -420,12 +431,13 @@
               </select>
             </div>
             <div>
-              <label for="contactMessage">What feels weak right now?</label>
-              <textarea id="contactMessage" name="contactMessage" placeholder="Share your URL and tell us what feels outdated, confusing, or too passive." required></textarea>
+              <label for="contactMessage">What would you like improved?</label>
+              <textarea id="contactMessage" name="contactMessage" placeholder="Tell us what feels outdated, confusing, unclear, or too passive." required></textarea>
             </div>
             <button class="btn primary" type="submit">Request your site review</button>
             <div class="status ok" id="contactSuccess">✓ Message sent. We’ll review it and follow up shortly.</div>
-            <div class="status err" id="contactError">Something went wrong. Please try again or email hello@mycommercepartner.com directly.</div>
+            <div class="status ok" id="contactEmailFallback">Your email app is opening with the request filled in. Send it to hello@mycommercepartner.com to finish.</div>
+            <div class="status err" id="contactError">Something went wrong. Please email hello@mycommercepartner.com directly.</div>
           </form>
         </div>
       </div>
@@ -447,7 +459,7 @@
         </div>
         <div class="faq-item">
           <h3>Is copy included?</h3>
-          <p>Yes. Messaging, calls to action, trust copy, and page cleanup are included when needed.</p>
+          <p>Yes. Page copy, calls to action, trust copy, and page cleanup are included when needed.</p>
         </div>
         <div class="faq-item">
           <h3>What if one page is the main problem?</h3>
@@ -467,9 +479,9 @@
           </div>
         </div>
         <div class="final-card">
-          <span class="eyebrow dark">Returning clients</span>
+          <span class="eyebrow dark">Returning customers</span>
           <h3 style="margin-top:14px;color:#fff">Keep the right path in view.</h3>
-          <p>Use this page for website review requests, or go back to the dashboard if you already know your workflow.</p>
+          <p>Use this page for website review requests, or open your account if you already work with MyCommercePartner.</p>
           <div class="final-actions">
             <a class="btn warm" href="dashboard.html">Open Dashboard</a>
             <a class="btn ghost" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.14);color:#fff" href="index.html">Go to Homepage</a>
@@ -506,15 +518,77 @@
 
     const contactForm = document.getElementById('contactForm');
     const contactSuccess = document.getElementById('contactSuccess');
+    const contactEmailFallback = document.getElementById('contactEmailFallback');
     const contactError = document.getElementById('contactError');
+    const contactPackage = document.getElementById('contactPackage');
+    const checkoutMessages = {
+      success: 'Payment received. We will follow up with the next steps shortly.',
+      cancelled: 'Checkout was cancelled. You can choose a package again when ready.'
+    };
+    const checkoutParams = new URLSearchParams(window.location.search);
+    const checkoutState = checkoutParams.get('checkout');
+    if (checkoutMessages[checkoutState]) {
+      window.setTimeout(function(){ alert(checkoutMessages[checkoutState]); }, 150);
+      checkoutParams.delete('checkout');
+      checkoutParams.delete('package');
+      checkoutParams.delete('session_id');
+      const cleanUrl = window.location.pathname + (checkoutParams.toString() ? '?' + checkoutParams.toString() : '') + window.location.hash;
+      window.history.replaceState({}, '', cleanUrl);
+    }
+    document.querySelectorAll('.package-jump').forEach(function(link){
+      link.addEventListener('click', function(){
+        if (contactPackage && link.dataset.package) contactPackage.value = link.dataset.package;
+      });
+    });
+    document.querySelectorAll('.checkout-package').forEach(function(link){
+      link.addEventListener('click', async function(e){
+        e.preventDefault();
+        const originalText = link.textContent;
+        link.textContent = 'Opening checkout...';
+        link.setAttribute('aria-busy', 'true');
+        try {
+          const resp = await fetch('/api/website-review-checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              package: link.dataset.checkoutPackage,
+              origin: window.location.origin + window.location.pathname
+            })
+          });
+          const data = await resp.json().catch(function(){ return {}; });
+          if (!resp.ok || !data.url) throw new Error(data.error || 'Unable to start checkout');
+          window.location.href = data.url;
+        } catch (err) {
+          alert('Checkout could not open. Please use the request form below or email hello@mycommercepartner.com.');
+          document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+          link.textContent = originalText;
+          link.removeAttribute('aria-busy');
+        }
+      });
+    });
+    function openEmailRequest(payload){
+      const subject = encodeURIComponent('Website review request');
+      const body = encodeURIComponent([
+        'Name: ' + payload.name,
+        'Email: ' + payload.email,
+        'Website URL: ' + payload.siteUrl,
+        'Package: ' + payload.package,
+        '',
+        'What would you like improved?',
+        payload.message
+      ].join('\n'));
+      window.location.href = 'mailto:hello@mycommercepartner.com?subject=' + subject + '&body=' + body;
+    }
     contactForm?.addEventListener('submit', async function(e){
       e.preventDefault();
       contactSuccess.style.display = 'none';
+      contactEmailFallback.style.display = 'none';
       contactError.style.display = 'none';
       const payload = {
         name: document.getElementById('contactName').value.trim(),
         email: document.getElementById('contactEmail').value.trim(),
-        package: document.getElementById('contactPackage').value,
+        siteUrl: document.getElementById('contactSiteUrl').value.trim(),
+        package: contactPackage.value,
         message: document.getElementById('contactMessage').value.trim()
       };
       try {
@@ -528,7 +602,8 @@
         contactSuccess.style.display = 'block';
         contactForm.reset();
       } catch (err) {
-        contactError.style.display = 'block';
+        openEmailRequest(payload);
+        contactEmailFallback.style.display = 'block';
       }
     });
   </script>
