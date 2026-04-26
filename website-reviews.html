@@ -547,10 +547,11 @@
         link.textContent = 'Opening checkout...';
         link.setAttribute('aria-busy', 'true');
         try {
-          const resp = await fetch('/api/website-review-checkout', {
+          const resp = await fetch('/api/contact', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+              action: 'website-review-checkout',
               package: link.dataset.checkoutPackage,
               origin: window.location.origin + window.location.pathname
             })
