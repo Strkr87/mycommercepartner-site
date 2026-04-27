@@ -49,6 +49,9 @@ footer{background:#eef1f6;border-top:1px solid var(--line);padding:56px 64px 28p
 .image-break{display:grid;grid-template-columns:.92fr 1.08fr;gap:34px;align-items:center;margin-top:50px}.image-break .visual-card{margin-bottom:0}.image-break-copy h3{font:2.05rem/1.08 Lora,Georgia,serif;font-weight:500;letter-spacing:-.045em}.image-break-copy p{margin-top:16px;color:var(--muted);line-height:1.75}.image-break-copy .pills{margin-top:22px}
 @media(max-width:980px){.image-break{grid-template-columns:1fr}.visual-card{max-width:640px}}
 @media(max-width:640px){.visual-card{border-radius:22px;margin-bottom:24px}.visual-card img{aspect-ratio:1.35/1}.visual-card:after{border-radius:22px}.visual-caption{position:static;border-radius:0;border-left:0;border-right:0;border-bottom:0;background:#fff;display:grid}.image-break{margin-top:34px}}
+
+.visual-mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px}.visual-mini{border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg,#fff,#fbfaf8);overflow:hidden;box-shadow:0 18px 44px rgba(29,29,31,.08)}.visual-mini img{display:block;width:100%;aspect-ratio:1.55/1;object-fit:cover}.visual-mini div{padding:18px}.visual-mini h3{font-size:1rem;line-height:1.25}.visual-mini p{margin-top:8px;color:var(--muted);font-size:.92rem;line-height:1.55}
+@media(max-width:980px){.visual-mini-grid{grid-template-columns:1fr 1fr}}@media(max-width:640px){.visual-mini-grid{grid-template-columns:1fr;margin-top:24px}.visual-mini img{aspect-ratio:1.75/1}}
 </style>
 </head>
 <body>
@@ -125,7 +128,12 @@ footer{background:#eef1f6;border-top:1px solid var(--line);padding:56px 64px 28p
         </div>
         <div class="image-break">
           <div class="image-break-copy"><span class="eyebrow">Less reading, faster recognition</span><h3>Show buyers the problem areas instead of making them decode everything.</h3><p>A clearer visual path helps visitors understand the service faster while still giving them the details they need to choose the right next step.</p><div class="pills"><span class="pill">Website path</span><span class="pill">Listing cleanup</span><span class="pill">Dashboard support</span></div></div>
-          <div class="visual-card"><img src="assets/home-commerce-visual.svg" alt="Custom illustration of ecommerce review cards and improvement charts" loading="lazy"><div class="visual-caption"><span>Where buyers decide</span><span>Support mapped visually</span></div></div>
+          <div class="visual-card"><img src="assets/home-buyer-path-visual.svg" alt="Illustration of buyer path cards moving from first impression to action" loading="lazy"><div class="visual-caption"><span>Buyer path map</span><span>First look → clear next step</span></div></div>
+        </div>
+        <div class="visual-mini-grid" aria-label="Commerce support visual examples">
+          <article class="visual-mini"><img src="assets/home-support-routes-visual.svg" alt="Illustration of three support route cards" loading="lazy"><div><h3>Pick the right support path</h3><p>Website reviews, listing cleanup, and dashboard access are easier to compare at a glance.</p></div></article>
+          <article class="visual-mini"><img src="assets/website-packages-visual.svg" alt="Illustration of package cards for website support" loading="lazy"><div><h3>See the level that fits</h3><p>Simple package cards help visitors understand that they can start small.</p></div></article>
+          <article class="visual-mini"><img src="assets/listing-inventory-visual.svg" alt="Illustration of stale inventory becoming clearer listing cards" loading="lazy"><div><h3>Make listings feel concrete</h3><p>Marketplace cleanup is easier to understand when sellers can see the before-to-after path.</p></div></article>
         </div>
       </section>
 
