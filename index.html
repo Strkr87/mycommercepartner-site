@@ -41,6 +41,14 @@ footer{background:#eef1f6;border-top:1px solid var(--line);padding:56px 64px 28p
 @media(max-width:980px){header{grid-template-columns:1fr auto}.header-actions{display:none}.menu-toggle{display:block}nav{display:none;position:absolute;left:18px;right:18px;top:78px;padding:14px;border:1px solid var(--line);border-radius:18px;background:#ffffff;box-shadow:0 24px 60px rgba(29,29,31,.16);flex-direction:column;align-items:stretch;gap:4px}nav.open{display:flex}.navlink,.mobile-only{padding:12px;border-radius:12px}.mobile-only{display:flex}.hero,.audiences,.final-cta{grid-template-columns:1fr}.hero-side{border-left:0;border-top:1px solid var(--line)}.services,.steps,.card-grid,.footer-grid{grid-template-columns:1fr 1fr}.service-card:nth-child(2){border-right:0}.service-card:nth-child(3){border-top:1px solid var(--line)}.step:nth-child(2){border-right:0}.step:nth-child(3),.step:nth-child(4){border-top:1px solid var(--line)}.audience{border-right:0;border-bottom:1px solid var(--line)}.audience:last-child{border-bottom:0}.final-buttons{margin-left:0}.footer-grid{gap:32px}}
 @media(min-width:981px){.mobile-only{display:none!important}}
 @media(max-width:640px){.wrap{padding:8px}.page-frame{border-radius:22px}header{padding:18px}.brand{font-size:1.22rem}.hero-copy,.hero-side,.section-pad,.audience,.quote,footer{padding:42px 24px}.hero h1{font-size:3.85rem;line-height:.92}.hero-lead,.section-head p,.audience p,.final-cta p{font-size:1rem;line-height:1.7}.hero-actions,.final-buttons{display:grid}.btn{width:100%}.services,.steps,.card-grid,.footer-grid{grid-template-columns:1fr}.service-card,.service-card:nth-child(2),.step,.step:nth-child(2){border-right:0;border-top:1px solid var(--line)}.service-card:first-child,.step:first-child{border-top:0}.service-card{min-height:auto}.footer-bottom{display:grid}.quote p{font-size:2.05rem;line-height:1.16}.section-head h2,.final-cta h2{font-size:2.75rem;line-height:1.02}.audience h2{line-height:1.04}}
+
+.visual-card{position:relative;margin-bottom:28px;border:1px solid var(--line);border-radius:28px;overflow:hidden;background:#fff;box-shadow:0 22px 58px rgba(29,29,31,.10)}
+.visual-card img{display:block;width:100%;height:auto;aspect-ratio:1.58/1;object-fit:cover}
+.visual-card:after{content:"";position:absolute;inset:0;border-radius:28px;box-shadow:inset 0 1px 0 rgba(255,255,255,.75),inset 0 -34px 70px rgba(255,255,255,.16);pointer-events:none}
+.visual-caption{position:absolute;left:18px;right:18px;bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;border:1px solid rgba(255,255,255,.74);border-radius:16px;background:rgba(255,255,255,.82);backdrop-filter:blur(14px);color:var(--soft);font-size:.82rem;font-weight:750;line-height:1.25}.visual-caption span:last-child{color:var(--cream)}
+.image-break{display:grid;grid-template-columns:.92fr 1.08fr;gap:34px;align-items:center;margin-top:50px}.image-break .visual-card{margin-bottom:0}.image-break-copy h3{font:2.05rem/1.08 Lora,Georgia,serif;font-weight:500;letter-spacing:-.045em}.image-break-copy p{margin-top:16px;color:var(--muted);line-height:1.75}.image-break-copy .pills{margin-top:22px}
+@media(max-width:980px){.image-break{grid-template-columns:1fr}.visual-card{max-width:640px}}
+@media(max-width:640px){.visual-card{border-radius:22px;margin-bottom:24px}.visual-card img{aspect-ratio:1.35/1}.visual-card:after{border-radius:22px}.visual-caption{position:static;border-radius:0;border-left:0;border-right:0;border-bottom:0;background:#fff;display:grid}.image-break{margin-top:34px}}
 </style>
 </head>
 <body>
@@ -74,6 +82,7 @@ footer{background:#eef1f6;border-top:1px solid var(--line);padding:56px 64px 28p
           </div>
         </div>
         <aside class="hero-side" aria-label="What gets improved">
+          <div class="visual-card"><img src="assets/home-commerce-visual.svg" alt="Illustration of ecommerce dashboard cards, buyer-path checks, and growth charts" loading="eager"><div class="visual-caption"><span>Visual audit workspace</span><span>Clarity → trust → action</span></div></div>
           <div class="side-title"><span class="eyebrow">What gets improved</span></div>
           <div class="improve-list">
             <div class="improve-item"><span class="check">✓</span><div><h3>Message clarity</h3><p>Help visitors understand what is being offered, who it is for, and why it matters — immediately.</p></div></div>
@@ -113,6 +122,10 @@ footer{background:#eef1f6;border-top:1px solid var(--line);padding:56px 64px 28p
             <div class="pills"><span class="pill">Credits</span><span class="pill">Active work</span><span class="pill">Account tasks</span></div>
             <a class="text-cta" href="dashboard.html">Sign in to dashboard →</a>
           </article>
+        </div>
+        <div class="image-break">
+          <div class="image-break-copy"><span class="eyebrow">Less reading, faster recognition</span><h3>Show buyers the problem areas instead of making them decode everything.</h3><p>A clearer visual path helps visitors understand the service faster while still giving them the details they need to choose the right next step.</p><div class="pills"><span class="pill">Website path</span><span class="pill">Listing cleanup</span><span class="pill">Dashboard support</span></div></div>
+          <div class="visual-card"><img src="assets/home-commerce-visual.svg" alt="Custom illustration of ecommerce review cards and improvement charts" loading="lazy"><div class="visual-caption"><span>Where buyers decide</span><span>Support mapped visually</span></div></div>
         </div>
       </section>
 
