@@ -209,14 +209,14 @@ module.exports = async (req, res) => {
         from: FROM_EMAIL,
         to: NOTIFY_EMAIL,
         reply_to: safeEmail,
-        subject: `New website review request from ${safeName}`,
+        subject: `New MyCommercePartner request from ${safeName}`,
         html: `<div style="font-family:sans-serif;max-width:600px;margin:40px auto;background:#fff;padding:32px;border-radius:12px;border:1px solid #e2e8f0">
-          <h2 style="margin:0 0 20px;color:#1a1a2e">New website review request</h2>
+          <h2 style="margin:0 0 20px;color:#1a1a2e">New MyCommercePartner request</h2>
           <p><strong>Name:</strong> ${safeNameHtml}</p>
           <p><strong>Email:</strong> <a href="mailto:${safeEmailHtml}">${safeEmailHtml}</a></p>
-          <p><strong>Website URL:</strong> ${safeSiteUrl ? `<a href="${safeSiteUrlHtml}">${safeSiteUrlHtml}</a>` : 'Not provided'}</p>
-          <p><strong>Package interest:</strong> ${safePackageInterestHtml}</p>
-          <p><strong>What they want improved:</strong></p>
+          <p><strong>Marketplace or website link:</strong> ${safeSiteUrl ? `<a href="${safeSiteUrlHtml}">${safeSiteUrlHtml}</a>` : 'Not provided'}</p>
+          <p><strong>Request type:</strong> ${safePackageInterestHtml}</p>
+          <p><strong>What they want reviewed:</strong></p>
           <div style="background:#f7f8ff;border-left:4px solid #4f46e5;border-radius:6px;padding:16px 20px;white-space:pre-wrap">${safeMessageHtml}</div>
           <p style="margin-top:20px;font-size:13px;color:#a0aec0">Reply directly to this email to respond to ${safeNameHtml}.</p>
         </div>`
@@ -230,7 +230,7 @@ module.exports = async (req, res) => {
       body: JSON.stringify({
         from: FROM_EMAIL,
         to: safeEmail,
-        subject: "Got your site review request — we'll follow up within 24 hours",
+        subject: "Got your MyCommercePartner request — we'll follow up within 24 hours",
         html: `<!DOCTYPE html>
 <html>
 <head>
@@ -252,8 +252,8 @@ module.exports = async (req, res) => {
     <div class="h"><h1>MyCommercePartner</h1></div>
     <div class="b">
       <h2>Thanks, ${escapeHtml(safeName.split(' ')[0])}!</h2>
-      <p>We got your site review request and will follow up within 24 hours with the clearest next step.</p>
-      <p>If a Basic Upgrade is enough, we’ll recommend that instead of pushing you into a bigger package.</p>
+      <p>We got your MyCommercePartner request and will follow up within 24 hours with the clearest next step.</p>
+      <p>If a small first step is enough, we’ll recommend that instead of pushing you into a bigger package.</p>
       <p>If you need to add anything before we reply, just respond to this email.</p>
     </div>
     <div class="ft">
