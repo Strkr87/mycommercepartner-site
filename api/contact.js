@@ -2,7 +2,7 @@
 const { STRIPE_SECRET_KEY, stripeRequest } = require('../lib/platform');
 const RESEND_API_KEY=process.env.RESEND_API_KEY || '';
 const FROM_EMAIL     = 'hello@mycommercepartner.com';
-const NOTIFY_EMAILS  = (process.env.CONTACT_NOTIFY_EMAILS || 'ken@mycommercepartner.com,james@mycommercepartner.com')
+const NOTIFY_EMAILS  = (process.env.CONTACT_NOTIFY_EMAILS || 'james@mycommercepartner.com')
   .split(',')
   .map(email => email.trim())
   .filter(Boolean);
