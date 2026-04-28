@@ -284,7 +284,6 @@ module.exports = async (req, res) => {
     res.status(200).json({ ok: true });
   } catch (err) {
     console.error('[contact] error:', err.message);
-    const debugDetail = req.body?.debug === 'theo' ? { detail: err.message } : {};
-    res.status(500).json({ error: 'Failed to send message', ...debugDetail });
+    res.status(500).json({ error: 'Failed to send message' });
   }
 };
