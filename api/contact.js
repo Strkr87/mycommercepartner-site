@@ -5,8 +5,8 @@ const nodemailer = require('nodemailer');
 const SMTP_HOST   = process.env.SMTP_HOST || 'smtp.gmail.com';
 const SMTP_PORT   = Number(process.env.SMTP_PORT || 587);
 const SMTP_SECURE = String(process.env.SMTP_SECURE || '').toLowerCase() === 'true' || SMTP_PORT === 465;
-const SMTP_USER   = process.env.SMTP_USER || 'hello@mycommercepartner.com';
-const SMTP_PASS   = process.env.SMTP_PASS || '';
+const SMTP_USER   = process.env.SMTP_USER || process.env.GMAIL_USER || process.env.EMAIL_USER || 'hello@mycommercepartner.com';
+const SMTP_PASS   = process.env.SMTP_PASS || process.env.SMTP_PASSWORD || process.env.GMAIL_APP_PASSWORD || process.env.GOOGLE_APP_PASSWORD || process.env.EMAIL_PASSWORD || '';
 const FROM_EMAIL  = process.env.FROM_EMAIL || SMTP_USER;
 const NOTIFY_EMAILS = (process.env.CONTACT_NOTIFY_EMAILS || 'hello@mycommercepartner.com')
   .split(',')
