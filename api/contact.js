@@ -1,11 +1,30 @@
 // api/contact.js — Contact form handler + website review checkout starter
 const { STRIPE_SECRET_KEY, stripeRequest } = require('../lib/platform');
-const RESEND_API_KEY=process.env.RESEND_API_KEY || '';
-const FROM_EMAIL     = 'hello@mycommercepartner.com';
-const NOTIFY_EMAILS  = (process.env.CONTACT_NOTIFY_EMAILS || 'james@mycommercepartner.com')
+const nodemailer = require('nodemailer');
+
+const SMTP_HOST   = process.env.SMTP_HOST || 'smtp.gmail.com';
+const SMTP_PORT   = Number(process.env.SMTP_PORT || 587);
+const SMTP_SECURE = String(process.env.SMTP_SECURE || '').toLowerCase() === 'true' || SMTP_PORT === 465;
+const SMTP_USER   = process.env.SMTP_USER || 'hello@mycommercepartner.com';
+const SMTP_PASS   = process.env.SMTP_PASS || '';
+const FROM_EMAIL  = process.env.FROM_EMAIL || SMTP_USER;
+const NOTIFY_EMAILS = (process.env.CONTACT_NOTIFY_EMAILS || 'hello@mycommercepartner.com')
   .split(',')
   .map(email => email.trim())
   .filter(Boolean);
+
+let smtpTransporter;
+function getSmtpTransporter() {
+  if (!smtpTransporter) {
+    smtpTransporter = nodemailer.createTransport({
+      host: SMTP_HOST,
+      port: SMTP_PORT,
+      secure: SMTP_SECURE,
+      auth: { user: SMTP_USER, pass: SMTP_PASS }
+    });
+  }
+  return smtpTransporter;
+}
 
 const WEBSITE_REVIEW_PACKAGES = {
   basic: {
@@ -62,21 +81,19 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-async function sendResendEmail(payload, label) {
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-  const text = await response.text();
-  let data = {};
-  try { data = text ? JSON.parse(text) : {}; } catch (_) { data = { raw: text }; }
-  if (!response.ok) {
-    const detail = data?.message || data?.error?.message || data?.name || response.statusText || 'Unknown Resend error';
-    console.error(`[contact] Resend ${label} failed:`, response.status, detail);
-    throw new Error(`Resend ${label} failed: ${detail}`);
+async function sendSmtpEmail(payload, label) {
+  try {
+    return await getSmtpTransporter().sendMail({
+      from: payload.from,
+      to: payload.to,
+      replyTo: payload.reply_to,
+      subject: payload.subject,
+      html: payload.html
+    });
+  } catch (err) {
+    console.error(`[contact] SMTP ${label} failed:`, err.message);
+    throw new Error(`SMTP ${label} failed: ${err.message}`);
   }
-  return data;
 }
 
 async function startWebsiteReviewCheckout(req, res) {
@@ -215,14 +232,14 @@ module.exports = async (req, res) => {
   const safePackageInterestHtml = escapeHtml(safePackageInterest);
   const safeMessageHtml = escapeHtml(safeMessage);
 
-  if (!RESEND_API_KEY) {
+  if (!SMTP_USER || !SMTP_PASS) {
     res.status(500).json({ error: 'Email not configured' });
     return;
   }
 
   try {
     // Notify Ken / internal mailbox first. If this fails, the form should show an error instead of a false success.
-    await sendResendEmail({
+    await sendSmtpEmail({
       from: FROM_EMAIL,
       to: NOTIFY_EMAILS,
       reply_to: safeEmail,
@@ -241,7 +258,7 @@ module.exports = async (req, res) => {
 
     // Auto-reply to sender. Do not fail the lead notification if the customer confirmation is rejected.
     try {
-      await sendResendEmail({
+      await sendSmtpEmail({
         from: FROM_EMAIL,
         to: safeEmail,
         subject: "Got your MyCommercePartner request — we'll follow up within 24 hours",
