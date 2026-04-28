@@ -1,8 +1,11 @@
 // api/contact.js — Contact form handler + website review checkout starter
 const { STRIPE_SECRET_KEY, stripeRequest } = require('../lib/platform');
-const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+const RESEND_API_KEY=process.env.RESEND_API_KEY || '';
 const FROM_EMAIL     = 'hello@mycommercepartner.com';
-const NOTIFY_EMAIL   = 'ken@mycommercepartner.com';
+const NOTIFY_EMAILS  = (process.env.CONTACT_NOTIFY_EMAILS || 'ken@mycommercepartner.com,james@mycommercepartner.com')
+  .split(',')
+  .map(email => email.trim())
+  .filter(Boolean);
 
 const WEBSITE_REVIEW_PACKAGES = {
   basic: {
@@ -57,6 +60,23 @@ function escapeHtml(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+async function sendResendEmail(payload, label) {
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  const text = await response.text();
+  let data = {};
+  try { data = text ? JSON.parse(text) : {}; } catch (_) { data = { raw: text }; }
+  if (!response.ok) {
+    const detail = data?.message || data?.error?.message || data?.name || response.statusText || 'Unknown Resend error';
+    console.error(`[contact] Resend ${label} failed:`, response.status, detail);
+    throw new Error(`Resend ${label} failed: ${detail}`);
+  }
+  return data;
 }
 
 async function startWebsiteReviewCheckout(req, res) {
@@ -201,33 +221,27 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Notify Ken
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from: FROM_EMAIL,
-        to: NOTIFY_EMAIL,
-        reply_to: safeEmail,
-        subject: `New MyCommercePartner request from ${safeName}`,
-        html: `<div style="font-family:sans-serif;max-width:600px;margin:40px auto;background:#fff;padding:32px;border-radius:12px;border:1px solid #e2e8f0">
-          <h2 style="margin:0 0 20px;color:#1a1a2e">New MyCommercePartner request</h2>
-          <p><strong>Name:</strong> ${safeNameHtml}</p>
-          <p><strong>Email:</strong> <a href="mailto:${safeEmailHtml}">${safeEmailHtml}</a></p>
-          <p><strong>Marketplace or website link:</strong> ${safeSiteUrl ? `<a href="${safeSiteUrlHtml}">${safeSiteUrlHtml}</a>` : 'Not provided'}</p>
-          <p><strong>Request type:</strong> ${safePackageInterestHtml}</p>
-          <p><strong>What they want reviewed:</strong></p>
-          <div style="background:#f7f8ff;border-left:4px solid #4f46e5;border-radius:6px;padding:16px 20px;white-space:pre-wrap">${safeMessageHtml}</div>
-          <p style="margin-top:20px;font-size:13px;color:#a0aec0">Reply directly to this email to respond to ${safeNameHtml}.</p>
-        </div>`
-      })
-    });
+    // Notify Ken / internal mailbox first. If this fails, the form should show an error instead of a false success.
+    await sendResendEmail({
+      from: FROM_EMAIL,
+      to: NOTIFY_EMAILS,
+      reply_to: safeEmail,
+      subject: `New MyCommercePartner request from ${safeName}`,
+      html: `<div style="font-family:sans-serif;max-width:600px;margin:40px auto;background:#fff;padding:32px;border-radius:12px;border:1px solid #e2e8f0">
+        <h2 style="margin:0 0 20px;color:#1a1a2e">New MyCommercePartner request</h2>
+        <p><strong>Name:</strong> ${safeNameHtml}</p>
+        <p><strong>Email:</strong> <a href="mailto:${safeEmailHtml}">${safeEmailHtml}</a></p>
+        <p><strong>Marketplace or website link:</strong> ${safeSiteUrl ? `<a href="${safeSiteUrlHtml}">${safeSiteUrlHtml}</a>` : 'Not provided'}</p>
+        <p><strong>Request type:</strong> ${safePackageInterestHtml}</p>
+        <p><strong>What they want reviewed:</strong></p>
+        <div style="background:#f7f8ff;border-left:4px solid #4f46e5;border-radius:6px;padding:16px 20px;white-space:pre-wrap">${safeMessageHtml}</div>
+        <p style="margin-top:20px;font-size:13px;color:#a0aec0">Reply directly to this email to respond to ${safeNameHtml}.</p>
+      </div>`
+    }, 'internal notification');
 
-    // Auto-reply to sender
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    // Auto-reply to sender. Do not fail the lead notification if the customer confirmation is rejected.
+    try {
+      await sendResendEmail({
         from: FROM_EMAIL,
         to: safeEmail,
         subject: "Got your MyCommercePartner request — we'll follow up within 24 hours",
@@ -262,8 +276,10 @@ module.exports = async (req, res) => {
   </div>
 </body>
 </html>`
-      })
-    });
+      }, 'sender auto-reply');
+    } catch (autoReplyErr) {
+      console.error('[contact] auto-reply skipped:', autoReplyErr.message);
+    }
 
     res.status(200).json({ ok: true });
   } catch (err) {
