@@ -10,14 +10,14 @@
 :root{--bg:#f6f5f2;--panel:#fff;--panel-2:#fbfaf8;--ink:#1d1d1f;--soft:#3f3b36;--muted:#615d59;--dim:#7a736c;--line:rgba(29,29,31,.12);--line-strong:rgba(29,29,31,.2);--blue:#0071e3;--violet:#533afd;--green:#177a55;--radius:26px;--max:1220px}
 *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth;background:var(--bg)}body{min-height:100vh;background:radial-gradient(circle at 12% 0%,rgba(0,113,227,.12),transparent 30%),radial-gradient(circle at 88% 6%,rgba(83,58,253,.10),transparent 28%),linear-gradient(180deg,#fff 0%,#f6f5f2 54%,#eef4ff 100%);color:var(--ink);font:16px/1.65 Inter,Arial,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}a{color:inherit;text-decoration:none}button{font:inherit}.wrap{max-width:var(--max);margin:0 auto;padding:18px 16px 34px}.page-frame{border:1px solid var(--line);border-radius:30px;overflow:hidden;background:rgba(255,255,255,.94);box-shadow:0 26px 80px rgba(29,29,31,.12)}.serif{font-family:Lora,Georgia,serif;font-weight:500;letter-spacing:-.055em}.italic{font-style:italic;color:var(--violet)}.eyebrow{display:block;color:var(--muted);font-size:.73rem;line-height:1;letter-spacing:.18em;text-transform:uppercase;font-weight:750}.muted{color:var(--muted)}
 header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px;padding:22px 28px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.88);backdrop-filter:blur(16px);position:sticky;top:0;z-index:30}.brand{font:1.55rem/1 Lora,Georgia,serif;font-weight:600;letter-spacing:-.04em;color:var(--ink)}nav{display:flex;align-items:center;justify-content:center;gap:28px}.navlink{color:var(--muted);font-size:.94rem;font-weight:650;transition:.18s ease}.navlink:hover{color:var(--ink)}.header-actions{display:flex;justify-content:flex-end}.btn,.text-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:750;transition:.18s ease}.btn{min-height:48px;padding:13px 20px;border-radius:999px;border:1px solid var(--line-strong);background:transparent;color:var(--ink)}.btn:hover,.text-cta:hover{transform:translateY(-1px);color:var(--ink);border-color:rgba(0,113,227,.34)}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}.btn.dark{background:transparent;color:var(--ink)}.btn.small{min-height:42px;padding:10px 16px;font-size:.93rem}.text-cta{color:var(--blue);font-size:.98rem}.menu-toggle{display:none;width:44px;height:44px;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}.menu-toggle span{display:block;width:19px;height:2px;background:currentColor;position:relative;margin:auto;border-radius:9px}.menu-toggle span:before,.menu-toggle span:after{content:"";position:absolute;left:0;width:19px;height:2px;background:currentColor;border-radius:9px}.menu-toggle span:before{top:-6px}.menu-toggle span:after{top:6px}
-.section{border-top:1px solid var(--line)}.section-pad{padding:76px 64px}.hero{display:grid;grid-template-columns:1fr .86fr;min-height:700px;border-top:0}.hero-copy{padding:86px 64px 54px;display:flex;flex-direction:column;justify-content:space-between}.hero h1{margin-top:28px;font-size:clamp(4.25rem,8.4vw,8rem);line-height:.86;max-width:9.8ch}.hero-lead{margin-top:30px;max-width:640px;color:var(--soft);font-size:1.14rem;line-height:1.75}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:34px}.hero-note{margin-top:28px;color:var(--dim);font-size:.95rem;line-height:1.7}.offer-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:28px;max-width:670px}.offer-strip span{border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.82);padding:13px 14px;color:var(--soft);font-size:.86rem;font-weight:650;line-height:1.35;box-shadow:0 12px 34px rgba(29,29,31,.06)}.offer-strip b{display:block;color:var(--ink);font-size:.92rem;font-weight:850;margin-bottom:2px}.hero-side{border-left:1px solid var(--line);padding:78px 48px 50px;background:linear-gradient(180deg,rgba(0,113,227,.08),rgba(255,255,255,.36));display:flex;flex-direction:column}.side-title{padding-bottom:24px;border-bottom:1px solid var(--line)}.improve-list{display:grid}.improve-item{display:grid;grid-template-columns:32px 1fr;gap:16px;padding:24px 0;border-bottom:1px solid var(--line)}.check{width:24px;height:24px;border-radius:50%;border:1px solid var(--line-strong);display:inline-flex;align-items:center;justify-content:center;color:var(--blue);font-size:.82rem;margin-top:2px}.improve-item h3{font-size:1.02rem;line-height:1.25;margin-bottom:7px}.improve-item p{color:var(--muted);line-height:1.62;font-size:.96rem}
+.section{border-top:1px solid var(--line)}.section-pad{padding:58px 64px}.hero{display:grid;grid-template-columns:1fr .78fr;min-height:560px;border-top:0}.hero-copy{padding:66px 64px 48px;display:flex;flex-direction:column;justify-content:center}.hero h1{margin-top:22px;font-size:clamp(3.85rem,7vw,6.4rem);line-height:.9;max-width:10.8ch}.hero-lead{margin-top:24px;max-width:610px;color:var(--soft);font-size:1.08rem;line-height:1.68}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.hero-note{margin-top:22px;color:var(--dim);font-size:.94rem;line-height:1.65}.offer-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px;max-width:670px}.offer-strip span{border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.82);padding:12px 13px;color:var(--soft);font-size:.84rem;font-weight:650;line-height:1.32;box-shadow:0 12px 34px rgba(29,29,31,.06)}.offer-strip b{display:block;color:var(--ink);font-size:.91rem;font-weight:850;margin-bottom:2px}.hero-side{border-left:1px solid var(--line);padding:54px 42px 42px;background:linear-gradient(180deg,rgba(0,113,227,.08),rgba(255,255,255,.36));display:flex;flex-direction:column}.side-title{padding-bottom:18px;border-bottom:1px solid var(--line)}.improve-list{display:grid}.improve-item{display:grid;grid-template-columns:30px 1fr;gap:14px;padding:18px 0;border-bottom:1px solid var(--line)}.check{width:24px;height:24px;border-radius:50%;border:1px solid var(--line-strong);display:inline-flex;align-items:center;justify-content:center;color:var(--blue);font-size:.82rem;margin-top:2px}.improve-item h3{font-size:1rem;line-height:1.25;margin-bottom:5px}.improve-item p{color:var(--muted);line-height:1.55;font-size:.94rem}
 .visual-card{position:relative;margin-bottom:28px;border:1px solid var(--line);border-radius:28px;overflow:hidden;background:#fff;box-shadow:0 22px 58px rgba(29,29,31,.10)}.visual-card img{display:block;width:100%;height:auto;aspect-ratio:1.58/1;object-fit:cover}.visual-card:after{content:"";position:absolute;inset:0;border-radius:28px;box-shadow:inset 0 1px 0 rgba(255,255,255,.75),inset 0 -34px 70px rgba(255,255,255,.16);pointer-events:none}.visual-caption{position:absolute;left:18px;right:18px;bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;border:1px solid rgba(255,255,255,.74);border-radius:16px;background:rgba(255,255,255,.82);backdrop-filter:blur(14px);color:var(--soft);font-size:.82rem;font-weight:750;line-height:1.25}.visual-caption span:last-child{color:var(--blue)}
-.section-head{max-width:900px}.section-head h2{margin-top:20px;font-size:clamp(2.8rem,5.4vw,5.1rem);line-height:.95}.section-head p{margin-top:22px;color:var(--soft);max-width:780px;font-size:1.08rem;line-height:1.75}.services{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);margin-top:58px}.service-card{padding:38px 34px 42px;min-height:430px;display:flex;flex-direction:column;border-right:1px solid var(--line)}.service-card:last-child{border-right:0}.service-card h3{font:2.05rem/1.06 Lora,Georgia,serif;font-weight:500;letter-spacing:-.04em;margin-top:28px;max-width:12ch}.service-card p{color:var(--muted);margin-top:22px;line-height:1.75}.offer-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px}.offer-meta span{border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,#fff,rgba(0,113,227,.045));padding:12px;color:var(--soft);font-size:.84rem;font-weight:650;line-height:1.3}.offer-meta b{display:block;color:var(--ink);font-size:1rem;font-weight:850;margin-bottom:3px}.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:26px}.pill{border:1px solid var(--line);border-radius:999px;padding:8px 11px;color:var(--soft);font-size:.83rem;background:rgba(0,113,227,.055)}.service-card .text-cta{margin-top:auto;justify-content:flex-start}.image-break{display:grid;grid-template-columns:.94fr 1.06fr;gap:34px;align-items:center;margin-top:50px}.image-break .visual-card{margin-bottom:0}.image-break-copy h3{font:2.05rem/1.08 Lora,Georgia,serif;font-weight:500;letter-spacing:-.045em}.image-break-copy p{margin-top:16px;color:var(--muted);line-height:1.75}.image-break-copy .pills{margin-top:22px}
-.steps-box{margin-top:52px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--panel)}.steps{display:grid;grid-template-columns:repeat(4,1fr)}.step{min-height:260px;padding:32px 28px;border-right:1px solid var(--line)}.step:last-child{border-right:0}.num{font:4.8rem/.82 Lora,Georgia,serif;color:rgba(29,29,31,.12);letter-spacing:-.07em}.step h3{margin-top:42px;font-size:1.12rem;line-height:1.32}.step p{margin-top:12px;color:var(--muted);line-height:1.62;font-size:.95rem}.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}.info-card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:30px}.info-card h3{font-size:1.08rem;margin-bottom:12px}.info-card p{color:var(--muted);line-height:1.72}.audiences{display:grid;grid-template-columns:1fr 1fr}.audience{padding:70px 64px;border-right:1px solid var(--line)}.audience:last-child{border-right:0}.audience h2{margin-top:20px;font-size:clamp(2.25rem,4.2vw,4rem);line-height:1}.audience p{margin-top:24px;color:var(--soft);line-height:1.75}.bullets{display:grid;gap:13px;margin:28px 0 30px;list-style:none}.bullets li{display:flex;gap:10px;color:var(--soft)}.bullets li:before{content:"•";color:var(--blue)}.quote{padding:86px 64px;background:linear-gradient(180deg,rgba(83,58,253,.07),rgba(0,113,227,.05))}.quote-mark{font:7rem/.65 Lora,Georgia,serif;color:rgba(83,58,253,.18)}.quote p{font:clamp(2.25rem,4.2vw,4.35rem)/1.08 Lora,Georgia,serif;font-style:italic;letter-spacing:-.055em;max-width:1060px}.quote cite{display:block;margin-top:28px;color:var(--muted);font-style:normal}.final-cta{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}.final-cta h2{font-size:clamp(3rem,5.4vw,5.25rem);line-height:.98;max-width:11ch}.final-cta p{margin-top:24px;color:var(--soft);max-width:560px;line-height:1.75}.final-buttons{display:grid;gap:14px;max-width:390px;margin-left:auto}
+.section-head{max-width:820px}.section-head h2{margin-top:18px;font-size:clamp(2.45rem,4.6vw,4.35rem);line-height:.98}.section-head p{margin-top:18px;color:var(--soft);max-width:720px;font-size:1.04rem;line-height:1.68}.services{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);margin-top:40px}.service-card{padding:30px 28px 32px;min-height:350px;display:flex;flex-direction:column;border-right:1px solid var(--line)}.service-card:last-child{border-right:0}.service-card h3{font:1.75rem/1.08 Lora,Georgia,serif;font-weight:500;letter-spacing:-.04em;margin-top:22px;max-width:13ch}.service-card p{color:var(--muted);margin-top:16px;line-height:1.62}.offer-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}.offer-meta span{border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,#fff,rgba(0,113,227,.045));padding:11px;color:var(--soft);font-size:.82rem;font-weight:650;line-height:1.3}.offer-meta b{display:block;color:var(--ink);font-size:.95rem;font-weight:850;margin-bottom:3px}.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}.pill{border:1px solid var(--line);border-radius:999px;padding:7px 10px;color:var(--soft);font-size:.81rem;background:rgba(0,113,227,.055)}.service-card .text-cta{margin-top:auto;justify-content:flex-start}
+.steps-box{margin-top:38px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--panel)}.steps{display:grid;grid-template-columns:repeat(4,1fr)}.step{min-height:205px;padding:26px 24px;border-right:1px solid var(--line)}.step:last-child{border-right:0}.num{font:3.8rem/.82 Lora,Georgia,serif;color:rgba(29,29,31,.12);letter-spacing:-.07em}.step h3{margin-top:26px;font-size:1.04rem;line-height:1.3}.step p{margin-top:10px;color:var(--muted);line-height:1.55;font-size:.92rem}.final-cta{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}.final-cta h2{font-size:clamp(2.65rem,4.8vw,4.6rem);line-height:1;max-width:12ch}.final-cta p{margin-top:20px;color:var(--soft);max-width:560px;line-height:1.68}.final-buttons{display:grid;gap:14px;max-width:390px;margin-left:auto}
 footer{background:#eef1f6;border-top:1px solid var(--line);padding:56px 64px 28px}.footer-grid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:48px}.footer-brand{font:1.65rem/1 Lora,Georgia,serif;font-weight:600;letter-spacing:-.04em}.footer-desc{color:var(--muted);margin-top:18px;max-width:330px}.footer-col h3{color:var(--dim);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:17px}.footer-col a{display:block;color:var(--muted);margin:10px 0}.footer-col a:hover{color:var(--ink)}.footer-bottom{border-top:1px solid var(--line);margin-top:46px;padding-top:24px;display:flex;justify-content:space-between;gap:20px;color:var(--muted);font-size:.92rem}.footer-bottom a{color:var(--soft)}
-@media(max-width:980px){header{grid-template-columns:1fr auto}.header-actions{display:none}.menu-toggle{display:block}nav{display:none;position:absolute;left:18px;right:18px;top:78px;padding:14px;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 24px 60px rgba(29,29,31,.16);flex-direction:column;align-items:stretch;gap:4px}nav.open{display:flex}.navlink,.mobile-only{padding:12px;border-radius:12px}.hero,.audiences,.final-cta,.image-break{grid-template-columns:1fr}.hero-side{border-left:0;border-top:1px solid var(--line)}.services,.steps,.card-grid,.footer-grid{grid-template-columns:1fr 1fr}.service-card:nth-child(2){border-right:0}.service-card:nth-child(3){border-top:1px solid var(--line);border-right:0}.step:nth-child(2){border-right:0}.step:nth-child(3),.step:nth-child(4){border-top:1px solid var(--line)}.audience{border-right:0;border-bottom:1px solid var(--line)}.audience:last-child{border-bottom:0}.final-buttons{margin-left:0}.footer-grid{gap:32px}.visual-card{max-width:640px}}
+@media(max-width:980px){header{grid-template-columns:1fr auto}.header-actions{display:none}.menu-toggle{display:block}nav{display:none;position:absolute;left:18px;right:18px;top:78px;padding:14px;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 24px 60px rgba(29,29,31,.16);flex-direction:column;align-items:stretch;gap:4px}nav.open{display:flex}.navlink,.mobile-only{padding:12px;border-radius:12px}.hero,.final-cta{grid-template-columns:1fr}.hero-side{border-left:0;border-top:1px solid var(--line)}.services,.steps,.footer-grid{grid-template-columns:1fr 1fr}.service-card:nth-child(2){border-right:0}.service-card:nth-child(3){border-top:1px solid var(--line);border-right:0}.step:nth-child(2){border-right:0}.step:nth-child(3),.step:nth-child(4){border-top:1px solid var(--line)}.final-buttons{margin-left:0}.footer-grid{gap:32px}.visual-card{max-width:640px}}
 @media(min-width:981px){.mobile-only{display:none!important}}
-@media(max-width:640px){.wrap{padding:8px}.page-frame{border-radius:22px}header{padding:18px}.brand{font-size:1.22rem}.hero-copy,.hero-side,.section-pad,.audience,.quote,footer{padding:42px 24px}.hero h1{font-size:3.55rem;line-height:.92}.hero-lead,.section-head p,.audience p,.final-cta p{font-size:1rem;line-height:1.7}.hero-actions,.final-buttons,.offer-strip,.offer-meta{display:grid;grid-template-columns:1fr}.btn{width:100%}.services,.steps,.card-grid,.footer-grid{grid-template-columns:1fr}.service-card,.service-card:nth-child(2),.service-card:nth-child(3),.step,.step:nth-child(2){border-right:0;border-top:1px solid var(--line)}.service-card:first-child,.step:first-child{border-top:0}.service-card{min-height:auto}.footer-bottom{display:grid}.quote p{font-size:2.05rem;line-height:1.16}.section-head h2,.final-cta h2{font-size:2.75rem;line-height:1.02}.audience h2{line-height:1.04}.visual-card{border-radius:22px;margin-bottom:24px}.visual-card img{aspect-ratio:1.35/1}.visual-card:after{border-radius:22px}.visual-caption{position:static;border-radius:0;border-left:0;border-right:0;border-bottom:0;background:#fff;display:grid}.image-break{margin-top:34px}}
+@media(max-width:640px){.wrap{padding:8px}.page-frame{border-radius:22px}header{padding:18px}.brand{font-size:1.22rem}.hero-copy,.hero-side,.section-pad,footer{padding:34px 24px}.hero h1{font-size:2.9rem;line-height:.98}.hero-lead,.section-head p,.final-cta p{font-size:.98rem;line-height:1.58}.hero-actions,.final-buttons,.offer-strip,.offer-meta{display:grid;grid-template-columns:1fr}.hero-actions{margin-top:22px}.btn{width:100%}.services,.steps,.footer-grid{grid-template-columns:1fr}.service-card,.service-card:nth-child(2),.service-card:nth-child(3),.step,.step:nth-child(2){border-right:0;border-top:1px solid var(--line)}.service-card:first-child,.step:first-child{border-top:0}.service-card{min-height:auto}.footer-bottom{display:grid}.section-head h2,.final-cta h2{font-size:2.55rem;line-height:1.02}.visual-card{border-radius:22px;margin-bottom:22px}.visual-card img{aspect-ratio:1.35/1}.visual-card:after{border-radius:22px}.visual-caption{position:static;border-radius:0;border-left:0;border-right:0;border-bottom:0;background:#fff;display:grid}}
 </style>
 </head>
 <body>
@@ -30,7 +30,6 @@ footer{background:#eef1f6;border-top:1px solid var(--line);padding:56px 64px 28p
         <a class="navlink" href="#services">Services</a>
         <a class="navlink" href="#process">How it works</a>
         <a class="navlink" href="listing-rescue.html">Listing Rescue</a>
-        <a class="navlink" href="blog.html">Blog</a>
         <a class="navlink" href="about.html">About</a>
         <a class="navlink" href="faq.html">FAQ</a>
       </nav>
@@ -42,120 +41,79 @@ footer{background:#eef1f6;border-top:1px solid var(--line);padding:56px 64px 28p
         <div class="hero-copy">
           <div>
             <span class="eyebrow">Amazon & eBay account management</span>
-            <h1 class="serif">Stop leaving money on Amazon and <span class="italic">eBay.</span></h1>
-            <p class="hero-lead">MyCommercePartner gives product brands a hands-on marketplace team for listings, content, account health, and weekly improvement reporting — so your store looks stronger, reads clearer, and gets managed with more consistency.</p>
+            <h1 class="serif">Clean up your Amazon and <span class="italic">eBay</span> presence.</h1>
+            <p class="hero-lead">Hands-on marketplace support for product brands that need stronger listings, cleaner content, account-health attention, and clear weekly progress.</p>
             <div class="hero-actions">
               <a class="btn primary" href="contact.html?interest=Free%20Listing%20Audit">Get a free listing audit</a>
-              <a class="btn dark" href="#services">See account support</a>
+              <a class="btn dark" href="listing-rescue.html">See Listing Rescue</a>
             </div>
             <div class="offer-strip" aria-label="Marketplace support highlights">
-              <span><b>Amazon + eBay</b>Listing, content, and store cleanup</span>
-              <span><b>Hands-on team</b>Review, edits, and senior oversight</span>
-              <span><b>Weekly reporting</b>Clear updates on what improved next</span>
+              <span><b>Free audit</b>Start with 1–3 listings</span>
+              <span><b>Fast fixes</b>Listing Rescue sprint available</span>
+              <span><b>Ongoing help</b>Weekly support when needed</span>
             </div>
-            <p class="hero-note">Built for product brands that have outgrown doing every marketplace task alone, but are not ready for a bloated agency contract.</p>
+            <p class="hero-note">Built for brands that want a practical team path without starting with a bloated agency contract.</p>
           </div>
         </div>
         <aside class="hero-side" aria-label="What our marketplace team handles">
           <div class="visual-card"><img src="assets/home-commerce-visual.svg" alt="Illustration of marketplace performance cards, listing checks, and reporting charts" loading="eager"><div class="visual-caption"><span>Marketplace account review</span><span>Listings → content → reporting</span></div></div>
-          <div class="side-title"><span class="eyebrow">What our team handles</span></div>
+          <div class="side-title"><span class="eyebrow">What we improve first</span></div>
           <div class="improve-list">
-            <div class="improve-item"><span class="check">✓</span><div><h3>Listing clarity</h3><p>Improve titles, bullets, descriptions, and product details so buyers understand the value faster.</p></div></div>
-            <div class="improve-item"><span class="check">✓</span><div><h3>Marketplace content</h3><p>Strengthen brand details, comparison points, feature callouts, and product-page structure.</p></div></div>
-            <div class="improve-item"><span class="check">✓</span><div><h3>Account-health review</h3><p>Keep attention on visible issues, stale listings, weak pages, and marketplace friction before they pile up.</p></div></div>
-            <div class="improve-item"><span class="check">✓</span><div><h3>Weekly action snapshots</h3><p>Get plain-English updates on what was reviewed, what changed, and what should happen next.</p></div></div>
-            <div class="improve-item"><span class="check">✓</span><div><h3>Founder workload relief</h3><p>Hand off repeat marketplace cleanup work while keeping final decisions clear and easy to review.</p></div></div>
+            <div class="improve-item"><span class="check">✓</span><div><h3>Listing clarity</h3><p>Sharper titles, bullets, descriptions, and product details.</p></div></div>
+            <div class="improve-item"><span class="check">✓</span><div><h3>Buyer confidence</h3><p>Cleaner proof points, feature callouts, and page structure.</p></div></div>
+            <div class="improve-item"><span class="check">✓</span><div><h3>Weekly visibility</h3><p>Plain-English notes on what changed and what needs attention next.</p></div></div>
           </div>
         </aside>
       </section>
 
       <section class="section section-pad" id="services">
         <div class="section-head">
-          <span class="eyebrow">Marketplace support paths</span>
-          <h2 class="serif">A practical team behind your Amazon and eBay <span class="italic">presence.</span></h2>
-          <p>Start free, fix the highest-impact listings, then keep marketplace improvements moving weekly when your account needs ongoing attention.</p>
+          <span class="eyebrow">Choose the right starting point</span>
+          <h2 class="serif">Three clear ways to get marketplace help.</h2>
+          <p>Start with a free audit, move into a focused cleanup sprint, or keep improvements moving with managed support.</p>
         </div>
         <div class="services">
           <article class="service-card">
             <span class="eyebrow">01 — Free Listing Audit</span>
-            <h3>Find the fastest marketplace cleanup opportunities.</h3>
-            <p>Our team reviews a small sample of your Amazon or eBay presence and flags the highest-impact issues in listings, content, trust signals, and buyer clarity.</p>
+            <h3>Find the fastest cleanup opportunities.</h3>
+            <p>We review a small sample of your marketplace presence and flag the issues most likely to confuse buyers or weaken trust.</p>
             <div class="offer-meta"><span><b>Free</b>1–3 listings reviewed</span><span><b>Fast start</b>Send links first</span></div>
             <div class="pills"><span class="pill">Listing review</span><span class="pill">Content gaps</span><span class="pill">Quick wins</span></div>
             <a class="text-cta" href="contact.html?interest=Free%20Listing%20Audit">Request the free audit →</a>
           </article>
           <article class="service-card">
-            <span class="eyebrow">02 — Listing Optimization Sprint</span>
-            <h3>Get a focused cleanup pass without a long contract.</h3>
-            <p>A short, structured sprint for brands that need sharper titles, bullets, descriptions, feature callouts, product-page copy, and cleaner marketplace pages.</p>
+            <span class="eyebrow">02 — Listing Rescue</span>
+            <h3>Fix weak listings without a long contract.</h3>
+            <p>A short, structured cleanup for brands that need sharper titles, bullets, descriptions, feature callouts, and product-page copy.</p>
             <div class="offer-meta"><span><b>$1,500–$2,500</b>Flat project range</span><span><b>5 business days</b>After materials arrive</span></div>
             <div class="pills"><span class="pill">Amazon pages</span><span class="pill">eBay listings</span><span class="pill">Content polish</span></div>
-            <a class="text-cta" href="contact.html?interest=Listing%20Optimization%20Sprint">Ask about the sprint →</a>
+            <a class="text-cta" href="listing-rescue.html">See Listing Rescue →</a>
           </article>
           <article class="service-card">
             <span class="eyebrow">03 — Managed Support</span>
-            <h3>Keep listings and account priorities moving every week.</h3>
-            <p>For brands that want ongoing help with listing updates, content improvements, account-health review, reporting, and marketplace task follow-through.</p>
+            <h3>Keep account priorities moving every week.</h3>
+            <p>For brands that want ongoing help with listing updates, content improvements, account-health review, reporting, and task follow-through.</p>
             <div class="offer-meta"><span><b>$1,500–$2,500/mo</b>Starting range</span><span><b>Weekly</b>Work queue and report</span></div>
             <div class="pills"><span class="pill">Weekly review</span><span class="pill">Account health</span><span class="pill">Ongoing support</span></div>
             <a class="text-cta" href="contact.html?interest=Managed%20Marketplace%20Support">Ask about managed support →</a>
           </article>
-        </div>
-        <div class="image-break">
-          <div class="image-break-copy"><span class="eyebrow">Built for brands with too much marketplace work</span><h3>Listings, content, and account details need regular attention — not occasional panic fixes.</h3><p>Our team gives your marketplace presence a repeatable review rhythm, so the next fix is easier to see and the work does not sit untouched for months.</p><div class="pills"><span class="pill">Listing cleanup</span><span class="pill">Content review</span><span class="pill">Weekly priorities</span></div></div>
-          <div class="visual-card"><img src="assets/home-buyer-path-visual.svg" alt="Illustration of marketplace review cards moving from listing gaps to weekly action steps" loading="lazy"><div class="visual-caption"><span>Weekly marketplace rhythm</span><span>Review → improve → report</span></div></div>
         </div>
       </section>
 
       <section class="section section-pad" id="process">
         <div class="section-head">
           <span class="eyebrow">How it works</span>
-          <h2 class="serif">A clear review process before deeper <span class="italic">commitments.</span></h2>
-          <p>We keep the path simple: review the current marketplace presence, identify the highest-value fixes, complete the agreed cleanup, and report what changed.</p>
+          <h2 class="serif">A simple path from review to action.</h2>
+          <p>We keep the next step clear, whether you only need audit notes or want a team helping weekly.</p>
         </div>
         <div class="steps-box">
           <div class="steps">
-            <article class="step"><div class="num">01</div><h3>Review your marketplace presence</h3><p>Share your Amazon or eBay store, listings, or product pages so our team can inspect what buyers see.</p></article>
-            <article class="step"><div class="num">02</div><h3>Prioritize the highest-impact fixes</h3><p>We separate urgent listing/content problems from lower-priority nice-to-have changes.</p></article>
-            <article class="step"><div class="num">03</div><h3>Complete the cleanup work</h3><p>Our team prepares stronger marketplace copy, content updates, listing improvements, and account notes.</p></article>
-            <article class="step"><div class="num">04</div><h3>Report what changed next</h3><p>You get a plain-English snapshot of completed work, open items, and the clearest next moves.</p></article>
+            <article class="step"><div class="num">01</div><h3>Send your listing links</h3><p>Share the Amazon or eBay pages you want reviewed.</p></article>
+            <article class="step"><div class="num">02</div><h3>Get the priority list</h3><p>We point out the clearest issues and quick wins.</p></article>
+            <article class="step"><div class="num">03</div><h3>Fix or manage the work</h3><p>Choose Listing Rescue for a focused cleanup or managed support for weekly help.</p></article>
+            <article class="step"><div class="num">04</div><h3>Review the progress</h3><p>You get plain-English notes on changes, open items, and next moves.</p></article>
           </div>
         </div>
-      </section>
-
-      <section class="section section-pad" id="why">
-        <div class="section-head">
-          <span class="eyebrow">Why brands use us</span>
-          <h2 class="serif">Marketplace growth gets harder when every detail depends on the <span class="italic">founder.</span></h2>
-        </div>
-        <div class="card-grid">
-          <article class="info-card"><h3>Less scattered marketplace work</h3><p>Turn random listing edits, account-health worries, and content tasks into a steadier review process.</p></article>
-          <article class="info-card"><h3>Better buyer confidence</h3><p>Improve the product information, proof points, and listing structure buyers use before they decide.</p></article>
-          <article class="info-card"><h3>Clearer weekly visibility</h3><p>Know what was worked on, what still needs attention, and where the next marketplace opportunity sits.</p></article>
-        </div>
-      </section>
-
-      <section class="section audiences" id="audiences">
-        <article class="audience">
-          <span class="eyebrow">For product brands</span>
-          <h2 class="serif">Your marketplace pages should look as serious as your products.</h2>
-          <p>If your product quality is stronger than your listings, content, or store pages, our team helps close that gap with cleaner copy and a more organized marketplace presence.</p>
-          <ul class="bullets"><li>Amazon and eBay listing cleanup</li><li>Product-page copy and content planning</li><li>Review notes written in plain English</li></ul>
-          <a class="text-cta" href="contact.html?interest=Free%20Listing%20Audit">Start with a free audit →</a>
-        </article>
-        <article class="audience">
-          <span class="eyebrow">For overloaded operators</span>
-          <h2 class="serif">You should not be the only person pushing marketplace tasks forward.</h2>
-          <p>When listing cleanup, account review, and weekly marketplace improvements keep getting delayed, MyCommercePartner gives you a team-supported execution rhythm.</p>
-          <ul class="bullets"><li>Senior review on priorities</li><li>Hands-on listing and content support</li><li>Weekly improvement snapshots</li></ul>
-          <a class="text-cta" href="contact.html?interest=Managed%20Marketplace%20Support">Discuss managed support →</a>
-        </article>
-      </section>
-
-      <section class="section quote" aria-label="MyCommercePartner approach">
-        <div class="quote-mark">“</div>
-        <p>Most marketplace accounts do not fail from one big mistake. They leak sales through unclear listings, stale content, weak product pages, and account details nobody has time to manage.</p>
-        <cite>— MyCommercePartner marketplace management approach</cite>
       </section>
 
       <section class="section section-pad final-cta">
