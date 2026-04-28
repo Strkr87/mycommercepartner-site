@@ -22,6 +22,22 @@ const WEBSITE_REVIEW_PACKAGES = {
   }
 };
 
+const MISSED_LEAD_PACKAGES = {
+  setup: {
+    label: 'Missed Lead Recovery Setup',
+    amount: 99700,
+    mode: 'payment',
+    description: 'One-time setup for missed-call response planning, form follow-up messages, booking/review flow cleanup, and launch support.'
+  },
+  managed: {
+    label: 'Managed Follow-Up',
+    amount: 49700,
+    mode: 'subscription',
+    interval: 'month',
+    description: 'Monthly support to keep follow-up messages, review requests, reporting, and small customer-response path fixes improving.'
+  }
+};
+
 function cleanPageUrl(value) {
   const raw = String(value || '').trim();
   if (!raw) return '';
@@ -32,6 +48,15 @@ function cleanPageUrl(value) {
   } catch (_) {
     return '';
   }
+}
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 async function startWebsiteReviewCheckout(req, res) {
@@ -78,6 +103,61 @@ async function startWebsiteReviewCheckout(req, res) {
   res.status(200).json({ url: data.url });
 }
 
+
+async function startMissedLeadCheckout(req, res) {
+  if (!STRIPE_SECRET_KEY) {
+    res.status(503).json({ error: 'Payments are not configured' });
+    return;
+  }
+
+  const { package: packageKey = '', origin = '' } = req.body || {};
+  const key = String(packageKey || '').toLowerCase();
+  const offer = MISSED_LEAD_PACKAGES[key];
+  const sitePage = cleanPageUrl(origin);
+
+  if (!offer) {
+    res.status(400).json({ error: 'Unknown missed lead package' });
+    return;
+  }
+  if (!sitePage) {
+    res.status(400).json({ error: 'Missing site origin' });
+    return;
+  }
+
+  const payload = {
+    mode: offer.mode,
+    success_url: `${sitePage}?checkout=success&offer=${encodeURIComponent(key)}&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${sitePage}?checkout=cancelled&offer=${encodeURIComponent(key)}`,
+    'phone_number_collection[enabled]': 'true',
+    'line_items[0][price_data][currency]': 'usd',
+    'line_items[0][price_data][product_data][name]': `MyCommercePartner ${offer.label}`,
+    'line_items[0][price_data][product_data][description]': offer.description,
+    'line_items[0][price_data][unit_amount]': String(offer.amount),
+    'line_items[0][quantity]': '1',
+    'metadata[kind]': 'missed_lead_recovery',
+    'metadata[package]': key,
+    'metadata[package_label]': offer.label
+  };
+
+  if (offer.mode === 'payment') {
+    payload.customer_creation = 'always';
+  }
+  if (offer.mode === 'subscription') {
+    payload['line_items[0][price_data][recurring][interval]'] = offer.interval || 'month';
+    payload['subscription_data[metadata][kind]'] = 'missed_lead_recovery';
+    payload['subscription_data[metadata][package]'] = key;
+  }
+
+  const { response, data } = await stripeRequest('/v1/checkout/sessions', payload);
+
+  if (!response.ok || !data?.url) {
+    res.status(response.status || 400).json({ error: data?.error?.message || 'Unable to start checkout' });
+    return;
+  }
+
+  res.status(200).json({ url: data.url });
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
@@ -89,7 +169,12 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const { name = '', email = '', message = '' } = req.body || {};
+  if (req.body?.action === 'missed-lead-checkout') {
+    await startMissedLeadCheckout(req, res);
+    return;
+  }
+
+  const { name = '', email = '', siteUrl = '', package: packageInterest = '', message = '' } = req.body || {};
   if (!name.trim() || !email.trim() || !message.trim()) {
     res.status(400).json({ error: 'Name, email, and message are required' });
     return;
@@ -98,6 +183,17 @@ module.exports = async (req, res) => {
     res.status(400).json({ error: 'Message too long' });
     return;
   }
+
+  const safeName = name.trim();
+  const safeEmail = email.trim();
+  const safeSiteUrl = siteUrl.trim();
+  const safePackageInterest = packageInterest.trim() || 'Not sure yet';
+  const safeMessage = message.trim();
+  const safeNameHtml = escapeHtml(safeName);
+  const safeEmailHtml = escapeHtml(safeEmail);
+  const safeSiteUrlHtml = escapeHtml(safeSiteUrl);
+  const safePackageInterestHtml = escapeHtml(safePackageInterest);
+  const safeMessageHtml = escapeHtml(safeMessage);
 
   if (!RESEND_API_KEY) {
     res.status(500).json({ error: 'Email not configured' });
@@ -112,15 +208,17 @@ module.exports = async (req, res) => {
       body: JSON.stringify({
         from: FROM_EMAIL,
         to: NOTIFY_EMAIL,
-        reply_to: email.trim(),
-        subject: `New contact form message from ${name.trim()}`,
+        reply_to: safeEmail,
+        subject: `New website review request from ${safeName}`,
         html: `<div style="font-family:sans-serif;max-width:600px;margin:40px auto;background:#fff;padding:32px;border-radius:12px;border:1px solid #e2e8f0">
-          <h2 style="margin:0 0 20px;color:#1a1a2e">New contact message</h2>
-          <p><strong>Name:</strong> ${name.trim()}</p>
-          <p><strong>Email:</strong> <a href="mailto:${email.trim()}">${email.trim()}</a></p>
-          <p><strong>Message:</strong></p>
-          <div style="background:#f7f8ff;border-left:4px solid #4f46e5;border-radius:6px;padding:16px 20px;white-space:pre-wrap">${message.trim().replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-          <p style="margin-top:20px;font-size:13px;color:#a0aec0">Reply directly to this email to respond to ${name.trim()}.</p>
+          <h2 style="margin:0 0 20px;color:#1a1a2e">New website review request</h2>
+          <p><strong>Name:</strong> ${safeNameHtml}</p>
+          <p><strong>Email:</strong> <a href="mailto:${safeEmailHtml}">${safeEmailHtml}</a></p>
+          <p><strong>Website URL:</strong> ${safeSiteUrl ? `<a href="${safeSiteUrlHtml}">${safeSiteUrlHtml}</a>` : 'Not provided'}</p>
+          <p><strong>Package interest:</strong> ${safePackageInterestHtml}</p>
+          <p><strong>What they want improved:</strong></p>
+          <div style="background:#f7f8ff;border-left:4px solid #4f46e5;border-radius:6px;padding:16px 20px;white-space:pre-wrap">${safeMessageHtml}</div>
+          <p style="margin-top:20px;font-size:13px;color:#a0aec0">Reply directly to this email to respond to ${safeNameHtml}.</p>
         </div>`
       })
     });
@@ -131,7 +229,7 @@ module.exports = async (req, res) => {
       headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         from: FROM_EMAIL,
-        to: email.trim(),
+        to: safeEmail,
         subject: "Got your site review request — we'll follow up within 24 hours",
         html: `<!DOCTYPE html>
 <html>
@@ -153,7 +251,7 @@ module.exports = async (req, res) => {
   <div class="w">
     <div class="h"><h1>MyCommercePartner</h1></div>
     <div class="b">
-      <h2>Thanks, ${name.trim().split(' ')[0]}!</h2>
+      <h2>Thanks, ${escapeHtml(safeName.split(' ')[0])}!</h2>
       <p>We got your site review request and will follow up within 24 hours with the clearest next step.</p>
       <p>If a Basic Upgrade is enough, we’ll recommend that instead of pushing you into a bigger package.</p>
       <p>If you need to add anything before we reply, just respond to this email.</p>
