@@ -60,6 +60,19 @@ const MISSED_LEAD_PACKAGES = {
   }
 };
 
+const MARKETPLACE_AUDIT_PACKAGES = {
+  intro: {
+    label: 'Marketplace Listing Audit — Intro',
+    amount: 9700,
+    description: 'Focused review for 1–3 Amazon or eBay listings with priority fixes and next-step recommendations.'
+  },
+  standard: {
+    label: 'Marketplace Listing Audit — Standard',
+    amount: 19700,
+    description: 'Expanded review for priority marketplace listings with title, detail, buyer-confidence, and cleanup recommendations.'
+  }
+};
+
 function cleanPageUrl(value) {
   const raw = String(value || '').trim();
   if (!raw) return '';
@@ -195,6 +208,55 @@ async function startMissedLeadCheckout(req, res) {
   res.status(200).json({ url: data.url });
 }
 
+async function startMarketplaceAuditCheckout(req, res) {
+  if (!STRIPE_SECRET_KEY) {
+    res.status(503).json({ error: 'Payments are not configured' });
+    return;
+  }
+
+  const { package: packageKey = '', origin = '', email = '' } = req.body || {};
+  const key = String(packageKey || '').toLowerCase();
+  const offer = MARKETPLACE_AUDIT_PACKAGES[key];
+  const sitePage = cleanPageUrl(origin);
+
+  if (!offer) {
+    res.status(400).json({ error: 'Unknown marketplace audit package' });
+    return;
+  }
+  if (!sitePage) {
+    res.status(400).json({ error: 'Missing site origin' });
+    return;
+  }
+
+  const payload = {
+    mode: 'payment',
+    success_url: `${sitePage}?checkout=success&audit=${encodeURIComponent(key)}&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${sitePage}?checkout=cancelled&audit=${encodeURIComponent(key)}`,
+    customer_creation: 'always',
+    'phone_number_collection[enabled]': 'true',
+    'line_items[0][price_data][currency]': 'usd',
+    'line_items[0][price_data][product_data][name]': `MyCommercePartner ${offer.label}`,
+    'line_items[0][price_data][product_data][description]': offer.description,
+    'line_items[0][price_data][unit_amount]': String(offer.amount),
+    'line_items[0][quantity]': '1',
+    'metadata[kind]': 'marketplace_listing_audit',
+    'metadata[package]': key,
+    'metadata[package_label]': offer.label
+  };
+
+  const customerEmail = String(email || '').trim();
+  if (customerEmail) payload.customer_email = customerEmail;
+
+  const { response, data } = await stripeRequest('/v1/checkout/sessions', payload);
+
+  if (!response.ok || !data?.url) {
+    res.status(response.status || 400).json({ error: data?.error?.message || 'Unable to start checkout' });
+    return;
+  }
+
+  res.status(200).json({ url: data.url });
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
@@ -208,6 +270,11 @@ module.exports = async (req, res) => {
 
   if (req.body?.action === 'missed-lead-checkout') {
     await startMissedLeadCheckout(req, res);
+    return;
+  }
+
+  if (req.body?.action === 'marketplace-audit-checkout') {
+    await startMarketplaceAuditCheckout(req, res);
     return;
   }
 
