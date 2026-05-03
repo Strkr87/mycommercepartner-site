@@ -153,8 +153,10 @@
     .case-left p { color:rgba(255,250,240,.72); font-size:18px; line-height:1.7; }
     .case-right { padding: 34px; background: var(--cream); }
     .comparison { display:grid; gap: 12px; }
-    .row { display:grid; grid-template-columns: 1fr 120px 120px 120px; gap: 12px; align-items:center; padding: 16px; background:#fffaf0; border-radius:18px; border:1px solid rgba(16,32,51,.08); font-weight: 800; }
-    .row small { color:#6f7c86; font-weight:800; text-transform:uppercase; letter-spacing:.1em; }
+    .row { display:grid; grid-template-columns: 1fr 1.1fr 1.1fr 1.1fr; gap: 12px; align-items:center; padding: 16px; background:#fffaf0; border-radius:18px; border:1px solid rgba(16,32,51,.08); font-weight: 700; }
+    .row span { line-height:1.35; }
+    .row span:first-child { font-weight: 850; }
+    .row small { color:#6f7c86; font-weight:800; text-transform:uppercase; letter-spacing:.08em; line-height:1.3; }
     .after { color:#12844a; }
     .cta-section { padding: 90px 0; background: linear-gradient(155deg, #071b2d, #0d304b); color: var(--paper); }
     .cta-box { display:grid; grid-template-columns: .9fr 1.1fr; gap: 42px; align-items:center; border:1px solid var(--line); border-radius:34px; padding: 38px; background: rgba(255,255,255,.055); box-shadow: var(--shadow); }
@@ -316,17 +318,17 @@
     <div class="wrap">
       <div class="case-card">
         <div class="case-left">
-          <div class="section-kicker" style="color:#b7f4cb">Example review output</div>
-          <h2>Before the review. After the priority map.</h2>
-          <p>See how a review turns vague marketplace issues into a ranked action plan your team can understand, approve, and move into execution.</p>
+          <div class="section-kicker" style="color:#b7f4cb">Example client output</div>
+          <h2>A simple action plan your team can follow.</h2>
+          <p>The review shows what is hurting buyer confidence, what to fix first, and what each fix should help improve.</p>
         </div>
         <div class="case-right">
           <div class="comparison">
-            <div class="row"><small>Area</small><small>Before</small><small>After</small><small>Delta</small></div>
-            <div class="row"><span>Listing clarity</span><span>Mixed</span><span class="after">Focused</span><span class="after">Improved</span></div>
-            <div class="row"><span>Image story</span><span>Feature-led</span><span class="after">Benefit-led</span><span class="after">Sharper</span></div>
-            <div class="row"><span>Fix plan</span><span>Unclear</span><span class="after">Ranked</span><span class="after">Actionable</span></div>
-            <div class="row"><span>Next step</span><span>Guessing</span><span class="after">Sprint-ready</span><span class="after">Clear</span></div>
+            <div class="row"><small>Review area</small><small>What we may find</small><small>Recommended fix</small><small>Client takeaway</small></div>
+            <div class="row"><span>Listing message</span><span>Unclear main value</span><span>Rewrite the title and bullets</span><span>Buyers understand it faster</span></div>
+            <div class="row"><span>Product photos</span><span>Features shown, benefits missing</span><span>Add clearer use-case images</span><span>The product feels easier to choose</span></div>
+            <div class="row"><span>Buyer confidence</span><span>Proof is hard to see</span><span>Show reviews or brand proof sooner</span><span>Fewer doubts before checkout</span></div>
+            <div class="row"><span>Next step</span><span>Too many possible fixes</span><span>Rank fixes by priority</span><span>The team knows what to do first</span></div>
           </div>
         </div>
       </div>
