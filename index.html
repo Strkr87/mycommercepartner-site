@@ -112,8 +112,9 @@
     .issue-list li { display:flex; gap:10px; align-items:flex-start; padding: 12px; border-radius: 14px; background:#fff6e5; color:#423119; font-weight:700; font-size:13px; }
     .dot { width:10px; height:10px; flex:0 0 10px; border-radius:50%; background:var(--gold); margin-top:4px; }
     .ticker { background: #061829; border-block: 1px solid rgba(255,255,255,.08); overflow:hidden; }
-    .ticker-track { width:min(1180px, calc(100% - 40px)); margin:0 auto; display:flex; justify-content:center; flex-wrap:wrap; gap:14px 28px; padding: 18px 0; color: rgba(255,250,240,.72); font-size: 12px; text-transform: uppercase; letter-spacing:.16em; font-weight:900; }
-    .ticker span { white-space:nowrap; }
+    .ticker-track { width:min(1180px, calc(100% - 40px)); margin:0 auto; display:flex; justify-content:center; flex-wrap:wrap; gap:14px 20px; padding: 18px 0; color: rgba(255,250,240,.72); font-size: 12px; text-transform: uppercase; letter-spacing:.16em; font-weight:900; }
+    .ticker-link { color: rgba(255,250,240,.74); text-decoration:none; white-space:nowrap; border-bottom:1px solid transparent; transition: color .18s ease, border-color .18s ease; }
+    .ticker-link:hover, .ticker-link:focus-visible { color: var(--paper); border-color: var(--green); outline:none; }
     section { background: var(--cream); color: var(--ink); }
     .wrap { width:min(1180px, calc(100% - 40px)); margin:0 auto; }
     .proof { padding: 86px 0 64px; }
@@ -257,7 +258,7 @@
     </div>
   </header>
 
-  <div class="ticker"><div class="ticker-track"><span>Amazon listing review</span><span>eBay growth map</span><span>A+ content gaps</span><span>Search clarity</span><span>Conversion blockers</span><span>Priority fix order</span></div></div>
+  <nav class="ticker" aria-label="Marketplace review topics"><div class="ticker-track"><a class="ticker-link" href="free-marketplace-review.html">Amazon listing review</a><a class="ticker-link" href="marketplace-listing-audit.html">eBay growth map</a><a class="ticker-link" href="#proof">A+ content gaps</a><a class="ticker-link" href="#method">Search clarity</a><a class="ticker-link" href="#case">Conversion blockers</a><a class="ticker-link" href="#audit">Priority fix order</a></div></nav>
 
   <section class="proof" id="proof">
     <div class="wrap">
