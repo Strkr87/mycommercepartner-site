@@ -125,6 +125,19 @@
     .stat.big strong { font-size: 74px; }
     .stat strong { font-family:"Source Serif 4", Georgia, serif; font-size: 54px; line-height:1; letter-spacing:-.055em; display:block; }
     .stat p { margin: 12px 0 0; color:#60707e; font-weight: 650; }
+    .offers { padding: 86px 0 72px; background: #fffaf0; }
+    .offer-path { display:grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 32px; }
+    .path-card { position:relative; border:1px solid rgba(16,32,51,.1); background: linear-gradient(180deg,#ffffff,#fffaf0); border-radius: 24px; padding: 22px; min-height: 180px; box-shadow: 0 18px 45px rgba(16,32,51,.06); }
+    .path-card:after { content:""; position:absolute; top:34px; right:-13px; width:24px; height:2px; background: rgba(18,132,74,.34); }
+    .path-card:last-child:after { display:none; }
+    .path-card small { display:inline-flex; color:#12844a; background:#e4f8ec; border:1px solid rgba(18,132,74,.16); padding: 6px 9px; border-radius:999px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }
+    .path-card h3 { font-family:"Source Serif 4", Georgia, serif; font-size: 30px; line-height:1; letter-spacing:-.04em; margin: 18px 0 10px; }
+    .path-card p { margin:0; color:#60707e; }
+    .offer-grid { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
+    .offer-card { display:grid; grid-template-columns: 1fr auto; gap: 18px; align-items:center; border:1px solid rgba(16,32,51,.1); background:#f7f1e7; border-radius: 26px; padding: 22px; }
+    .offer-card h3 { font-family:"Source Serif 4", Georgia, serif; font-size: 30px; line-height:1; letter-spacing:-.04em; margin:0 0 8px; }
+    .offer-card p { margin:0; color:#60707e; }
+    .offer-link { white-space:nowrap; color:#03190d; background:var(--green); padding: 12px 15px; border-radius:999px; font-size:13px; font-weight:900; box-shadow:0 14px 30px rgba(47,196,111,.18); }
     .method { padding: 34px 0 86px; }
     .steps { margin-top: 34px; display:grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
     .step { border:1px solid rgba(16,32,51,.1); background:#fffaf0; border-radius: 26px; padding: 24px; min-height: 270px; }
@@ -157,7 +170,10 @@
       .hero-inner, .split-title, .case-card, .cta-box { grid-template-columns: 1fr; }
       .hero { padding-top: 34px; }
       .audit-panel { transform: none; }
-      .qualification, .stat-wall, .steps, .footer-grid { grid-template-columns: 1fr; }
+      .qualification, .stat-wall, .steps, .footer-grid, .offer-path, .offer-grid { grid-template-columns: 1fr; }
+      .offer-card { grid-template-columns: 1fr; }
+      .offer-link { justify-content:center; text-align:center; }
+      .path-card:after { display:none; }
       .row { grid-template-columns: 1fr; }
       .footer-bottom { display:grid; }
       h1 { font-size: 56px; }
@@ -170,10 +186,11 @@
     <nav class="nav">
       <a class="brand" href="index.html" aria-label="MyCommercePartner home"><span class="mark">M</span><span>MyCommercePartner</span></a>
       <div class="links">
+        <a href="#offers">Offers</a>
         <a href="#method">Approach</a>
         <a href="#proof">Proof</a>
         <a href="#case">Example Review</a>
-        <a class="nav-cta" href="#audit">Request Review</a>
+        <a class="nav-cta" href="free-marketplace-review.html">Request Review</a>
       </div>
     </nav>
 
@@ -229,6 +246,28 @@
         <div class="stat big"><strong>1–3</strong><p>Product pages reviewed first so prospects can experience the value before a bigger audit.</p></div>
         <div class="stat"><strong>5</strong><p>Highest-priority fixes surfaced in a simple action order.</p></div>
         <div class="stat"><strong>3</strong><p>Paths after review: audit, listing sprint, or monthly management.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="offers" id="offers">
+    <div class="wrap">
+      <div class="section-kicker">Marketplace growth offers</div>
+      <div class="split-title">
+        <h2>Start with the right level of help, then move into execution.</h2>
+        <p>Choose the path that fits the account: a free first look, a deeper audit, a focused listing sprint, or ongoing monthly management.</p>
+      </div>
+      <div class="offer-path" aria-label="Marketplace growth path">
+        <article class="path-card"><small>01</small><h3>Free Growth Review</h3><p>Send 1–3 marketplace links and get the clearest visible opportunities first.</p></article>
+        <article class="path-card"><small>02</small><h3>Marketplace Growth Audit</h3><p>Use the deeper audit when the account needs a sharper priority map.</p></article>
+        <article class="path-card"><small>03</small><h3>5-Day Listing Sprint</h3><p>Turn approved listing priorities into focused title, content, and detail improvements.</p></article>
+        <article class="path-card"><small>04</small><h3>Monthly Management</h3><p>Bring MCP in as the ongoing Amazon and eBay marketplace growth team.</p></article>
+      </div>
+      <div class="offer-grid">
+        <article class="offer-card"><div><h3>Free Marketplace Growth Review</h3><p>A simple first step for brands that want to see what is holding key listings back.</p></div><a class="offer-link" href="free-marketplace-review.html">Open page →</a></article>
+        <article class="offer-card"><div><h3>Marketplace Growth Audit</h3><p>A deeper diagnosis for marketplace accounts that need a clearer action plan.</p></div><a class="offer-link" href="marketplace-listing-audit.html">Open page →</a></article>
+        <article class="offer-card"><div><h3>5-day Listing Optimization Sprint</h3><p>A focused service path for cleaning up priority Amazon or eBay listings quickly.</p></div><a class="offer-link" href="contact.html?interest=5-day%20Listing%20Optimization%20Sprint">Discuss sprint →</a></article>
+        <article class="offer-card"><div><h3>Monthly Management</h3><p>Ongoing marketplace support for brands that need steady execution and reporting.</p></div><a class="offer-link" href="contact.html?interest=Monthly%20Amazon%20eBay%20Growth%20Management">Ask about monthly →</a></article>
       </div>
     </div>
   </section>
