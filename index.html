@@ -81,8 +81,8 @@
     .hero-inner { position: relative; z-index: 1; width: min(1180px, calc(100% - 40px)); margin: 0 auto; display: grid; grid-template-columns: 1.02fr .98fr; gap: 60px; align-items: center; }
     .eyebrow { display: inline-flex; align-items: center; gap: 10px; color: #b7f4cb; font-size: 12px; text-transform: uppercase; letter-spacing: .16em; font-weight: 900; }
     .eyebrow:before { content: ""; width: 8px; height: 8px; border-radius: 999px; background: var(--green); box-shadow: 0 0 0 8px rgba(47,196,111,.14); }
-    h1 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(54px, 7.6vw, 94px); line-height: .86; letter-spacing: -.065em; margin: 24px 0 26px; max-width: 760px; }
-    h1 em { color: var(--gold); font-style: italic; font-weight: 650; }
+    h1 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(54px, 7.6vw, 94px); line-height: .92; letter-spacing: -.055em; margin: 24px 0 26px; max-width: 760px; }
+    h1 em { color: var(--gold); font-style: italic; font-weight: 650; padding-right: .08em; }
     .subhead { font-size: 19px; line-height: 1.7; color: rgba(255,250,240,.78); max-width: 620px; margin: 0 0 34px; }
     .cta-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
     .btn { border: 0; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; border-radius: 999px; padding: 16px 22px; font-weight: 900; letter-spacing: -.01em; transition: transform .18s ease, box-shadow .18s ease, background .18s ease; }
@@ -93,7 +93,7 @@
     .q-card { border: 1px solid var(--line); background: rgba(255,255,255,.055); border-radius: 20px; padding: 16px; backdrop-filter: blur(14px); }
     .q-card strong { display:block; color: var(--paper); font-size: 24px; letter-spacing: -.04em; }
     .q-card span { color: rgba(255,250,240,.62); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; }
-    .audit-panel { border: 1px solid var(--line); background: rgba(255,255,255,.08); border-radius: 34px; box-shadow: var(--shadow); padding: 20px; transform: rotate(.8deg); }
+    .audit-panel { border: 1px solid var(--line); background: rgba(255,255,255,.08); border-radius: 34px; box-shadow: var(--shadow); padding: 20px; transform: none; }
     .panel-top { display:flex; justify-content:space-between; align-items:center; padding: 6px 4px 16px; color: rgba(255,250,240,.66); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
     .status { color: #091f13; background: var(--green); padding: 7px 10px; border-radius: 999px; letter-spacing: .08em; }
     .score-card { background: var(--paper); color: var(--ink); border-radius: 26px; padding: 24px; overflow: hidden; }
@@ -180,7 +180,27 @@
       .footer-bottom { display:grid; }
       h1 { font-size: 56px; }
     }
-  </style>
+
+    /* sitewide-alignment-hardening: keep mobile hero content inside the viewport and remove unintended visual tilt. */
+    @media (max-width: 680px) {
+      .nav, .hero-inner, .ticker-track, .wrap { width: calc(100% - 48px); }
+      h1 { font-size: 46px; line-height: .96; letter-spacing: -.045em; }
+      h1 em { padding-right: .08em; }
+      .eyebrow { max-width: 100%; white-space: normal; line-height: 1.35; letter-spacing: .12em; }
+      .audit-panel { transform: none; }
+    }
+
+    /* hero-grid-min-width-fix: allow grid columns to shrink on narrow screens instead of forcing sideways overflow. */
+    .hero-inner, .hero-inner > * { min-width: 0; }
+    h1, h2, .subhead, .q-card, .score-card, .checkout-panel, .audit-panel { max-width: 100%; }
+
+    /* mobile-score-card-overflow-fix: stack score headers so circular score badges do not force card overflow. */
+    @media (max-width: 680px) {
+      .score-card { overflow: visible; padding: 20px; }
+      .score-head { display: grid; grid-template-columns: 1fr; gap: 16px; }
+      .score { width: 82px; height: 82px; border-radius: 22px; font-size: 24px; }
+    }
+</style>
   <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
 </head>
 <body data-design="rocket-route-elevate-marketplace-audit-2026-05-03">
