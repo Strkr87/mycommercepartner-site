@@ -50,6 +50,7 @@
     }
     a { color: inherit; text-decoration: none; }
     .nav {
+      position: relative; z-index: 3;
       width: min(1180px, calc(100% - 40px)); margin: 0 auto;
       height: 82px; display: flex; align-items: center; justify-content: space-between;
       color: rgba(255,250,240,.86);
@@ -72,7 +73,7 @@
         linear-gradient(155deg, #061829 0%, #09233a 46%, #071b2d 100%);
     }
     .hero:before {
-      content: ""; position: absolute; inset: 0; opacity: .23;
+      content: ""; position: absolute; inset: 0; opacity: .23; pointer-events: none;
       background-image: linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);
       background-size: 64px 64px;
       mask-image: radial-gradient(circle at 68% 28%, black 0 35%, transparent 72%);
