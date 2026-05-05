@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <title>Amazon & eBay Marketplace Growth Team | MyCommercePartner</title>
-  <meta name="description" content="Send 1–3 Amazon or eBay links for a free marketplace review. MyCommercePartner finds listing, content, and conversion gaps, then turns them into a clear priority map.">
+  <meta name="description" content="Send 1–3 Amazon or eBay links for a free marketplace review. We find listing, content, and conversion gaps, then map the priority fixes.">
   <link rel="canonical" href="https://www.mycommercepartner.com/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Amazon & eBay Marketplace Growth Team | MyCommercePartner">
@@ -127,6 +127,29 @@
     .stat.big strong { font-size: 74px; }
     .stat strong { font-family:"Source Serif 4", Georgia, serif; font-size: 54px; line-height:1; letter-spacing:-.055em; display:block; }
     .stat p { margin: 12px 0 0; color:#60707e; font-weight: 650; }
+    .infographics { padding: 34px 0 82px; background: var(--cream); }
+    .infographic-grid { display:grid; grid-template-columns: 1fr 1fr; gap:18px; margin-top: 32px; }
+    .infographic-card { position:relative; overflow:hidden; border:1px solid rgba(16,32,51,.1); background:#fffaf0; border-radius:30px; padding:28px; box-shadow:0 22px 60px rgba(16,32,51,.08); min-height:340px; }
+    .infographic-card.wide { grid-column: 1 / -1; min-height: 280px; }
+    .infographic-card:before { content:""; position:absolute; width:220px; height:220px; border-radius:50%; right:-90px; top:-100px; background:radial-gradient(circle, rgba(47,196,111,.22), transparent 68%); pointer-events:none; }
+    .infographic-label { display:inline-flex; align-items:center; gap:8px; color:#12844a; background:#e4f8ec; border:1px solid rgba(18,132,74,.16); border-radius:999px; padding:7px 11px; font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.12em; }
+    .infographic-card h3 { position:relative; margin:18px 0 18px; font-family:"Source Serif 4", Georgia, serif; font-size:34px; line-height:1; letter-spacing:-.045em; }
+    .leak-bars { display:grid; gap:12px; }
+    .leak-row { display:grid; grid-template-columns: 132px 1fr 42px; gap:12px; align-items:center; color:#50606d; font-weight:800; font-size:13px; }
+    .leak-track { height:14px; background:#e8eee8; border-radius:999px; overflow:hidden; }
+    .leak-fill { display:block; height:100%; border-radius:999px; background:linear-gradient(90deg, var(--green), var(--gold)); }
+    .priority-map { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:12px; }
+    .priority-cell { border:1px solid rgba(16,32,51,.09); border-radius:20px; padding:16px; background:#f7f1e7; min-height:112px; }
+    .priority-cell strong { display:block; color:#102033; margin-bottom:8px; font-size:18px; letter-spacing:-.02em; }
+    .priority-cell span { color:#60707e; font-weight:700; font-size:13px; }
+    .priority-cell.hot { background:#e4f8ec; border-color:rgba(18,132,74,.18); }
+    .rhythm { display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; }
+    .rhythm-step { position:relative; border:1px solid rgba(16,32,51,.09); border-radius:22px; padding:18px; background:#f7f1e7; min-height:138px; }
+    .rhythm-step:after { content:""; position:absolute; right:-15px; top:44px; width:16px; height:2px; background:rgba(18,132,74,.34); }
+    .rhythm-step:last-child:after { display:none; }
+    .rhythm-step small { color:var(--gold); font-weight:900; letter-spacing:.14em; text-transform:uppercase; }
+    .rhythm-step strong { display:block; margin:12px 0 8px; font-size:20px; letter-spacing:-.03em; }
+    .rhythm-step span { color:#60707e; font-weight:700; font-size:13px; }
     .offers { padding: 86px 0 72px; background: #fffaf0; }
     .anchor-target { display:block; position:relative; top:-82px; visibility:hidden; height:0; overflow:hidden; }
     .offer-path { display:grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 32px; }
@@ -175,7 +198,10 @@
       .hero-inner, .split-title, .case-card, .cta-box { grid-template-columns: 1fr; }
       .hero { padding-top: 34px; }
       .audit-panel { transform: none; }
-      .qualification, .stat-wall, .steps, .footer-grid, .offer-path, .offer-grid { grid-template-columns: 1fr; }
+      .qualification, .stat-wall, .steps, .footer-grid, .offer-path, .offer-grid, .infographic-grid, .rhythm, .priority-map { grid-template-columns: 1fr; }
+      .infographic-card.wide { grid-column: auto; }
+      .leak-row { grid-template-columns: 1fr; gap:8px; }
+      .rhythm-step:after { display:none; }
       .offer-card { grid-template-columns: 1fr; }
       .offer-link { justify-content:center; text-align:center; }
       .path-card:after { display:none; }
@@ -258,7 +284,7 @@
     </div>
   </header>
 
-  <nav class="ticker" aria-label="Marketplace review topics"><div class="ticker-track"><a class="ticker-link" href="free-marketplace-review.html">Amazon listing review</a><a class="ticker-link" href="marketplace-listing-audit.html">eBay growth map</a><a class="ticker-link" href="#proof">A+ content gaps</a><a class="ticker-link" href="#method">Search clarity</a><a class="ticker-link" href="#case">Conversion blockers</a><a class="ticker-link" href="#audit">Priority fix order</a></div></nav>
+  <nav class="ticker" aria-label="Marketplace review topics"><div class="ticker-track"><a class="ticker-link" href="free-marketplace-review.html">Amazon listing review</a><a class="ticker-link" href="marketplace-listing-audit.html">eBay growth map</a><a class="ticker-link" href="blog-amazon-a-plus-content-refresh.html">A+ content refresh</a><a class="ticker-link" href="#method">Search clarity</a><a class="ticker-link" href="#case">Buyer confidence gaps</a><a class="ticker-link" href="#audit">Priority fix order</a></div></nav>
 
   <section class="proof" id="proof">
     <div class="wrap">
@@ -268,9 +294,51 @@
         <p>Most brands know something could improve, but not what deserves attention first. The review turns scattered listing and content concerns into a focused priority map.</p>
       </div>
       <div class="stat-wall">
-        <div class="stat big"><strong>1–3</strong><p>Product pages reviewed first so prospects can experience the value before a bigger audit.</p></div>
+        <div class="stat big"><strong>1–3</strong><p>Product pages reviewed first so your team can see the value before a bigger audit.</p></div>
         <div class="stat"><strong>5</strong><p>Highest-priority fixes surfaced in a simple action order.</p></div>
         <div class="stat"><strong>3</strong><p>Paths after review: audit, listing sprint, or monthly management.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="infographics" aria-label="Marketplace growth infographics">
+    <div class="wrap">
+      <div class="section-kicker">Visual growth maps</div>
+      <div class="split-title">
+        <h2>See the account the way a buyer and marketplace team see it.</h2>
+        <p>These snapshots show how we translate messy marketplace concerns into practical visuals: where sales may be leaking, which fixes should move first, and how execution can stay steady.</p>
+      </div>
+      <div class="infographic-grid">
+        <article class="infographic-card">
+          <div class="infographic-label">Revenue leak map</div>
+          <h3>Where buyers may be dropping off</h3>
+          <div class="leak-bars" aria-label="Common marketplace revenue leak areas">
+            <div class="leak-row"><span>Main image clarity</span><div class="leak-track"><i class="leak-fill" style="width:78%"></i></div><b>High</b></div>
+            <div class="leak-row"><span>Title search fit</span><div class="leak-track"><i class="leak-fill" style="width:64%"></i></div><b>Med</b></div>
+            <div class="leak-row"><span>Bullets and proof</span><div class="leak-track"><i class="leak-fill" style="width:71%"></i></div><b>High</b></div>
+            <div class="leak-row"><span>A+ content path</span><div class="leak-track"><i class="leak-fill" style="width:52%"></i></div><b>Med</b></div>
+          </div>
+        </article>
+        <article class="infographic-card">
+          <div class="infographic-label">Priority matrix</div>
+          <h3>Fix order before busywork</h3>
+          <div class="priority-map" aria-label="Marketplace priority matrix">
+            <div class="priority-cell hot"><strong>Quick wins</strong><span>Title clarity, image order, missing trust cues.</span></div>
+            <div class="priority-cell"><strong>Deeper lifts</strong><span>A+ story, brand storefront, offer positioning.</span></div>
+            <div class="priority-cell"><strong>Monitor</strong><span>Competitor shifts, price pressure, stock signals.</span></div>
+            <div class="priority-cell"><strong>Delay</strong><span>Low-impact polish that can wait until core gaps are fixed.</span></div>
+          </div>
+        </article>
+        <article class="infographic-card wide">
+          <div class="infographic-label">Execution rhythm</div>
+          <h3>How review insights become steady marketplace improvements</h3>
+          <div class="rhythm" aria-label="Marketplace improvement rhythm">
+            <div class="rhythm-step"><small>Week 1</small><strong>Diagnose</strong><span>Review listings, content, search fit, and buyer doubts.</span></div>
+            <div class="rhythm-step"><small>Week 2</small><strong>Prioritize</strong><span>Choose the fixes most likely to improve confidence first.</span></div>
+            <div class="rhythm-step"><small>Week 3</small><strong>Improve</strong><span>Update titles, bullets, images, A+ content, and proof.</span></div>
+            <div class="rhythm-step"><small>Week 4</small><strong>Review</strong><span>Check the next bottleneck and keep the account moving.</span></div>
+          </div>
+        </article>
       </div>
     </div>
   </section>
@@ -301,16 +369,16 @@
   <span class="anchor-target" id="process"></span>
   <section class="method" id="method">
     <div class="wrap">
-      <div class="section-kicker">The Growth Review Framework</div>
+      <div class="section-kicker">What we check first</div>
       <div class="split-title">
         <h2>Four phases. One clear next step.</h2>
-        <p>We keep the process simple: inspect the storefront and listings, identify the gaps, rank the fixes, then recommend the cleanest next step.</p>
+        <p>We keep the process simple: inspect the storefront and listings, identify the gaps, rank the fixes, then show the cleanest next step.</p>
       </div>
       <div class="steps">
-        <article class="step"><div class="num">01</div><h3>Marketplace surface scan</h3><p>Review Amazon/eBay pages, brand content, product positioning, and shopper-facing clarity.</p></article>
-        <article class="step"><div class="num">02</div><h3>Conversion gap map</h3><p>Identify what may be costing sales: images, titles, bullets, A+ content, proof, and offer clarity.</p></article>
-        <article class="step"><div class="num">03</div><h3>Priority action order</h3><p>Sort fixes by likely upside and effort so the team knows what should move first.</p></article>
-        <article class="step"><div class="num">04</div><h3>Execution path</h3><p>Move into a deeper audit, a 5-day listing sprint, or ongoing marketplace growth management.</p></article>
+        <article class="step"><div class="num">01</div><h3>Review the live pages</h3><p>Check Amazon/eBay pages, brand content, product positioning, and buyer clarity.</p></article>
+        <article class="step"><div class="num">02</div><h3>Find what costs sales</h3><p>Identify the images, titles, bullets, A+ content, proof, and offer details that may be holding buyers back.</p></article>
+        <article class="step"><div class="num">03</div><h3>Rank the fixes</h3><p>Sort improvements by likely upside and effort so your team knows what should move first.</p></article>
+        <article class="step"><div class="num">04</div><h3>Move into the right help</h3><p>Choose a deeper audit, a 5-day listing sprint, or ongoing marketplace growth management.</p></article>
       </div>
     </div>
   </section>
@@ -319,13 +387,13 @@
     <div class="wrap">
       <div class="case-card">
         <div class="case-left">
-          <div class="section-kicker" style="color:#b7f4cb">Example client output</div>
+          <div class="section-kicker" style="color:#b7f4cb">Sample growth plan</div>
           <h2>A simple action plan your team can follow.</h2>
           <p>The review shows what is hurting buyer confidence, what to fix first, and what each fix should help improve.</p>
         </div>
         <div class="case-right">
           <div class="comparison">
-            <div class="row"><small>Review area</small><small>What we may find</small><small>Recommended fix</small><small>Client takeaway</small></div>
+            <div class="row"><small>Review area</small><small>What we may find</small><small>Priority fix</small><small>What improves</small></div>
             <div class="row"><span>Listing message</span><span>Unclear main value</span><span>Rewrite the title and bullets</span><span>Buyers understand it faster</span></div>
             <div class="row"><span>Product photos</span><span>Features shown, benefits missing</span><span>Add clearer use-case images</span><span>The product feels easier to choose</span></div>
             <div class="row"><span>Buyer confidence</span><span>Proof is hard to see</span><span>Show reviews or brand proof sooner</span><span>Fewer doubts before checkout</span></div>
@@ -342,7 +410,7 @@
         <div>
           <div class="eyebrow">Free marketplace review</div>
           <h2>Put a marketplace growth team behind your best products.</h2>
-          <p>Prospects send 1–3 marketplace links. We return a clear view of what is holding the listings back and which fixes should happen first.</p>
+          <p>Send 1–3 marketplace links. We return a clear view of what is holding the listings back and which fixes should happen first.</p>
         </div>
         <form class="form" id="contactForm">
           <input id="name" name="name" placeholder="Name" autocomplete="name" required />
@@ -397,3 +465,4 @@
   </script>
 </body>
 </html>
+
