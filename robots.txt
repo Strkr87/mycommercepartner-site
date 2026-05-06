@@ -1,7 +1,8 @@
 User-agent: *
 Allow: /
 Disallow: /dashboard.html
-Disallow: /index.backup-2026-04-03-auth-stable.html
 Disallow: /options/
+Disallow: /design-previews/
+Disallow: /index.backup-2026-04-03-auth-stable.html
 
 Sitemap: https://www.mycommercepartner.com/sitemap.xml

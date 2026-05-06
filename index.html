@@ -18,7 +18,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Amazon & eBay Marketplace Growth Team | MyCommercePartner">
   <meta name="twitter:description" content="Send 1–3 Amazon or eBay links for a free marketplace review and a clear priority map.">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","name":"MyCommercePartner","url":"https://www.mycommercepartner.com/","description":"Outsourced Amazon and eBay marketplace growth team for product brands.","areaServed":"United States","contactPoint":{"@type":"ContactPoint","contactType":"sales","url":"https://www.mycommercepartner.com/contact.html"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","name":"MyCommercePartner","url":"https://www.mycommercepartner.com/","description":"Outsourced Amazon and eBay marketplace growth team for product brands.","areaServed":"United States","contactPoint":{"@type":"ContactPoint","contactType":"sales","url":"https://www.mycommercepartner.com/contact"}}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,500;8..60,650;8..60,750&display=swap" rel="stylesheet">
@@ -85,6 +85,8 @@
     h1 em { color: var(--gold); font-style: italic; font-weight: 650; padding-right: .08em; }
     .subhead { font-size: 19px; line-height: 1.7; color: rgba(255,250,240,.78); max-width: 620px; margin: 0 0 34px; }
     .cta-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+    .assurance-note { display:inline-flex; align-items:center; gap:9px; margin:16px 0 0; color:#dff8e9; font-weight:850; font-size:14px; }
+    .assurance-note:before { content:"✓"; display:grid; place-items:center; width:22px; height:22px; border-radius:999px; background:rgba(47,196,111,.18); color:#8af0ae; }
     .btn { border: 0; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; border-radius: 999px; padding: 16px 22px; font-weight: 900; letter-spacing: -.01em; transition: transform .18s ease, box-shadow .18s ease, background .18s ease; }
     .btn:hover { transform: translateY(-2px); }
     .btn-primary { background: var(--green); color: #03190d; box-shadow: 0 20px 46px rgba(47,196,111,.25); }
@@ -127,6 +129,9 @@
     .stat.big strong { font-size: 74px; }
     .stat strong { font-family:"Source Serif 4", Georgia, serif; font-size: 54px; line-height:1; letter-spacing:-.055em; display:block; }
     .stat p { margin: 12px 0 0; color:#60707e; font-weight: 650; }
+    .trust-strip { margin-top:18px; display:grid; grid-template-columns: repeat(3, 1fr); gap:14px; }
+    .trust-strip div { border:1px solid rgba(18,132,74,.16); background:#e4f8ec; color:#153424; border-radius:22px; padding:18px; font-weight:800; }
+    .trust-strip strong { display:block; color:#0f6b3d; margin-bottom:6px; font-size:13px; text-transform:uppercase; letter-spacing:.1em; }
     .infographics { padding: 34px 0 82px; background: var(--cream); }
     .infographic-grid { display:grid; grid-template-columns: 1fr 1fr; gap:18px; margin-top: 32px; }
     .infographic-card { position:relative; overflow:hidden; border:1px solid rgba(16,32,51,.1); background:#fffaf0; border-radius:30px; padding:28px; box-shadow:0 22px 60px rgba(16,32,51,.08); min-height:340px; }
@@ -198,7 +203,7 @@
       .hero-inner, .split-title, .case-card, .cta-box { grid-template-columns: 1fr; }
       .hero { padding-top: 34px; }
       .audit-panel { transform: none; }
-      .qualification, .stat-wall, .steps, .footer-grid, .offer-path, .offer-grid, .infographic-grid, .rhythm, .priority-map { grid-template-columns: 1fr; }
+      .qualification, .stat-wall, .trust-strip, .steps, .footer-grid, .offer-path, .offer-grid, .infographic-grid, .rhythm, .priority-map { grid-template-columns: 1fr; }
       .infographic-card.wide { grid-column: auto; }
       .leak-row { grid-template-columns: 1fr; gap:8px; }
       .rhythm-step:after { display:none; }
@@ -241,7 +246,7 @@
         <a href="#method">Approach</a>
         <a href="#proof">Proof</a>
         <a href="#case">Example Review</a>
-        <a class="nav-cta" href="free-marketplace-review.html">Request Review</a>
+        <a class="nav-cta" href="free-marketplace-review.html">Request free review</a>
       </div>
     </nav>
 
@@ -251,9 +256,10 @@
         <h1>Find the marketplace gaps <em>holding back your product sales.</em></h1>
         <p class="subhead">Send 1–3 Amazon or eBay links. We review your marketplace presence, identify listing and content issues, then turn the findings into a clear priority map your team can act on — or hand to us for execution.</p>
         <div class="cta-row">
-          <a class="btn btn-primary" href="#audit">Get your free marketplace review →</a>
+          <a class="btn btn-primary" href="#audit">Request free marketplace review →</a>
           <a class="btn btn-secondary" href="#method">See what we review</a>
         </div>
+        <div class="assurance-note">Free review of 1–3 public marketplace links. No login or account access needed.</div>
         <div class="qualification">
           <div class="q-card"><strong>01</strong><span>Diagnose first</span></div>
           <div class="q-card"><strong>02</strong><span>Fix order mapped</span></div>
@@ -284,7 +290,7 @@
     </div>
   </header>
 
-  <nav class="ticker" aria-label="Marketplace review topics"><div class="ticker-track"><a class="ticker-link" href="free-marketplace-review.html">Amazon listing review</a><a class="ticker-link" href="marketplace-listing-audit.html">eBay growth map</a><a class="ticker-link" href="blog-amazon-a-plus-content-refresh.html">A+ content refresh</a><a class="ticker-link" href="#method">Search clarity</a><a class="ticker-link" href="#case">Buyer confidence gaps</a><a class="ticker-link" href="#audit">Priority fix order</a></div></nav>
+  <nav class="ticker" aria-label="Marketplace review topics"><div class="ticker-track"><a class="ticker-link" href="free-marketplace-review.html">Amazon listing review</a><a class="ticker-link" href="marketplace-listing-audit.html">eBay growth map</a><a class="ticker-link" href="blog-amazon-a-plus-content-refresh.html">A+ content refresh</a><a class="ticker-link" href="blog-marketplace-account-health-checklist.html">Account health checklist</a><a class="ticker-link" href="#case">Buyer confidence gaps</a><a class="ticker-link" href="#audit">Priority fix order</a></div></nav>
 
   <section class="proof" id="proof">
     <div class="wrap">
@@ -297,6 +303,11 @@
         <div class="stat big"><strong>1–3</strong><p>Product pages reviewed first so your team can see the value before a bigger audit.</p></div>
         <div class="stat"><strong>5</strong><p>Highest-priority fixes surfaced in a simple action order.</p></div>
         <div class="stat"><strong>3</strong><p>Paths after review: audit, listing sprint, or monthly management.</p></div>
+      </div>
+      <div class="trust-strip" aria-label="Free review reassurance">
+        <div><strong>No account access</strong>Public links are enough for the free review.</div>
+        <div><strong>Plain-English output</strong>You get clear notes and a practical fix order.</div>
+        <div><strong>Built for product brands</strong>Focused on Amazon and eBay marketplace growth.</div>
       </div>
     </div>
   </section>
@@ -358,10 +369,10 @@
         <article class="path-card"><small>04</small><h3>Monthly Management</h3><p>Bring MCP in as the ongoing Amazon and eBay marketplace growth team.</p></article>
       </div>
       <div class="offer-grid">
-        <article class="offer-card"><div><h3>Free Marketplace Growth Review</h3><p>A simple first step for brands that want to see what is holding key listings back.</p></div><a class="offer-link" href="free-marketplace-review.html">Open page →</a></article>
-        <article class="offer-card"><div><h3>Marketplace Growth Audit</h3><p>A deeper diagnosis for marketplace accounts that need a clearer action plan.</p></div><a class="offer-link" href="marketplace-listing-audit.html">Open page →</a></article>
+        <article class="offer-card"><div><h3>Free Marketplace Growth Review</h3><p>A simple first step for brands that want to see what is holding key listings back.</p></div><a class="offer-link" href="free-marketplace-review.html">Request free review →</a></article>
+        <article class="offer-card"><div><h3>Marketplace Growth Audit</h3><p>A deeper diagnosis for marketplace accounts that need a clearer action plan.</p></div><a class="offer-link" href="marketplace-listing-audit.html">See audit details →</a></article>
         <article class="offer-card"><div><h3>5-day Listing Optimization Sprint</h3><p>A focused service path for cleaning up priority Amazon or eBay listings quickly.</p></div><a class="offer-link" href="contact.html?interest=5-day%20Listing%20Optimization%20Sprint">Discuss sprint →</a></article>
-        <article class="offer-card"><div><h3>Monthly Management</h3><p>Ongoing marketplace support for brands that need steady execution and reporting.</p></div><a class="offer-link" href="monthly-management.html">Ask about monthly →</a></article>
+        <article class="offer-card"><div><h3>Monthly Management</h3><p>Ongoing marketplace support for brands that need steady execution and reporting.</p></div><a class="offer-link" href="monthly-management.html">Discuss monthly support →</a></article>
       </div>
     </div>
   </section>
@@ -410,14 +421,14 @@
         <div>
           <div class="eyebrow">Free marketplace review</div>
           <h2>Put a marketplace growth team behind your best products.</h2>
-          <p>Send 1–3 marketplace links. We return a clear view of what is holding the listings back and which fixes should happen first.</p>
+          <p>Send 1–3 marketplace links. We return a clear view of what is holding the listings back and which fixes should happen first. Public links are enough for the free review — no login or account access needed.</p>
         </div>
         <form class="form" id="contactForm">
           <input id="name" name="name" placeholder="Name" autocomplete="name" required />
           <input id="email" name="email" type="email" placeholder="Work email" autocomplete="email" required />
-          <input id="siteUrl" name="siteUrl" placeholder="Amazon or eBay listing URL" inputmode="url" />
+          <input id="siteUrl" name="siteUrl" placeholder="Amazon, eBay, or product page link — public links are enough" inputmode="url" />
           <select id="package" name="package"><option>Free Marketplace Growth Review</option><option>Marketplace Growth Audit</option><option>5-day Listing Optimization Sprint</option><option>Monthly Amazon and eBay Growth Management</option><option>Not sure yet</option></select>
-          <textarea id="message" name="message" placeholder="What should we know about the product or marketplace issue?" required></textarea>
+          <textarea id="message" name="message" placeholder="Short note is fine — what should we know about the product or marketplace issue?" required></textarea>
           <button class="btn btn-primary submit" type="submit">Request my free marketplace review →</button>
           <div id="formStatus" class="form-status" role="status" aria-live="polite"></div>
         </form>
