@@ -62,8 +62,9 @@
       display: grid; place-items: center; color: #062014; font-weight: 900;
       box-shadow: 0 12px 34px rgba(47,196,111,.25);
     }
-    .links { display: flex; align-items: center; gap: 28px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
-    .nav-cta { padding: 13px 18px; background: var(--green); color: #03190d; border-radius: 999px; font-weight: 900; box-shadow: 0 16px 42px rgba(47,196,111,.25); }
+    .links { display: flex; align-items: center; justify-content: flex-end; gap: clamp(12px, 1.45vw, 22px); margin-left: auto; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .055em; }
+    .brand { flex: 0 0 auto; }
+    .nav-cta { padding: 13px 18px; background: var(--green); color: #03190d; border-radius: 999px; font-weight: 900; box-shadow: 0 16px 42px rgba(47,196,111,.25); white-space: nowrap; }
     .hero {
       position: relative; overflow: hidden;
       min-height: 760px; padding: 74px 0 96px;
@@ -198,6 +199,9 @@
     .toast.show { transform: translateY(0); opacity: 1; }
 
     footer{background:#eef1f6;color:var(--ink);border-top:1px solid rgba(16,32,51,.1);padding:56px 0 28px}.footer-grid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:48px}.footer-brand{font-weight:900;font-size:1.45rem;letter-spacing:-.04em}.footer-desc{color:var(--muted);margin-top:14px;max-width:330px}.footer-col h3{color:var(--muted);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;margin:0 0 14px}.footer-col a{display:block;color:#4f5f6b;margin:9px 0}.footer-col a:hover{color:var(--ink)}.footer-bottom{border-top:1px solid rgba(16,32,51,.1);margin-top:42px;padding-top:22px;display:flex;justify-content:space-between;gap:20px;color:var(--muted);font-size:.92rem}.form-status{min-height:22px;color:#60707e;font-weight:800;font-size:.92rem}.form-status.ok{color:#12844a}.form-status.err{color:#b42318}
+    @media (max-width: 1180px) {
+      .links { display:none; }
+    }
     @media (max-width: 900px) {
       .links { display:none; }
       .hero-inner, .split-title, .case-card, .cta-box { grid-template-columns: 1fr; }
