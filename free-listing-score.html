@@ -141,9 +141,9 @@
             <div class="opportunities"><h3>Top opportunities / what to review next</h3><ol id="opportunityList"><li>Paste a listing URL and submit the form to generate a first-look priority list.</li><li>The full review should inspect title, images, offer clarity, proof, and account growth fit.</li><li>If the listing looks promising, request the free growth review for the clearest next step.</li></ol></div>
             <div class="optimizer-preview" id="optimizerPreview">
               <div class="optimizer-head"><div><span class="section-kicker">Optimized Listing Preview</span><h3>Ready-to-use listing copy</h3></div><span class="status-pill">Results</span></div>
-              <div class="optimized-block"><h4>Optimized title</h4><p class="optimized-title-output" id="optimizedTitle">Your optimized title will appear here.</p></div>
-              <div class="optimized-block"><h4>Optimized bullet points</h4><ul id="optimizedBullets"><li>Paste your listing link and submit to see buyer-focused bullets.</li></ul></div>
-              <div class="optimized-block"><h4>Suggested keywords</h4><div class="keyword-chips" id="optimizedKeywords"><span>Keyword ideas will appear here.</span></div></div>
+              <div class="optimized-block"><h4>Optimized title shoppers see</h4><p class="optimized-title-output" id="optimizedTitle">Your optimized title will appear here.</p></div>
+              <div class="optimized-block"><h4>Customer-facing bullets</h4><ul id="optimizedBullets"><li>Paste your listing link and submit to see buyer-focused bullets.</li></ul></div>
+              <div class="optimized-block"><h4>Keyword ideas</h4><div class="keyword-chips" id="optimizedKeywords"><span>Keyword ideas will appear here.</span></div></div>
             </div>
             <p class="sample-note">First-look sample. For a final marketplace-ready rewrite, MyCommercePartner reviews the live page, images, offer, and category fit.</p>
             <div class="result-actions"><a class="btn btn-primary" href="free-marketplace-review.html">Request a Free Growth Review →</a><a class="btn" href="contact.html?interest=5-day%20Listing%20Optimization%20Sprint">Get help fixing the full listing</a></div>
@@ -472,49 +472,22 @@
       return `${clean.slice(0,-1).join(', ')}, and ${clean[clean.length-1]}`;
     }
     function buildBullets({productType, specs, phrases, useCases}){
-      const product = productType === 'product' ? 'item' : productType;
+      const product = /^product$/i.test(productType) ? 'item' : productType;
       const useful = dedupe(phrases.map(firstSentenceFromPhrase)).filter(x => x.length > 4 && !/^(amazon|garden|patio|pools?)$/i.test(x));
       const specText = naturalList(specs.slice(0,3));
-      const useText = naturalList(useCases.slice(0,4)) || 'everyday use';
-      const source = `${product} ${useful.join(' ')} ${specText} ${useText}`.toLowerCase();
-      let bullets;
-      if (/shade|privacy screen|pergola|patio|pool|garden|windscreen/.test(source)) {
-        bullets = [
-          [`SUN SHADE AND PRIVACY`, `${specText ? `${specText} coverage details help` : 'Shade fabric helps'} reduce direct sun and add privacy for outdoor areas without closing the space in.`],
-          [`BREATHABLE OUTDOOR FABRIC`, `Air-permeable material lets wind pass through, making it a practical cover for warm patios, pergolas, gardens, and pool areas.`],
-          [`FITS COMMON OUTDOOR SPACES`, `Designed for ${useText}, making it easier to match the screen to the area that needs coverage.`],
-          [`REINFORCED INSTALLATION`, `Reinforced edges or grommet-style details support a cleaner, more secure tie-down setup.`],
-          [`CLEANER BACKYARD LOOK`, `Neutral shade-screen coverage adds comfort, privacy, and softer sunlight without making the outdoor area feel closed off.`]
-        ];
-      } else if (/water bottle|tumbler|insulated/.test(source)) {
-        bullets = [
-          [`ALL-DAY TEMPERATURE CONTROL`, `${specText || 'Insulated construction'} helps keep drinks cold or hot through work, workouts, travel, and daily errands.`],
-          [`LEAK-RESISTANT DRINKING`, `Straw lid and carry-friendly details make the bottle easier to use at the gym, office, school, or on the road.`],
-          [`DURABLE DAILY BUILD`, `Stainless steel style construction gives the bottle a reusable feel without disposable plastic waste.`],
-          [`EASY TO CARRY`, `Cup-holder and travel-friendly positioning helps shoppers picture how the bottle fits into their routine.`],
-          [`SIMPLE GIFTABLE CHOICE`, `Clear size, lid, and use-case details make it easy to compare colors, capacity, and everyday value.`]
-        ];
-      } else if (/brush|deshedding|grooming|dog|pet/.test(source)) {
-        bullets = [
-          [`REMOVES LOOSE FUR`, `Deshedding design helps lift loose undercoat before it ends up on furniture, clothes, or car seats.`],
-          [`COMFORTABLE GROOMING`, `Rounded teeth and an easy-grip handle support a calmer brushing routine for short- and long-haired pets.`],
-          [`MADE FOR REGULAR CARE`, `Useful for small, medium, and large dogs when owners want a simple at-home grooming tool.`],
-          [`EASY CLEANUP`, `Clean-release style details make it easier to remove collected fur between grooming passes.`],
-          [`BETTER PET-CARE ROUTINE`, `Clear benefits show how the brush saves time, reduces shedding mess, and supports coat maintenance.`]
-        ];
-      } else {
-        const feature1 = useful[0] || titleCase(product);
-        const feature2 = useful[1] || feature1;
-        const feature3 = useful[2] || specText || feature2;
-        bullets = [
-          [`MAIN PRODUCT BENEFIT`, `${feature1}${specText ? ` with ${specText}` : ''} gives customers a clear reason to understand the product quickly.`],
-          [`PRACTICAL USE CASES`, `${titleCase(product)} is positioned for ${useText}, making the listing easier to scan and compare.`],
-          [`MATERIAL AND BUILD DETAILS`, `${feature2} highlights concrete product qualities instead of broad marketing claims.`],
-          [`SIZE FIT AND COMPATIBILITY`, `${feature3} clarifies the details customers usually check before buying.`],
-          [`CLEAR VALUE SUMMARY`, `${specText || feature1} and ${useText} bring the most useful buying details into the first screen.`]
-        ];
-      }
-      return bullets.map(([head, body]) => `<strong>${escapeHtml(head)}:</strong> ${escapeHtml(body.replace(/\s+/g,' ').trim())}`);
+      const useText = naturalList(useCases.slice(0,4));
+      const primaryDetail = useful[0] || '';
+      const buildText = useful.find(item => /mesh|material|steel|wood|plastic|fabric|grommet|reinforced|build|color|green|black|white/i.test(item)) || primaryDetail;
+      const usePhrase = useful.find(item => /help|block|protect|cover|shade|privacy|dust|wind|debris|use|for /i.test(item)) || '';
+      const installPhrase = useful.find(item => /install|tie|included|include|with|grommet|pack|set|kit/i.test(item)) || '';
+      const bullets = [
+        ['Product Details', `${titleCase(product)}${primaryDetail ? ` with ${primaryDetail.toLowerCase()}` : ''}.`],
+        ['Size & Fit', specText ? `${titleCase(specText)} gives buyers the key size or feature details before ordering.` : `${titleCase(product)} details are kept clear and easy to scan.`],
+        ['Material & Build', buildText ? `${buildText.replace(/[.;,\s]+$/,'')}.` : `${titleCase(product)} is presented with the product details provided in the listing.`],
+        ['Everyday Use', usePhrase ? `${usePhrase.replace(/[.;,\s]+$/,'')}.` : useText ? `Made for ${useText}, helping buyers match the item to the place or routine they have in mind.` : `Made for buyers comparing this product type and checking the details that matter most.`],
+        ['What’s Included', installPhrase ? `${installPhrase.replace(/[.;,\s]+$/,'')}.` : `${titleCase(product)} listing copy focuses on the supplied title, category, and product details.`]
+      ];
+      return bullets.map(([head, body]) => `${escapeHtml(`【${head}】 ${body.replace(/\s+/g,' ').trim()}`)}`);
     }
     function buildKeywordIdeas({productType, keyword, brand, specs, useCases}){
       const base = sanitizeListingText(keyword || productType);
@@ -537,21 +510,31 @@
       const currentCopyRaw = data.get('currentCopy') || '';
       const differentiatorsRaw = data.get('differentiators') || '';
       const keyword = sanitizeListingText(data.get('targetKeyword'));
+      const enteredProductType = sanitizeListingText(data.get('productType'));
+      const hasEnoughListingDetailForCopy = Boolean(currentTitle || sanitizeListingText(currentCopyRaw) || sanitizeListingText(differentiatorsRaw) || enteredProductType || keyword);
+      if (!hasEnoughListingDetailForCopy) {
+        return {
+          title: 'Add Product Title for Stronger Preview',
+          bullets: [],
+          keywords: ['product title', 'product details'],
+          copyEmptyState: 'Add the current title and key product details to generate customer-facing listing copy.'
+        };
+      }
       const sourceText = `${currentTitle}\n${currentCopyRaw}\n${differentiatorsRaw}`;
       const phrases = splitPhrases(`${differentiatorsRaw}\n${currentCopyRaw}\n${currentTitle}`);
       const brand = extractBrand(data.get('currentTitle'));
       const productCode = extractProductCode(`${currentTitle} ${currentCopyRaw} ${differentiatorsRaw}`);
-      const productType = inferProductType(currentTitle, data.get('productType'), keyword, phrases);
+      const productType = inferProductType(currentTitle, enteredProductType, keyword, phrases);
       const specs = extractSpecs(sourceText);
       const useCases = extractUseCases(sourceText);
       const title = buildAmazonTitle({brand, productType, keyword: keyword || productType, specs, useCases, currentTitle, productCode});
       const bullets = buildBullets({productType, specs, phrases, useCases});
       const keywords = buildKeywordIdeas({productType, keyword: keyword || productType, brand, specs, useCases});
-      return {title, bullets, keywords};
+      return {title, bullets, keywords, copyEmptyState: ''};
     }
     function renderOptimizerPreview(preview){
       optimizedTitle.textContent = preview.title;
-      optimizedBullets.innerHTML = preview.bullets.map(item => `<li>${item}</li>`).join('');
+      optimizedBullets.innerHTML = preview.bullets.length ? preview.bullets.map(item => `<li>${item}</li>`).join('') : `<li>${escapeHtml(preview.copyEmptyState || 'Add product details to generate customer-facing bullets.')}</li>`;
       optimizedKeywords.innerHTML = preview.keywords.map(item => `<span>${escapeHtml(item)}</span>`).join('');
     }
     function fallbackMailto(payload){
