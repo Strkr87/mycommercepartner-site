@@ -3,422 +3,131 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <title>Amazon & eBay Marketplace Growth Team | MyCommercePartner</title>
-  <meta name="description" content="Send 1–3 Amazon or eBay links for a free marketplace review. We find listing, content, and conversion gaps, then map the priority fixes.">
+  <title>Marketplace Growth for Amazon & eBay | MyCommercePartner</title>
+  <meta name="description" content="MyCommercePartner helps Amazon and eBay brands improve listings, account health, campaigns, and weekly marketplace execution.">
   <link rel="canonical" href="https://www.mycommercepartner.com/">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Amazon & eBay Marketplace Growth Team | MyCommercePartner">
-  <meta property="og:description" content="Free Amazon and eBay marketplace review for product brands that need sharper diagnosis, stronger listings, and steady execution.">
+  <meta property="og:title" content="Marketplace Growth for Amazon & eBay | MyCommercePartner">
+  <meta property="og:description" content="Listing optimization, account health, growth campaigns, and weekly marketplace reporting for Amazon and eBay brands.">
   <meta property="og:url" content="https://www.mycommercepartner.com/">
   <meta property="og:site_name" content="MyCommercePartner">
   <meta property="og:image" content="https://www.mycommercepartner.com/assets/home-commerce-visual.svg">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Amazon & eBay Marketplace Growth Team | MyCommercePartner">
-  <meta name="twitter:description" content="Send 1–3 Amazon or eBay links for a free marketplace review and a clear priority map.">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","name":"MyCommercePartner","url":"https://www.mycommercepartner.com/","description":"Outsourced Amazon and eBay marketplace growth team for product brands.","areaServed":"United States","contactPoint":{"@type":"ContactPoint","contactType":"sales","url":"https://www.mycommercepartner.com/contact.html"}}</script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,500;8..60,650;8..60,750&display=swap" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","name":"MyCommercePartner","url":"https://www.mycommercepartner.com/","description":"Amazon and eBay marketplace growth support for product brands.","areaServed":"United States","contactPoint":{"@type":"ContactPoint","contactType":"sales","url":"https://www.mycommercepartner.com/contact.html"}}</script>
   <style>
-    :root {
-      --navy: #071b2d;
-      --navy-2: #0b263d;
-      --navy-3: #0e314d;
-      --green: #2fc46f;
-      --green-soft: #dff8e9;
-      --gold: #f4b84a;
-      --cream: #f7f1e7;
-      --paper: #fffaf0;
-      --ink: #102033;
-      --muted: #6f7c86;
-      --line: rgba(255,255,255,.16);
-      --shadow: 0 28px 90px rgba(0,0,0,.28);
-      --radius: 28px;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      background: #071b2d;
-      color: var(--paper);
-      font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
-      line-height: 1.45;
-      -webkit-font-smoothing: antialiased;
-    }
-    a { color: inherit; text-decoration: none; }
-    .nav {
-      position: relative; z-index: 3;
-      width: min(1180px, calc(100% - 40px)); margin: 0 auto;
-      height: 82px; display: flex; align-items: center; justify-content: space-between;
-      color: rgba(255,250,240,.86);
-    }
-    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: -.03em; }
-    .mark {
-      width: 38px; height: 38px; border-radius: 12px;
-      background: linear-gradient(135deg, var(--green), #8af0ae 52%, var(--gold));
-      display: grid; place-items: center; color: #062014; font-weight: 900;
-      box-shadow: 0 12px 34px rgba(47,196,111,.25);
-    }
-    .links { display: flex; align-items: center; gap: 28px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
-    .nav-cta { padding: 13px 18px; background: var(--green); color: #03190d; border-radius: 999px; font-weight: 900; box-shadow: 0 16px 42px rgba(47,196,111,.25); }
-    .hero {
-      position: relative; overflow: hidden;
-      min-height: 760px; padding: 74px 0 96px;
-      background:
-        radial-gradient(circle at 80% 12%, rgba(47,196,111,.22), transparent 28%),
-        radial-gradient(circle at 60% 45%, rgba(244,184,74,.15), transparent 36%),
-        linear-gradient(155deg, #061829 0%, #09233a 46%, #071b2d 100%);
-    }
-    .hero:before {
-      content: ""; position: absolute; inset: 0; opacity: .23; pointer-events: none;
-      background-image: linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);
-      background-size: 64px 64px;
-      mask-image: radial-gradient(circle at 68% 28%, black 0 35%, transparent 72%);
-    }
-    .hero-inner { position: relative; z-index: 1; width: min(1180px, calc(100% - 40px)); margin: 0 auto; display: grid; grid-template-columns: 1.02fr .98fr; gap: 60px; align-items: center; }
-    .eyebrow { display: inline-flex; align-items: center; gap: 10px; color: #b7f4cb; font-size: 12px; text-transform: uppercase; letter-spacing: .16em; font-weight: 900; }
-    .eyebrow:before { content: ""; width: 8px; height: 8px; border-radius: 999px; background: var(--green); box-shadow: 0 0 0 8px rgba(47,196,111,.14); }
-    h1 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(54px, 7.6vw, 94px); line-height: .92; letter-spacing: -.055em; margin: 24px 0 26px; max-width: 760px; }
-    h1 em { color: var(--gold); font-style: italic; font-weight: 650; padding-right: .08em; }
-    .subhead { font-size: 19px; line-height: 1.7; color: rgba(255,250,240,.78); max-width: 620px; margin: 0 0 34px; }
-    .cta-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
-    .btn { border: 0; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; border-radius: 999px; padding: 16px 22px; font-weight: 900; letter-spacing: -.01em; transition: transform .18s ease, box-shadow .18s ease, background .18s ease; }
-    .btn:hover { transform: translateY(-2px); }
-    .btn-primary { background: var(--green); color: #03190d; box-shadow: 0 20px 46px rgba(47,196,111,.25); }
-    .btn-secondary { color: var(--paper); border: 1px solid var(--line); background: rgba(255,255,255,.06); }
-    .qualification { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 40px; max-width: 660px; }
-    .q-card { border: 1px solid var(--line); background: rgba(255,255,255,.055); border-radius: 20px; padding: 16px; backdrop-filter: blur(14px); }
-    .q-card strong { display:block; color: var(--paper); font-size: 24px; letter-spacing: -.04em; }
-    .q-card span { color: rgba(255,250,240,.62); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; }
-    .audit-panel { border: 1px solid var(--line); background: rgba(255,255,255,.08); border-radius: 34px; box-shadow: var(--shadow); padding: 20px; transform: none; }
-    .panel-top { display:flex; justify-content:space-between; align-items:center; padding: 6px 4px 16px; color: rgba(255,250,240,.66); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-    .status { color: #091f13; background: var(--green); padding: 7px 10px; border-radius: 999px; letter-spacing: .08em; }
-    .score-card { background: var(--paper); color: var(--ink); border-radius: 26px; padding: 24px; overflow: hidden; }
-    .score-head { display:flex; justify-content:space-between; gap: 20px; align-items:flex-start; border-bottom: 1px solid rgba(16,32,51,.1); padding-bottom: 18px; }
-    .score-head h3 { margin:0; font-family:"Source Serif 4", Georgia, serif; font-size: 34px; line-height:.95; letter-spacing:-.045em; }
-    .score { width: 94px; height: 94px; border-radius: 24px; display:grid; place-items:center; background: conic-gradient(var(--green) 0 72%, #e7edf0 72% 100%); position: relative; font-weight: 900; font-size: 28px; }
-    .score:before { content:""; position:absolute; inset: 10px; border-radius: 18px; background: var(--paper); }
-    .score span { position:relative; z-index: 1; }
-    .audit-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
-    .mini { background: #f0f6f2; border: 1px solid rgba(16,32,51,.08); border-radius: 18px; padding: 15px; min-height: 126px; }
-    .mini label { display:block; color: #647481; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing:.1em; margin-bottom: 10px; }
-    .mini strong { display:block; font-size: 22px; letter-spacing:-.035em; margin-bottom: 8px; }
-    .bar { height: 8px; background:#d9e3dd; border-radius:999px; overflow:hidden; margin-top: 12px; }
-    .bar i { display:block; height:100%; border-radius:999px; background: linear-gradient(90deg, var(--green), var(--gold)); }
-    .issue-list { margin: 18px 0 0; padding:0; list-style:none; display:grid; gap:10px; }
-    .issue-list li { display:flex; gap:10px; align-items:flex-start; padding: 12px; border-radius: 14px; background:#fff6e5; color:#423119; font-weight:700; font-size:13px; }
-    .dot { width:10px; height:10px; flex:0 0 10px; border-radius:50%; background:var(--gold); margin-top:4px; }
-    .ticker { background: #061829; border-block: 1px solid rgba(255,255,255,.08); overflow:hidden; }
-    .ticker-track { width:min(1180px, calc(100% - 40px)); margin:0 auto; display:flex; justify-content:center; flex-wrap:wrap; gap:14px 20px; padding: 18px 0; color: rgba(255,250,240,.72); font-size: 12px; text-transform: uppercase; letter-spacing:.16em; font-weight:900; }
-    .ticker-link { color: rgba(255,250,240,.74); text-decoration:none; white-space:nowrap; border-bottom:1px solid transparent; transition: color .18s ease, border-color .18s ease; }
-    .ticker-link:hover, .ticker-link:focus-visible { color: var(--paper); border-color: var(--green); outline:none; }
-    section { background: var(--cream); color: var(--ink); }
-    .wrap { width:min(1180px, calc(100% - 40px)); margin:0 auto; }
-    .proof { padding: 86px 0 64px; }
-    .section-kicker { color:#1b7d49; font-size:12px; font-weight:900; letter-spacing:.16em; text-transform:uppercase; }
-    .split-title { display:grid; grid-template-columns: .9fr 1.1fr; gap: 70px; align-items:end; margin-top: 12px; }
-    h2 { font-family:"Source Serif 4", Georgia, serif; font-size: clamp(42px, 5vw, 66px); line-height:.95; letter-spacing:-.055em; margin:0; }
-    .split-title p { color:#586775; font-size:18px; line-height:1.7; margin:0; }
-    .stat-wall { display:grid; grid-template-columns: 1.2fr .8fr .8fr; gap:18px; margin-top: 36px; }
-    .stat { background: #fffaf0; border:1px solid rgba(16,32,51,.09); border-radius: 28px; padding: 26px; min-height: 210px; box-shadow: 0 18px 45px rgba(16,32,51,.06); }
-    .stat.big strong { font-size: 74px; }
-    .stat strong { font-family:"Source Serif 4", Georgia, serif; font-size: 54px; line-height:1; letter-spacing:-.055em; display:block; }
-    .stat p { margin: 12px 0 0; color:#60707e; font-weight: 650; }
-    .infographics { padding: 34px 0 82px; background: var(--cream); }
-    .infographic-grid { display:grid; grid-template-columns: 1fr 1fr; gap:18px; margin-top: 32px; }
-    .infographic-card { position:relative; overflow:hidden; border:1px solid rgba(16,32,51,.1); background:#fffaf0; border-radius:30px; padding:28px; box-shadow:0 22px 60px rgba(16,32,51,.08); min-height:340px; }
-    .infographic-card.wide { grid-column: 1 / -1; min-height: 280px; }
-    .infographic-card:before { content:""; position:absolute; width:220px; height:220px; border-radius:50%; right:-90px; top:-100px; background:radial-gradient(circle, rgba(47,196,111,.22), transparent 68%); pointer-events:none; }
-    .infographic-label { display:inline-flex; align-items:center; gap:8px; color:#12844a; background:#e4f8ec; border:1px solid rgba(18,132,74,.16); border-radius:999px; padding:7px 11px; font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.12em; }
-    .infographic-card h3 { position:relative; margin:18px 0 18px; font-family:"Source Serif 4", Georgia, serif; font-size:34px; line-height:1; letter-spacing:-.045em; }
-    .leak-bars { display:grid; gap:12px; }
-    .leak-row { display:grid; grid-template-columns: 132px 1fr 42px; gap:12px; align-items:center; color:#50606d; font-weight:800; font-size:13px; }
-    .leak-track { height:14px; background:#e8eee8; border-radius:999px; overflow:hidden; }
-    .leak-fill { display:block; height:100%; border-radius:999px; background:linear-gradient(90deg, var(--green), var(--gold)); }
-    .priority-map { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:12px; }
-    .priority-cell { border:1px solid rgba(16,32,51,.09); border-radius:20px; padding:16px; background:#f7f1e7; min-height:112px; }
-    .priority-cell strong { display:block; color:#102033; margin-bottom:8px; font-size:18px; letter-spacing:-.02em; }
-    .priority-cell span { color:#60707e; font-weight:700; font-size:13px; }
-    .priority-cell.hot { background:#e4f8ec; border-color:rgba(18,132,74,.18); }
-    .rhythm { display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; }
-    .rhythm-step { position:relative; border:1px solid rgba(16,32,51,.09); border-radius:22px; padding:18px; background:#f7f1e7; min-height:138px; }
-    .rhythm-step:after { content:""; position:absolute; right:-15px; top:44px; width:16px; height:2px; background:rgba(18,132,74,.34); }
-    .rhythm-step:last-child:after { display:none; }
-    .rhythm-step small { color:var(--gold); font-weight:900; letter-spacing:.14em; text-transform:uppercase; }
-    .rhythm-step strong { display:block; margin:12px 0 8px; font-size:20px; letter-spacing:-.03em; }
-    .rhythm-step span { color:#60707e; font-weight:700; font-size:13px; }
-    .offers { padding: 86px 0 72px; background: #fffaf0; }
-    .anchor-target { display:block; position:relative; top:-82px; visibility:hidden; height:0; overflow:hidden; }
-    .offer-path { display:grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 32px; }
-    .path-card { position:relative; border:1px solid rgba(16,32,51,.1); background: linear-gradient(180deg,#ffffff,#fffaf0); border-radius: 24px; padding: 22px; min-height: 180px; box-shadow: 0 18px 45px rgba(16,32,51,.06); }
-    .path-card:after { content:""; position:absolute; top:34px; right:-13px; width:24px; height:2px; background: rgba(18,132,74,.34); }
-    .path-card:last-child:after { display:none; }
-    .path-card small { display:inline-flex; color:#12844a; background:#e4f8ec; border:1px solid rgba(18,132,74,.16); padding: 6px 9px; border-radius:999px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }
-    .path-card h3 { font-family:"Source Serif 4", Georgia, serif; font-size: 30px; line-height:1; letter-spacing:-.04em; margin: 18px 0 10px; }
-    .path-card p { margin:0; color:#60707e; }
-    .offer-grid { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
-    .offer-card { display:grid; grid-template-columns: 1fr auto; gap: 18px; align-items:center; border:1px solid rgba(16,32,51,.1); background:#f7f1e7; border-radius: 26px; padding: 22px; }
-    .offer-card h3 { font-family:"Source Serif 4", Georgia, serif; font-size: 30px; line-height:1; letter-spacing:-.04em; margin:0 0 8px; }
-    .offer-card p { margin:0; color:#60707e; }
-    .offer-link { white-space:nowrap; color:#03190d; background:var(--green); padding: 12px 15px; border-radius:999px; font-size:13px; font-weight:900; box-shadow:0 14px 30px rgba(47,196,111,.18); }
-    .method { padding: 34px 0 86px; }
-    .steps { margin-top: 34px; display:grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-    .step { border:1px solid rgba(16,32,51,.1); background:#fffaf0; border-radius: 26px; padding: 24px; min-height: 270px; }
-    .num { color: var(--gold); font-size: 13px; font-weight: 900; letter-spacing:.14em; }
-    .step h3 { font-family:"Source Serif 4", Georgia, serif; font-size: 30px; line-height:1; letter-spacing:-.04em; margin: 20px 0 12px; }
-    .step p { color:#60707e; margin:0; }
-    .case { padding: 90px 0; background:#fffaf0; }
-    .case-card { display:grid; grid-template-columns: .95fr 1.05fr; gap: 0; border-radius: 34px; overflow:hidden; border:1px solid rgba(16,32,51,.1); box-shadow: 0 25px 80px rgba(16,32,51,.09); }
-    .case-left { padding:38px; background: var(--navy); color:var(--paper); }
-    .case-left h2 { font-size: 58px; }
-    .case-left p { color:rgba(255,250,240,.72); font-size:18px; line-height:1.7; }
-    .case-right { padding: 34px; background: var(--cream); }
-    .comparison { display:grid; gap: 12px; }
-    .row { display:grid; grid-template-columns: 1fr 1.1fr 1.1fr 1.1fr; gap: 12px; align-items:center; padding: 16px; background:#fffaf0; border-radius:18px; border:1px solid rgba(16,32,51,.08); font-weight: 700; }
-    .row span { line-height:1.35; }
-    .row span:first-child { font-weight: 850; }
-    .row small { color:#6f7c86; font-weight:800; text-transform:uppercase; letter-spacing:.08em; line-height:1.3; }
-    .after { color:#12844a; }
-    .cta-section { padding: 90px 0; background: linear-gradient(155deg, #071b2d, #0d304b); color: var(--paper); }
-    .cta-box { display:grid; grid-template-columns: .9fr 1.1fr; gap: 42px; align-items:center; border:1px solid var(--line); border-radius:34px; padding: 38px; background: rgba(255,255,255,.055); box-shadow: var(--shadow); }
-    .cta-box p { color:rgba(255,250,240,.72); font-size:18px; line-height:1.7; }
-    .form { display:grid; gap:12px; background: var(--paper); color: var(--ink); padding: 22px; border-radius: 26px; }
-    input, textarea, select { width:100%; border:1px solid rgba(16,32,51,.14); background:#fff; border-radius:14px; padding: 15px 16px; font: inherit; color: var(--ink); }
-    textarea { min-height: 96px; resize: vertical; }
-    .submit { width:100%; }
-    .toast { position: fixed; right: 22px; bottom: 22px; z-index: 60; background: var(--green); color:#03190d; font-weight:900; padding: 16px 18px; border-radius: 18px; box-shadow: 0 24px 70px rgba(0,0,0,.28); transform: translateY(120px); opacity:0; transition: all .25s ease; }
-    .toast.show { transform: translateY(0); opacity: 1; }
-
-    footer{background:#eef1f6;color:var(--ink);border-top:1px solid rgba(16,32,51,.1);padding:56px 0 28px}.footer-grid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:48px}.footer-brand{font-weight:900;font-size:1.45rem;letter-spacing:-.04em}.footer-desc{color:var(--muted);margin-top:14px;max-width:330px}.footer-col h3{color:var(--muted);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;margin:0 0 14px}.footer-col a{display:block;color:#4f5f6b;margin:9px 0}.footer-col a:hover{color:var(--ink)}.footer-bottom{border-top:1px solid rgba(16,32,51,.1);margin-top:42px;padding-top:22px;display:flex;justify-content:space-between;gap:20px;color:var(--muted);font-size:.92rem}.form-status{min-height:22px;color:#60707e;font-weight:800;font-size:.92rem}.form-status.ok{color:#12844a}.form-status.err{color:#b42318}
-    @media (max-width: 900px) {
-      .links { display:none; }
-      .hero-inner, .split-title, .case-card, .cta-box { grid-template-columns: 1fr; }
-      .hero { padding-top: 34px; }
-      .audit-panel { transform: none; }
-      .qualification, .stat-wall, .steps, .footer-grid, .offer-path, .offer-grid, .infographic-grid, .rhythm, .priority-map { grid-template-columns: 1fr; }
-      .infographic-card.wide { grid-column: auto; }
-      .leak-row { grid-template-columns: 1fr; gap:8px; }
-      .rhythm-step:after { display:none; }
-      .offer-card { grid-template-columns: 1fr; }
-      .offer-link { justify-content:center; text-align:center; }
-      .path-card:after { display:none; }
-      .row { grid-template-columns: 1fr; }
-      .footer-bottom { display:grid; }
-      h1 { font-size: 56px; }
-    }
-
-    /* sitewide-alignment-hardening: keep mobile hero content inside the viewport and remove unintended visual tilt. */
-    @media (max-width: 680px) {
-      .nav, .hero-inner, .ticker-track, .wrap { width: calc(100% - 48px); }
-      h1 { font-size: 46px; line-height: .96; letter-spacing: -.045em; }
-      h1 em { padding-right: .08em; }
-      .eyebrow { max-width: 100%; white-space: normal; line-height: 1.35; letter-spacing: .12em; }
-      .audit-panel { transform: none; }
-    }
-
-    /* hero-grid-min-width-fix: allow grid columns to shrink on narrow screens instead of forcing sideways overflow. */
-    .hero-inner, .hero-inner > * { min-width: 0; }
-    h1, h2, .subhead, .q-card, .score-card, .checkout-panel, .audit-panel { max-width: 100%; }
-
-    /* mobile-score-card-overflow-fix: stack score headers so circular score badges do not force card overflow. */
-    @media (max-width: 680px) {
-      .score-card { overflow: visible; padding: 20px; }
-      .score-head { display: grid; grid-template-columns: 1fr; gap: 16px; }
-      .score { width: 82px; height: 82px; border-radius: 22px; font-size: 24px; }
-    }
-</style>
+    :root{color-scheme:dark;--bg:#04111d;--bg2:#071827;--panel:#0b1f31;--panel2:#102b40;--card:#0d2437;--line:rgba(255,255,255,.13);--line2:rgba(255,255,255,.20);--text:#f6fbff;--soft:#d8e7ef;--muted:#94abbd;--green:#34c774;--green2:#9cf1ba;--gold:#f3b449;--gold2:#ffd98a;--shadow:0 32px 90px rgba(0,0,0,.42);--radius:30px}*{box-sizing:border-box}html{color-scheme:dark;scroll-behavior:smooth;overflow-x:hidden;background:var(--bg)}body{margin:0;background:radial-gradient(circle at 14% 3%,rgba(52,199,116,.16),transparent 31%),radial-gradient(circle at 84% 9%,rgba(243,180,73,.14),transparent 30%),linear-gradient(180deg,#04111d 0%,#071827 42%,#04111d 100%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.45;overflow-x:hidden;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}.wrap{width:min(1160px,calc(100% - 40px));margin:0 auto}.hero{position:relative;isolation:isolate;overflow:hidden;padding-bottom:80px;border-bottom:1px solid var(--line);background:radial-gradient(circle at 20% 22%,rgba(52,199,116,.22),transparent 27%),radial-gradient(circle at 78% 16%,rgba(243,180,73,.20),transparent 28%),linear-gradient(150deg,#04111d 0%,#092135 54%,#061521 100%)}.hero:before{content:"";position:absolute;inset:0;z-index:-2;opacity:.24;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:58px 58px;mask-image:radial-gradient(circle at 50% 26%,black 0 38%,transparent 78%)}.glow{position:absolute;border-radius:999px;filter:blur(2px);z-index:-1}.glow.one{width:170px;height:170px;background:rgba(243,180,73,.24);left:-54px;top:220px}.glow.two{width:240px;height:240px;background:rgba(52,199,116,.15);right:-92px;top:360px}.site-header{height:82px;display:flex;align-items:center;justify-content:space-between;gap:24px}.brand{display:flex;align-items:center;gap:12px;font-weight:950;letter-spacing:-.04em;font-size:20px;white-space:nowrap}.mark{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--green),var(--green2) 56%,var(--gold));color:#031827;display:grid;place-items:center;font-weight:950;box-shadow:0 16px 40px rgba(52,199,116,.26)}.nav{display:flex;align-items:center;gap:26px;font-size:13px;text-transform:uppercase;letter-spacing:.1em;font-weight:850;color:rgba(246,251,255,.78)}.nav a:hover{color:#fff}.nav-pill{padding:12px 16px;border:1px solid var(--line2);border-radius:999px;background:rgba(255,255,255,.055);color:#fff}.hero-center{padding:66px 0 32px;text-align:center;max-width:1080px;margin:0 auto}.eyebrow{display:inline-flex;align-items:center;gap:10px;padding:9px 14px;border-radius:999px;border:1px solid rgba(243,180,73,.36);background:rgba(243,180,73,.10);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.16em;color:var(--gold2)}.eyebrow:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 7px rgba(243,180,73,.14)}h1{font-size:clamp(54px,8.8vw,106px);line-height:.88;letter-spacing:-.078em;margin:22px auto 22px;font-weight:950;max-width:1060px}.accent{color:var(--gold);text-shadow:0 12px 45px rgba(243,180,73,.22)}.subhead{max-width:760px;margin:0 auto;color:rgba(246,251,255,.76);font-size:clamp(18px,2.1vw,22px);line-height:1.62}.cta-row{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;margin-top:32px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:16px 23px;border-radius:999px;font-weight:950;letter-spacing:-.015em;border:0;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}.btn:hover{transform:translateY(-2px)}.btn-primary{background:linear-gradient(135deg,var(--green),var(--green2));color:#031827;box-shadow:0 18px 50px rgba(52,199,116,.25)}.btn-secondary{border:1px solid var(--line2);background:rgba(255,255,255,.07);color:var(--text)}.dashboard{margin-top:42px;border:1px solid var(--line2);background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.045));border-radius:34px;box-shadow:var(--shadow);padding:18px;text-align:left;backdrop-filter:blur(14px)}.browser-bar{height:38px;display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.1em}.dot{width:10px;height:10px;border-radius:50%;background:#f46b63}.dot:nth-child(2){background:#ffd05a}.dot:nth-child(3){background:#4bd47f}.dash-ui{background:linear-gradient(180deg,#0b1f31,#102b40);border:1px solid var(--line);border-radius:24px;padding:18px;display:grid;grid-template-columns:210px 1fr;gap:18px}.sidebar{background:rgba(255,255,255,.045);border:1px solid var(--line);border-radius:20px;padding:14px;display:grid;gap:10px;align-content:start}.side-title{font-weight:950;letter-spacing:-.03em;margin-bottom:6px}.tab{border-radius:14px;padding:12px 13px;color:var(--muted);font-weight:850}.tab.active{background:rgba(52,199,116,.16);color:#c9ffd9}.dash-main{min-width:0}.dash-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px}.dash-head h2{margin:0;font-size:28px;letter-spacing:-.055em;line-height:1}.status{border:1px solid rgba(52,199,116,.26);background:rgba(52,199,116,.12);color:#caffd9;border-radius:999px;padding:8px 11px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;white-space:nowrap}.focus{border:1px solid var(--line);background:rgba(255,255,255,.055);border-radius:20px;padding:16px;margin-bottom:14px}.label{color:var(--gold2);font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.13em}.focus strong{display:block;margin-top:7px;font-size:22px;letter-spacing:-.04em}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}.metric{border:1px solid var(--line);background:#13283a;border-radius:18px;padding:16px}.metric b{display:block;font-size:30px;line-height:1;letter-spacing:-.055em;color:#fff}.metric span{display:block;margin-top:8px;color:var(--muted);font-size:13px;font-weight:760}.roadmap{display:grid;gap:10px}.road{display:grid;grid-template-columns:130px 1fr auto;gap:12px;align-items:center;border:1px solid var(--line);background:rgba(255,255,255,.045);border-radius:16px;padding:12px;color:var(--soft);font-weight:820}.track{height:10px;background:#27455a;border-radius:999px;overflow:hidden}.track i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--gold));border-radius:999px}section{position:relative;padding:86px 0;background:linear-gradient(180deg,#071827,#061521);color:var(--text)}.section-head{text-align:center;max-width:820px;margin:0 auto 38px}.kicker{font-size:12px;font-weight:950;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}.section-head h2,.split-copy h2,.cta-card h2{font-size:clamp(38px,5.5vw,68px);line-height:.95;letter-spacing:-.07em;margin:12px 0 14px;font-weight:950}.section-head p,.split-copy p,.cta-card p{color:var(--muted);font-size:18px;line-height:1.65;margin:0}.services{background:linear-gradient(180deg,#061521,#071827)}.service-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.service-card{min-height:244px;background:linear-gradient(180deg,var(--card),#0a1b2a);border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:0 26px 70px rgba(0,0,0,.25);position:relative;overflow:hidden}.service-card:after{content:"";position:absolute;right:-48px;top:-48px;width:126px;height:126px;border-radius:50%;background:rgba(52,199,116,.12)}.icon{width:48px;height:48px;border-radius:17px;background:linear-gradient(135deg,rgba(52,199,116,.22),rgba(243,180,73,.18));border:1px solid var(--line);display:grid;place-items:center;font-size:23px;margin-bottom:18px}.service-card h3{margin:0 0 10px;font-size:23px;letter-spacing:-.045em}.service-card p{margin:0;color:var(--muted);font-size:15px;line-height:1.58}.split{background:linear-gradient(180deg,#071827,#0a1d2d)}.split-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}.listing-card{border:1px solid var(--line2);background:radial-gradient(circle at 12% 12%,rgba(52,199,116,.16),transparent 32%),linear-gradient(155deg,#081724,#102f46);border-radius:34px;padding:22px;box-shadow:var(--shadow)}.window{border:1px solid var(--line);background:rgba(255,255,255,.055);border-radius:24px;padding:18px}.mock-row{display:grid;grid-template-columns:112px 1fr;gap:16px;margin:16px 0}.product{height:112px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(135deg,#102b40,#19394f);position:relative}.product:after{content:"";position:absolute;inset:27px;border-radius:16px;background:linear-gradient(135deg,var(--green),var(--gold))}.lines{display:grid;gap:11px;align-content:center}.line{height:12px;border-radius:999px;background:rgba(255,255,255,.18)}.line.short{width:60%}.checklist{list-style:none;padding:0;margin:24px 0 0;display:grid;gap:14px}.checklist li{display:flex;gap:12px;align-items:flex-start;color:var(--soft);font-size:18px;font-weight:780}.check{flex:0 0 26px;width:26px;height:26px;border-radius:9px;background:rgba(52,199,116,.18);color:#bfffd2;display:grid;place-items:center;font-weight:950}.quotes{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:34px}.quote{border:1px solid var(--line);background:rgba(255,255,255,.055);border-radius:24px;padding:22px;color:var(--soft)}.quote p{margin:0 0 14px;font-size:17px;line-height:1.55}.quote b{color:var(--gold2)}.cta-section{background:linear-gradient(180deg,#0a1d2d,#04111d);padding-top:42px}.cta-card{position:relative;overflow:hidden;border-radius:38px;background:radial-gradient(circle at 90% 20%,rgba(52,199,116,.22),transparent 30%),radial-gradient(circle at 12% 78%,rgba(243,180,73,.16),transparent 34%),linear-gradient(145deg,#071827,#102f46);padding:56px;display:grid;grid-template-columns:1fr .9fr;gap:30px;align-items:center;box-shadow:var(--shadow);border:1px solid var(--line2)}.mini-stack{display:grid;gap:12px}.stack-row{background:rgba(255,255,255,.08);border:1px solid var(--line2);border-radius:18px;padding:16px;font-weight:850}.stack-row small{display:block;color:#bff5d0;text-transform:uppercase;letter-spacing:.1em;font-size:11px;margin-bottom:4px}.form{display:grid;gap:12px;background:rgba(4,17,29,.72);border:1px solid var(--line2);padding:20px;border-radius:24px}input,textarea,select{width:100%;border:1px solid var(--line2);background:#091a29;border-radius:14px;padding:15px 16px;font:inherit;color:var(--text)}input::placeholder,textarea::placeholder{color:#7890a3}textarea{min-height:96px;resize:vertical}.form-status{min-height:22px;color:var(--muted);font-weight:820;font-size:.92rem}.form-status.ok{color:#bfffd2}.form-status.err{color:#ffb3aa}footer{background:#04111d;color:rgba(246,251,255,.70);padding:52px 0 30px;border-top:1px solid var(--line)}.footer-grid{display:grid;grid-template-columns:1.3fr repeat(3,1fr);gap:42px}.footer-brand{font-weight:950;font-size:1.35rem;letter-spacing:-.04em;color:#fff}.footer-desc{color:var(--muted);margin-top:14px;max-width:340px}.footer-col h3{color:var(--gold2);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;margin:0 0 14px}.footer-col a{display:block;color:rgba(246,251,255,.66);margin:9px 0}.footer-col a:hover{color:#fff}.footer-bottom{border-top:1px solid var(--line);margin-top:40px;padding-top:22px;display:flex;justify-content:space-between;gap:20px;color:var(--muted);font-size:.92rem}@media (max-width:960px){.nav{display:none}.hero-center{padding-top:42px}.dash-ui,.split-grid,.cta-card,.footer-grid{grid-template-columns:1fr}.service-grid{grid-template-columns:1fr 1fr}.sidebar{display:none}.metrics,.quotes{grid-template-columns:1fr}.road{grid-template-columns:1fr;gap:8px}.cta-card{padding:36px}}@media (max-width:560px){.wrap{width:min(100% - 28px,1160px)}.site-header{height:72px}.brand{font-size:17px}.mark{width:36px;height:36px;border-radius:12px}h1{font-size:clamp(44px,14vw,64px);line-height:.94;letter-spacing:-.07em}.subhead{font-size:17px}.btn{width:100%}.hero{padding-bottom:58px}.dashboard{padding:12px;border-radius:26px}.dash-ui{padding:12px;border-radius:20px}.dash-head{display:grid}.service-grid{grid-template-columns:1fr}.mock-row{grid-template-columns:88px 1fr}.product{height:88px}.section-head h2,.split-copy h2,.cta-card h2{font-size:42px;line-height:1}.cta-card{border-radius:28px;padding:26px}section{padding:62px 0}.footer-bottom{display:grid}}
+  </style>
   <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
 </head>
-<body data-design="rocket-route-elevate-marketplace-audit-2026-05-03">
-  <header class="hero">
-    <nav class="nav">
-      <a class="brand" href="index.html" aria-label="MyCommercePartner home"><span class="mark">M</span><span>MyCommercePartner</span></a>
-      <div class="links">
-        <a href="#offers">Offers</a>
-        <a href="free-listing-score.html">Listing Score</a>
-        <a href="#method">Approach</a>
-        <a href="#case">Example Review</a>
-        <a class="nav-cta" href="free-marketplace-review.html">Request Review</a>
-      </div>
-    </nav>
-
-    <div class="hero-inner">
-      <div>
-        <div class="eyebrow">Amazon & eBay Marketplace Growth Team</div>
-        <h1>Find the marketplace gaps <em>holding back your product sales.</em></h1>
-        <p class="subhead">Send 1–3 Amazon or eBay links. We review your marketplace presence, identify listing and content issues, then turn the findings into a clear priority map your team can act on — or hand to us for execution.</p>
+<body>
+  <main class="hero">
+    <div class="glow one"></div><div class="glow two"></div>
+    <div class="wrap">
+      <header class="site-header">
+        <a class="brand" href="index.html" aria-label="MyCommercePartner home"><span class="mark">M</span><span>MyCommercePartner</span></a>
+        <nav class="nav" aria-label="Main navigation">
+          <a href="#services">Services</a>
+          <a href="#results">Results</a>
+          <a href="#pricing">Pricing</a>
+          <a href="contact.html">Contact</a>
+          <a class="nav-pill" href="free-marketplace-review.html">Book a Review</a>
+        </nav>
+      </header>
+      <div class="hero-center">
+        <div class="eyebrow">Amazon &amp; eBay growth partner</div>
+        <h1>Marketplace growth,<br><span class="accent">handled for you.</span></h1>
+        <p class="subhead">We optimize listings, fix account issues, improve ads, and keep your marketplace operations moving — without adding another hire to your team.</p>
         <div class="cta-row">
-          <a class="btn btn-primary" href="#audit">Get your free marketplace review →</a>
-          <a class="btn btn-secondary" href="#method">See what we review</a>
-        </div>
-        <div class="qualification">
-          <div class="q-card"><strong>01</strong><span>Diagnose first</span></div>
-          <div class="q-card"><strong>02</strong><span>Fix order mapped</span></div>
-          <div class="q-card"><strong>03</strong><span>Execution ready</span></div>
+          <a class="btn btn-primary" href="free-marketplace-review.html">Get a Growth Review</a>
+          <a class="btn btn-secondary" href="#services">See What We Handle</a>
         </div>
       </div>
-
-      <aside class="audit-panel" aria-label="Marketplace review preview">
-        <div class="panel-top"><span>Marketplace Growth Review</span><span class="status">Sample Review</span></div>
-        <div class="score-card">
-          <div class="score-head">
-            <h3>Revenue opportunity snapshot</h3>
-            <div class="score"><span>72</span></div>
+      <section class="dashboard" aria-label="MCP Client Growth Dashboard preview">
+        <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>MCP Client Growth Dashboard</span></div>
+        <div class="dash-ui">
+          <aside class="sidebar" aria-label="Dashboard tabs"><div class="side-title">MyCommercePartner</div><div class="tab active">Growth plan</div><div class="tab">Listings</div><div class="tab">Account health</div><div class="tab">Campaigns</div><div class="tab">Reports</div></aside>
+          <div class="dash-main">
+            <div class="dash-head"><h2>MCP Client Growth Dashboard</h2><span class="status">On track</span></div>
+            <div class="focus"><div class="label">This month’s focus</div><strong>Refresh top products, clean up account risks, and push the next campaign tests.</strong></div>
+            <div class="metrics">
+              <div class="metric"><b>+28%</b><span>Revenue lift on priority listings</span></div>
+              <div class="metric"><b>42 listings</b><span>Reviewed, improved, or queued</span></div>
+              <div class="metric"><b>96%</b><span>Account health items resolved</span></div>
+            </div>
+            <div class="roadmap" aria-label="Priority roadmap">
+              <div class="road"><span>Listing fixes</span><div class="track"><i style="width:82%"></i></div><b>82%</b></div>
+              <div class="road"><span>Store trust</span><div class="track"><i style="width:68%"></i></div><b>68%</b></div>
+              <div class="road"><span>Growth tests</span><div class="track"><i style="width:54%"></i></div><b>54%</b></div>
+            </div>
           </div>
-          <div class="audit-grid">
-            <div class="mini"><label>Listing clarity</label><strong>Needs stronger buyer language</strong><div class="bar"><i style="width:64%"></i></div></div>
-            <div class="mini"><label>Content gaps</label><strong>A+ modules underused</strong><div class="bar"><i style="width:48%"></i></div></div>
-            <div class="mini"><label>Search fit</label><strong>Titles missing key intent</strong><div class="bar"><i style="width:58%"></i></div></div>
-            <div class="mini"><label>Priority order</label><strong>Top 5 fixes surfaced</strong><div class="bar"><i style="width:82%"></i></div></div>
-          </div>
-          <ul class="issue-list">
-            <li><span class="dot"></span><span>Hero image does not show the product benefit fast enough.</span></li>
-            <li><span class="dot"></span><span>Bullets describe features, but miss comparison and buying triggers.</span></li>
-            <li><span class="dot"></span><span>Brand page has trust signals, but they are not connected to top products.</span></li>
-          </ul>
         </div>
-      </aside>
+      </section>
     </div>
-  </header>
+  </main>
 
-  <nav class="ticker" aria-label="Marketplace review topics"><div class="ticker-track"><a class="ticker-link" href="free-marketplace-review.html">Amazon listing review</a><a class="ticker-link" href="marketplace-listing-audit.html">eBay growth map</a><a class="ticker-link" href="blog-amazon-a-plus-content-refresh.html">A+ content refresh</a><a class="ticker-link" href="#method">Search clarity</a><a class="ticker-link" href="#case">Buyer confidence gaps</a><a class="ticker-link" href="#audit">Priority fix order</a></div></nav>
-
-  <section class="proof" id="proof">
+  <section class="services" id="services">
     <div class="wrap">
-      <div class="section-kicker">Marketplace diagnosis before execution</div>
-      <div class="split-title">
-        <h2>Make the revenue leaks visible before you invest in fixes.</h2>
-        <p>Most brands know something could improve, but not what deserves attention first. The review turns scattered listing and content concerns into a focused priority map.</p>
-      </div>
-      <div class="stat-wall">
-        <div class="stat big"><strong>1–3</strong><p>Product pages reviewed first so your team can see the value before a bigger audit.</p></div>
-        <div class="stat"><strong>5</strong><p>Highest-priority fixes surfaced in a simple action order.</p></div>
-        <div class="stat"><strong>3</strong><p>Paths after review: audit, listing sprint, or monthly management.</p></div>
+      <div class="section-head"><div class="kicker">Marketplace operating support</div><h2>Everything needed to run a stronger marketplace channel</h2><p>Focused help for brands that want sharper pages, cleaner account execution, and a clear weekly path forward.</p></div>
+      <div class="service-grid">
+        <article class="service-card"><div class="icon">✎</div><h3>Listing Optimization</h3><p>Sharper titles, stronger bullets, cleaner descriptions, image guidance, and product pages shoppers understand faster.</p></article>
+        <article class="service-card"><div class="icon">✓</div><h3>Account Health</h3><p>Review suppression risks, policy issues, detail gaps, and operational blockers before they slow the account down.</p></article>
+        <article class="service-card"><div class="icon">↗</div><h3>Growth Campaigns</h3><p>Plan marketplace promotions, ad cleanups, merchandising tests, and priority moves around the products that matter most.</p></article>
+        <article class="service-card"><div class="icon">▦</div><h3>Weekly Reporting</h3><p>Simple updates that show what changed, what improved, what needs attention, and what MCP is handling next.</p></article>
       </div>
     </div>
   </section>
 
-  <section class="infographics" aria-label="Marketplace growth infographics">
-    <div class="wrap">
-      <div class="section-kicker">Visual growth maps</div>
-      <div class="split-title">
-        <h2>See the account the way a buyer and marketplace team see it.</h2>
-        <p>These snapshots show how we translate messy marketplace concerns into practical visuals: where sales may be leaking, which fixes should move first, and how execution can stay steady.</p>
-      </div>
-      <div class="infographic-grid">
-        <article class="infographic-card">
-          <div class="infographic-label">Revenue leak map</div>
-          <h3>Where buyers may be dropping off</h3>
-          <div class="leak-bars" aria-label="Common marketplace revenue leak areas">
-            <div class="leak-row"><span>Main image clarity</span><div class="leak-track"><i class="leak-fill" style="width:78%"></i></div><b>High</b></div>
-            <div class="leak-row"><span>Title search fit</span><div class="leak-track"><i class="leak-fill" style="width:64%"></i></div><b>Med</b></div>
-            <div class="leak-row"><span>Bullets and proof</span><div class="leak-track"><i class="leak-fill" style="width:71%"></i></div><b>High</b></div>
-            <div class="leak-row"><span>A+ content path</span><div class="leak-track"><i class="leak-fill" style="width:52%"></i></div><b>Med</b></div>
-          </div>
-        </article>
-        <article class="infographic-card">
-          <div class="infographic-label">Priority matrix</div>
-          <h3>Fix order before busywork</h3>
-          <div class="priority-map" aria-label="Marketplace priority matrix">
-            <div class="priority-cell hot"><strong>Quick wins</strong><span>Title clarity, image order, missing trust cues.</span></div>
-            <div class="priority-cell"><strong>Deeper lifts</strong><span>A+ story, brand storefront, offer positioning.</span></div>
-            <div class="priority-cell"><strong>Monitor</strong><span>Competitor shifts, price pressure, stock signals.</span></div>
-            <div class="priority-cell"><strong>Delay</strong><span>Low-impact polish that can wait until core gaps are fixed.</span></div>
-          </div>
-        </article>
-        <article class="infographic-card wide">
-          <div class="infographic-label">Execution rhythm</div>
-          <h3>How review insights become steady marketplace improvements</h3>
-          <div class="rhythm" aria-label="Marketplace improvement rhythm">
-            <div class="rhythm-step"><small>Week 1</small><strong>Diagnose</strong><span>Review listings, content, search fit, and buyer doubts.</span></div>
-            <div class="rhythm-step"><small>Week 2</small><strong>Prioritize</strong><span>Choose the fixes most likely to improve confidence first.</span></div>
-            <div class="rhythm-step"><small>Week 3</small><strong>Improve</strong><span>Update titles, bullets, images, A+ content, and proof.</span></div>
-            <div class="rhythm-step"><small>Week 4</small><strong>Review</strong><span>Check the next bottleneck and keep the account moving.</span></div>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <span class="anchor-target" id="services"></span>
-  <section class="offers" id="offers">
-    <div class="wrap">
-      <div class="section-kicker">Marketplace growth offers</div>
-      <div class="split-title">
-        <h2>Start with the right level of help, then move into execution.</h2>
-        <p>Choose the path that fits the account: a free first look, a deeper audit, a focused listing sprint, or ongoing monthly management.</p>
-      </div>
-      <div class="offer-path" aria-label="Marketplace growth path">
-        <article class="path-card"><small>01</small><h3>Free Growth Review</h3><p>Send 1–3 marketplace links and get the clearest visible opportunities first.</p></article>
-        <article class="path-card"><small>02</small><h3>Marketplace Growth Audit</h3><p>Use the deeper audit when the account needs a sharper priority map.</p></article>
-        <article class="path-card"><small>03</small><h3>5-Day Listing Sprint</h3><p>Turn approved listing priorities into focused title, content, and detail improvements.</p></article>
-        <article class="path-card"><small>04</small><h3>Monthly Management</h3><p>Bring MCP in as the ongoing Amazon and eBay marketplace growth team.</p></article>
-      </div>
-      <div class="offer-grid">
-        <article class="offer-card"><div><h3>Free Marketplace Growth Review</h3><p>A simple first step for brands that want to see what is holding key listings back.</p></div><a class="offer-link" href="free-marketplace-review.html">Open page →</a></article>
-        <article class="offer-card"><div><h3>Marketplace Growth Audit</h3><p>A deeper diagnosis for marketplace accounts that need a clearer action plan.</p></div><a class="offer-link" href="marketplace-listing-audit.html">Open page →</a></article>
-        <article class="offer-card"><div><h3>5-day Listing Optimization Sprint</h3><p>A focused service path for cleaning up priority Amazon or eBay listings quickly.</p></div><a class="offer-link" href="contact.html?interest=5-day%20Listing%20Optimization%20Sprint">Discuss sprint →</a></article>
-        <article class="offer-card"><div><h3>Monthly Management</h3><p>Ongoing marketplace support for brands that need steady execution and reporting.</p></div><a class="offer-link" href="monthly-management.html">Ask about monthly →</a></article>
-      </div>
-    </div>
-  </section>
-
-  <span class="anchor-target" id="process"></span>
-  <section class="method" id="method">
-    <div class="wrap">
-      <div class="section-kicker">What we check first</div>
-      <div class="split-title">
-        <h2>Four phases. One clear next step.</h2>
-        <p>We keep the process simple: inspect the storefront and listings, identify the gaps, rank the fixes, then show the cleanest next step.</p>
-      </div>
-      <div class="steps">
-        <article class="step"><div class="num">01</div><h3>Review the live pages</h3><p>Check Amazon/eBay pages, brand content, product positioning, and buyer clarity.</p></article>
-        <article class="step"><div class="num">02</div><h3>Find what costs sales</h3><p>Identify the images, titles, bullets, A+ content, proof, and offer details that may be holding buyers back.</p></article>
-        <article class="step"><div class="num">03</div><h3>Rank the fixes</h3><p>Sort improvements by likely upside and effort so your team knows what should move first.</p></article>
-        <article class="step"><div class="num">04</div><h3>Move into the right help</h3><p>Choose a deeper audit, a 5-day listing sprint, or ongoing marketplace growth management.</p></article>
-      </div>
-    </div>
-  </section>
-
-  <section class="case" id="case">
-    <div class="wrap">
-      <div class="case-card">
-        <div class="case-left">
-          <div class="section-kicker" style="color:#b7f4cb">Sample growth plan</div>
-          <h2>A simple action plan your team can follow.</h2>
-          <p>The review shows what is hurting buyer confidence, what to fix first, and what each fix should help improve.</p>
-        </div>
-        <div class="case-right">
-          <div class="comparison">
-            <div class="row"><small>Review area</small><small>What we may find</small><small>Priority fix</small><small>What improves</small></div>
-            <div class="row"><span>Listing message</span><span>Unclear main value</span><span>Rewrite the title and bullets</span><span>Buyers understand it faster</span></div>
-            <div class="row"><span>Product photos</span><span>Features shown, benefits missing</span><span>Add clearer use-case images</span><span>The product feels easier to choose</span></div>
-            <div class="row"><span>Buyer confidence</span><span>Proof is hard to see</span><span>Show reviews or brand proof sooner</span><span>Fewer doubts before checkout</span></div>
-            <div class="row"><span>Next step</span><span>Too many possible fixes</span><span>Rank fixes by priority</span><span>The team knows what to do first</span></div>
+  <section class="split" id="results">
+    <div class="wrap split-grid">
+      <div class="listing-card" aria-label="Listing improvement mockup">
+        <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>Listing quality board</span></div>
+        <div class="window">
+          <div class="label">Priority listing refresh</div>
+          <div class="mock-row"><div class="product"></div><div class="lines"><div class="line"></div><div class="line"></div><div class="line short"></div><div class="line" style="width:82%"></div></div></div>
+          <div class="roadmap">
+            <div class="road"><span>Buyer clarity</span><div class="track"><i style="width:88%"></i></div><b>High</b></div>
+            <div class="road"><span>Trust signals</span><div class="track"><i style="width:74%"></i></div><b>Med</b></div>
+            <div class="road"><span>Search fit</span><div class="track"><i style="width:69%"></i></div><b>Med</b></div>
           </div>
         </div>
       </div>
+      <div class="split-copy">
+        <div class="kicker">Better product pages</div>
+        <h2>Create listings shoppers trust</h2>
+        <p>Marketplace growth starts with pages that make the buying decision easier. MCP turns scattered issues into clear improvements your customers can feel.</p>
+        <ul class="checklist">
+          <li><span class="check">✓</span><span>Turn feature-heavy copy into benefit-led product messaging.</span></li>
+          <li><span class="check">✓</span><span>Surface proof, specs, and buying triggers where shoppers need them.</span></li>
+          <li><span class="check">✓</span><span>Keep top listings reviewed, refreshed, and ready for growth pushes.</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="wrap quotes">
+      <article class="quote"><p>“The biggest win was clarity. We could finally see which listing fixes mattered first and which ones could wait.”</p><b>Marketplace brand operator</b></article>
+      <article class="quote"><p>“MCP keeps the weekly work moving — listings, account issues, and next growth priorities do not sit untouched.”</p><b>Amazon &amp; eBay seller</b></article>
     </div>
   </section>
 
-  <section class="cta-section" id="audit">
+  <section class="cta-section" id="pricing">
     <div class="wrap">
-      <div class="cta-box">
+      <div class="cta-card">
         <div>
-          <div class="eyebrow">Free marketplace review</div>
-          <h2>Put a marketplace growth team behind your best products.</h2>
-          <p>Send 1–3 marketplace links. We return a clear view of what is holding the listings back and which fixes should happen first.</p>
+          <div class="eyebrow">Growth review</div>
+          <h2>Let MCP find your next growth wins.</h2>
+          <p>Start with a review of your marketplace presence. We will point out the clearest opportunities and recommend the right next step.</p>
+          <div class="cta-row" style="justify-content:flex-start"><a class="btn btn-primary" href="free-marketplace-review.html">Book a Review</a><a class="btn btn-secondary" href="free-listing-score.html">Try Free Listing Score</a></div>
         </div>
         <form class="form" id="contactForm">
-          <input id="name" name="name" placeholder="Name" autocomplete="name" required />
-          <input id="email" name="email" type="email" placeholder="Work email" autocomplete="email" required />
-          <input id="siteUrl" name="siteUrl" placeholder="Amazon or eBay listing URL" inputmode="url" />
+          <input id="name" name="name" placeholder="Name" autocomplete="name" required>
+          <input id="email" name="email" type="email" placeholder="Work email" autocomplete="email" required>
+          <input id="siteUrl" name="siteUrl" placeholder="Amazon or eBay URL" inputmode="url">
           <select id="package" name="package"><option>Free Marketplace Growth Review</option><option>Marketplace Growth Audit</option><option>5-day Listing Optimization Sprint</option><option>Monthly Amazon and eBay Growth Management</option><option>Not sure yet</option></select>
-          <textarea id="message" name="message" placeholder="What should we know about the product or marketplace issue?" required></textarea>
-          <button class="btn btn-primary submit" type="submit">Request my free marketplace review →</button>
+          <textarea id="message" name="message" placeholder="What should we know about your marketplace goals?" required></textarea>
+          <button class="btn btn-primary" type="submit">Request my review</button>
           <div id="formStatus" class="form-status" role="status" aria-live="polite"></div>
         </form>
       </div>
@@ -428,10 +137,7 @@
   <footer>
     <div class="wrap">
       <div class="footer-grid">
-        <div>
-          <div class="footer-brand">MyCommercePartner</div>
-          <p class="footer-desc">Amazon and eBay marketplace growth support for product brands that need sharper diagnosis, stronger listings, and steady execution.</p>
-        </div>
+        <div><div class="footer-brand">MyCommercePartner</div><p class="footer-desc">Amazon and eBay marketplace growth support for product brands that need sharper listings, cleaner execution, and steady next steps.</p></div>
         <div class="footer-col"><h3>Marketplace growth</h3><a href="free-listing-score.html">Free Listing Score</a><a href="free-marketplace-review.html">Free Marketplace Growth Review</a><a href="marketplace-listing-audit.html">Marketplace Growth Audit</a><a href="contact.html?interest=5-day%20Listing%20Optimization%20Sprint">5-day Listing Optimization Sprint</a><a href="monthly-management.html">Monthly Management</a></div>
         <div class="footer-col"><h3>Company</h3><a href="about.html">About</a><a href="faq.html">FAQ</a><a href="blog.html">Blog</a><a href="contact.html">Contact</a></div>
         <div class="footer-col"><h3>Other services</h3><a href="website-reviews.html">Website Reviews</a><a href="missed-lead-recovery.html">Missed Lead Recovery</a></div>
@@ -439,7 +145,6 @@
       <div class="footer-bottom"><span>© <span id="year"></span> MyCommercePartner · MyCommercePartner LLC</span><a href="contact.html">Contact us</a></div>
     </div>
   </footer>
-
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
     const form = document.getElementById('contactForm');
@@ -465,4 +170,3 @@
   </script>
 </body>
 </html>
-
