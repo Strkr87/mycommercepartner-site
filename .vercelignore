@@ -1,9 +1,68 @@
-docs/
-options/
-design-previews/
+# Source control / local Vercel metadata
 .git/
 .github/
+.vercel/
+
+# Local dependencies and caches
+node_modules/
+.npm/
+.cache/
+*.tsbuildinfo
+
+# Internal assistant/worktree state
+.claude/
+CLAUDE.md
+
+# Internal docs, plans, proposals, options, and reports
+docs/
+options/
+reports/
+report/
+plans/
+proposals/
+README.md
+*.md
+*.pdf
+*.doc
+*.docx
+*.txt
+*.csv
+
+# Design previews and experiments that should never be served
+design-previews/
+previews/
+preview/
+experiments/
+concepts/
+mockups/
+creatorbuddy*/
+*CreatorBuddy*
+*creatorbuddy*
+
+# Backup/draft/stale HTML snapshots
+*.backup*.html
+*.bak.html
+*.draft.html
+*.old.html
+*.tmp.html
+index.backup-*.html
+
+# Generated screenshots, temp output, and logs
+screenshots/
+screenshot*/
+output/
+outputs/
+tmp/
+temp/
+logs/
 *.log
+*.png.log
+*.trace
+*.har
+*.webm
+*.mp4
+
+# Secrets / local environment
 .env
 .env.*
-README.md
+!.env.example
