@@ -226,12 +226,30 @@
       const url = String(listingUrlInput?.value || '').trim();
       if (!url || (!force && url === lastLookupUrl)) return;
       lastLookupUrl = url;
-      setLookupStatus('Reading public page details from the link...', '');
-      lookupPromise = fetch('/api/contact', {
+      const clue = extractUrlProductClue(url);
+      const isEbayItemNumberOnly = clue.marketplace === 'eBay' && clue.id && !clue.title;
+      setLookupStatus(isEbayItemNumberOnly ? 'Looking up public listing details from the eBay item number...' : 'Reading public page details from the link...', '');
+      const endpoint = '/api/contact';
+      const payload = isEbayItemNumberOnly ? {action:'ebay-item-lookup', url} : {action:'extract-listing', url};
+      lookupPromise = fetch(endpoint, {
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'extract-listing', url})
+        body:JSON.stringify(payload)
       }).then(response => response.json()).then(data => {
+        if (isEbayItemNumberOnly && data.ok && data.title) {
+          if (marketplaceInput) marketplaceInput.value = 'eBay';
+          if (currentTitleInput && !currentTitleInput.value.trim()) currentTitleInput.value = data.title;
+          const details = [data.condition && `Condition: ${data.condition}`, data.price && `Price: ${data.price}`, data.category && `Category: ${data.category}`, data.description].filter(Boolean).join('\n');
+          if (details && currentCopyInput && !currentCopyInput.value.trim()) currentCopyInput.value = details;
+          if (data.category && productTypeInput && !productTypeInput.value.trim()) productTypeInput.value = data.category;
+          setLookupStatus('Found listing details from the eBay item number.', 'ok');
+          return data;
+        }
+        if (isEbayItemNumberOnly) {
+          if (marketplaceInput) marketplaceInput.value = 'eBay';
+          setLookupStatus('We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.', 'err');
+          return data;
+        }
         if (data.marketplace && marketplaceInput) marketplaceInput.value = data.marketplace;
         if (data.title && currentTitleInput && !currentTitleInput.value.trim()) currentTitleInput.value = data.title;
         if (data.description && currentCopyInput && !currentCopyInput.value.trim()) currentCopyInput.value = data.description;
@@ -243,7 +261,8 @@
         }
         return data;
       }).catch(() => {
-        setLookupStatus('We could not read the page automatically. You can still submit the link, or add optional details for a stronger preview.', 'err');
+        if (isEbayItemNumberOnly) setLookupStatus('We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.', 'err');
+        else setLookupStatus('We could not read the page automatically. You can still submit the link, or add optional details for a stronger preview.', 'err');
       }).finally(() => { lookupPromise = null; });
       return lookupPromise;
     }
@@ -598,12 +617,13 @@
       const hasFullDetails = Boolean(currentTitle || sanitizeListingText(currentCopyRaw) || sanitizeListingText(differentiatorsRaw) || enteredProductType || keyword);
       const hasCustomerFacingSeed = Boolean(sourceTitle || sanitizeListingText(currentCopyRaw) || sanitizeListingText(differentiatorsRaw) || enteredProductType || keyword);
       if (!hasCustomerFacingSeed) {
+        const itemNumberOnly = urlClue.marketplace === 'eBay' && urlClue.id && !urlClue.title;
         return {
           title: 'Add Product Title for Stronger Preview',
           bullets: [],
           keywords: ['product title', 'product details'],
-          note: 'The link was accepted, but it does not expose enough product words. Add the current title, product type, or a few details for a useful rewrite.',
-          copyEmptyState: 'This link does not contain enough product words to create honest listing copy. Enter the current title, product type, or a few details above and run it again.'
+          note: itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : 'The link was accepted, but it does not expose enough product words. Add the current title, product type, or a few details for a useful rewrite.',
+          copyEmptyState: itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : 'This link does not contain enough product words to create honest listing copy. Enter the current title, product type, or a few details above and run it again.'
         };
       }
       const sourceText = `${sourceTitle}\n${currentCopyRaw}\n${differentiatorsRaw}`;

@@ -1,5 +1,6 @@
 // api/contact.js — Contact form handler + website review checkout starter
 const { STRIPE_SECRET_KEY, stripeRequest } = require('../lib/platform');
+const { extractEbayItemId, parseEbayItemHtml } = require('./_lib/ebay-item-lookup');
 const nodemailer = require('nodemailer');
 
 const SMTP_HOST   = process.env.SMTP_HOST || 'smtp.gmail.com';
@@ -257,6 +258,46 @@ async function startMarketplaceAuditCheckout(req, res) {
   res.status(200).json({ url: data.url });
 }
 
+async function lookupEbayItemDetails(req, res) {
+  const itemId = extractEbayItemId(req.body?.itemId || req.body?.url || '');
+  if (!itemId) {
+    res.status(400).json({ ok: false, message: 'Enter a valid eBay item number.' });
+    return;
+  }
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 9000);
+  try {
+    const response = await fetch(`https://www.ebay.com/itm/${encodeURIComponent(itemId)}`, {
+      signal: controller.signal,
+      redirect: 'follow',
+      headers: {
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'accept-language': 'en-US,en;q=0.9',
+        'cache-control': 'no-cache'
+      }
+    });
+    const html = await response.text();
+    const parsed = parseEbayItemHtml(html, itemId);
+    if (response.ok && parsed.ok) {
+      res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
+      res.status(200).json(parsed);
+      return;
+    }
+  } catch (_) {
+    // Return the same simple fallback below.
+  } finally {
+    clearTimeout(timer);
+  }
+  res.setHeader('Cache-Control', 'no-store');
+  res.status(200).json({
+    ok: false,
+    itemId,
+    source: 'fallback',
+    message: 'We found the eBay item number, but could not read enough public listing details.'
+  });
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
@@ -275,6 +316,11 @@ module.exports = async (req, res) => {
 
   if (req.body?.action === 'marketplace-audit-checkout') {
     await startMarketplaceAuditCheckout(req, res);
+    return;
+  }
+
+  if (req.body?.action === 'ebay-item-lookup') {
+    await lookupEbayItemDetails(req, res);
     return;
   }
 

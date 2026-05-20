@@ -223,6 +223,42 @@
       const title = words.length >= 2 ? optTitleCase(words.slice(0,12).join(' ')) : '';
       return {title, marketplace, id};
     }
+    function homeNeedsEbayItemLookup(url){
+      const clue = optExtractUrlClue(url);
+      return clue.marketplace === 'eBay' && clue.id && !clue.title;
+    }
+    async function lookupHomeEbayItemIfNeeded(){
+      const urlInput = homeOptimizerForm?.querySelector('[name="siteUrl"]');
+      const url = optClean(urlInput?.value);
+      if (!url || !homeNeedsEbayItemLookup(url)) return null;
+      const titleInput = homeOptimizerForm.querySelector('[name="currentTitle"]');
+      const detailsInput = homeOptimizerForm.querySelector('[name="currentCopy"]');
+      const productTypeInput = homeOptimizerForm.querySelector('[name="productType"]');
+      const keywordInput = homeOptimizerForm.querySelector('[name="targetKeyword"]');
+      if (optClean(titleInput?.value) || optClean(detailsInput?.value) || optClean(productTypeInput?.value) || optClean(keywordInput?.value)) return null;
+      homeOptimizerStatus.textContent = 'Looking up public listing details from the eBay item number...';
+      try {
+        const response = await fetch('/api/contact', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({action:'ebay-item-lookup', url})
+        });
+        const data = await response.json().catch(()=>({}));
+        if (response.ok && data.ok && data.title) {
+          if (titleInput && !titleInput.value.trim()) titleInput.value = data.title;
+          const details = [data.condition && `Condition: ${data.condition}`, data.price && `Price: ${data.price}`, data.category && `Category: ${data.category}`, data.description].filter(Boolean).join('\n');
+          if (detailsInput && details && !detailsInput.value.trim()) detailsInput.value = details;
+          if (productTypeInput && data.category && !productTypeInput.value.trim()) productTypeInput.value = data.category;
+          homeOptimizerStatus.textContent = 'Found listing details from the eBay item number.';
+          return data;
+        }
+        homeOptimizerStatus.textContent = 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.';
+        return data;
+      } catch (_) {
+        homeOptimizerStatus.textContent = 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.';
+        return null;
+      }
+    }
     function optTitleCase(value){
       return optClean(value).replace(/\b[a-z][a-z0-9'/-]*\b/gi, word => {
         if (/^(and|or|for|with|of|to|in)$/i.test(word)) return word.toLowerCase();
@@ -403,21 +439,23 @@
         'Include verified specs such as dimensions, material, color, compatibility, pack count, or included items.',
         'Paste visible description or feature text if the marketplace page cannot be read automatically.'
       ];
-      return {score, marketplace, host, optimizedTitle, bullets, keywordIdeas, fixes, hasDetails: hasFullDetails, hasCustomerFacingSeed, copyEmptyState: 'This link does not contain enough product words to create honest listing copy. Enter the current title, product type, or a few details above and run it again.'};
+      const itemNumberOnly = homeNeedsEbayItemLookup(url);
+      return {score, marketplace, host, optimizedTitle, bullets, keywordIdeas, fixes, hasDetails: hasFullDetails, hasCustomerFacingSeed, itemNumberOnly, copyEmptyState: itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : 'This link does not contain enough product words to create honest listing copy. Enter the current title, product type, or a few details above and run it again.'};
     }
     function renderHomeOptimizer(result){
       homeOptimizerResult.hidden = false;
       homeScoreValue.textContent = result.score;
       homeScoreLabel.textContent = `${result.marketplace} readiness score`;
-      homeScoreSummary.textContent = result.hasDetails ? `Based on the public link plus the details entered for ${result.host || 'this listing'}.` : result.hasCustomerFacingSeed ? `Based on the public link for ${result.host || 'this listing'}. Add title/details for a stronger rewrite.` : `The link was accepted, but it does not expose enough product words. Add title/details for a useful rewrite.`;
+      homeScoreSummary.textContent = result.hasDetails ? `Based on the public link plus the details entered for ${result.host || 'this listing'}.` : result.hasCustomerFacingSeed ? `Based on the public link for ${result.host || 'this listing'}. Add title/details for a stronger rewrite.` : result.itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : `The link was accepted, but it does not expose enough product words. Add title/details for a useful rewrite.`;
       homeOptimizedTitle.textContent = result.optimizedTitle;
       homeOptimizedBullets.innerHTML = result.bullets.length ? result.bullets.map(item => `<li>${optEscape(item)}</li>`).join('') : `<li>${optEscape(result.copyEmptyState)}</li>`;
       homeKeywordChips.innerHTML = result.keywordIdeas.map(item => `<span class="chip">${optEscape(item)}</span>`).join('');
       homeFirstFixes.innerHTML = result.fixes.map(item => `<li>${optEscape(item)}</li>`).join('');
-      homeOptimizerStatus.textContent = result.hasDetails ? 'Your optimized result is ready below.' : result.hasCustomerFacingSeed ? 'Your link-only result is ready below. Optional details will make it stronger.' : 'Add a title or product details to generate customer-facing copy from this link.';
+      homeOptimizerStatus.textContent = result.hasDetails ? 'Your optimized result is ready below.' : result.hasCustomerFacingSeed ? 'Your link-only result is ready below. Optional details will make it stronger.' : result.itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : 'Add a title or product details to generate customer-facing copy from this link.';
     }
-    homeOptimizerForm?.addEventListener('submit', function(event){
+    homeOptimizerForm?.addEventListener('submit', async function(event){
       event.preventDefault();
+      await lookupHomeEbayItemIfNeeded();
       const data = new FormData(homeOptimizerForm);
       renderHomeOptimizer(buildHomeOptimizer(data));
     });
