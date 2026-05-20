@@ -113,11 +113,210 @@ function parseEbayItemHtml(html, itemId = '') {
     price,
     condition,
     category,
+    productType: category || 'eBay listing',
     image,
     description,
     source: 'ebay-item-page',
+    detailCount: [title, price, condition, category, image, description].filter(Boolean).length,
     blocked
   };
 }
 
-module.exports = { extractEbayItemId, parseEbayItemHtml };
+function getEbayCredentials(env = process.env) {
+  const clientId = String(env.EBAY_CLIENT_ID || '').trim();
+  const clientSecret = String(env.EBAY_CLIENT_SECRET || '').trim();
+  if (!clientId || !clientSecret) return null;
+  return {
+    clientId,
+    clientSecret,
+    marketplaceId: String(env.EBAY_MARKETPLACE_ID || 'EBAY_US').trim() || 'EBAY_US'
+  };
+}
+
+function formatAmount(value) {
+  if (!value) return '';
+  if (typeof value === 'string') return cleanField(value, 80);
+  const amount = value.value || value.convertedFromValue || '';
+  const currency = value.currency || value.convertedFromCurrency || '';
+  return cleanField([currency, amount].filter(Boolean).join(' '), 80);
+}
+
+function formatLocation(location = {}) {
+  return cleanField([
+    location.city,
+    location.stateOrProvince,
+    location.postalCode,
+    location.country
+  ].filter(Boolean).join(', '), 160);
+}
+
+function formatSeller(seller = {}) {
+  const parts = [];
+  if (seller.username) parts.push(`Seller: ${seller.username}`);
+  if (seller.feedbackPercentage) parts.push(`${seller.feedbackPercentage}% positive`);
+  if (seller.feedbackScore) parts.push(`${seller.feedbackScore} feedback`);
+  return cleanField(parts.join(', '), 180);
+}
+
+function formatEstimatedAvailabilities(list = []) {
+  return list.map(entry => {
+    const parts = [];
+    if (entry.availabilityThresholdType) parts.push(entry.availabilityThresholdType);
+    if (entry.availabilityThreshold !== undefined) parts.push(String(entry.availabilityThreshold));
+    if (entry.estimatedAvailabilityStatus) parts.push(entry.estimatedAvailabilityStatus);
+    if (entry.estimatedAvailableQuantity !== undefined) parts.push(`${entry.estimatedAvailableQuantity} available`);
+    return cleanField(parts.join(' '), 120);
+  }).filter(Boolean).join('; ');
+}
+
+function formatShippingOptions(list = []) {
+  return list.slice(0, 3).map(option => {
+    const parts = [];
+    if (option.shippingServiceCode) parts.push(option.shippingServiceCode);
+    if (option.type) parts.push(option.type);
+    if (option.shippingCost) parts.push(formatAmount(option.shippingCost));
+    if (option.minEstimatedDeliveryDate || option.maxEstimatedDeliveryDate) {
+      parts.push([option.minEstimatedDeliveryDate, option.maxEstimatedDeliveryDate].filter(Boolean).join(' to '));
+    }
+    return cleanField(parts.join(' - '), 180);
+  }).filter(Boolean).join('; ');
+}
+
+function formatReturnTerms(returnTerms = {}) {
+  const parts = [];
+  if (returnTerms.returnsAccepted !== undefined) parts.push(returnTerms.returnsAccepted ? 'Returns accepted' : 'Returns not accepted');
+  if (returnTerms.refundMethod) parts.push(`Refund: ${returnTerms.refundMethod}`);
+  if (returnTerms.returnPeriod?.value) parts.push(`${returnTerms.returnPeriod.value} ${returnTerms.returnPeriod.unit || 'days'}`);
+  if (returnTerms.returnShippingCostPayer) parts.push(`Return shipping: ${returnTerms.returnShippingCostPayer}`);
+  return cleanField(parts.join(', '), 180);
+}
+
+function formatAspects(aspects = []) {
+  return aspects.map(aspect => {
+    const name = cleanField(aspect.name, 60);
+    const values = Array.isArray(aspect.value) ? aspect.value : (Array.isArray(aspect.values) ? aspect.values : []);
+    const value = cleanField(values.join(', '), 120);
+    return name && value ? `${name}: ${value}` : '';
+  }).filter(Boolean);
+}
+
+function buildBrowseDetailBundle(item, itemId) {
+  const aspects = formatAspects(item.localizedAspects || item.itemSpecifics || []);
+  const category = cleanField(item.categoryPath || item.category?.categoryName || '', 180);
+  const condition = cleanField(item.condition || item.conditionDescription || '', 120);
+  const price = formatAmount(item.price);
+  const seller = formatSeller(item.seller || {});
+  const location = formatLocation(item.itemLocation || {});
+  const availability = formatEstimatedAvailabilities(item.estimatedAvailabilities || []);
+  const shipping = formatShippingOptions(item.shippingOptions || []);
+  const returns = formatReturnTerms(item.returnTerms || {});
+  const buyingOptions = Array.isArray(item.buyingOptions) ? item.buyingOptions.join(', ') : '';
+  const subtitle = cleanField(item.subtitle || item.shortDescription || '', 500);
+  const title = cleanField(item.title, 240);
+
+  const detailLines = [
+    title && `Title: ${title}`,
+    category && `Category: ${category}`,
+    condition && `Condition: ${condition}`,
+    price && `Price: ${price}`,
+    buyingOptions && `Buying options: ${buyingOptions}`,
+    availability && `Availability: ${availability}`,
+    seller,
+    location && `Item location: ${location}`,
+    shipping && `Shipping: ${shipping}`,
+    returns && `Returns: ${returns}`,
+    subtitle && `Listing notes: ${subtitle}`,
+    aspects.length ? `Item specifics: ${aspects.slice(0, 12).join('; ')}` : ''
+  ].filter(Boolean);
+
+  const image = cleanField(item.image?.imageUrl || item.thumbnailImages?.[0]?.imageUrl || item.additionalImages?.[0]?.imageUrl || '', 500);
+  const productType = category || item.category?.categoryName || 'eBay listing';
+  return {
+    ok: Boolean(title && detailLines.length >= 2),
+    source: 'ebay-api',
+    itemId,
+    title,
+    productType,
+    category,
+    condition,
+    price,
+    buyingOptions,
+    availability,
+    seller: cleanField(seller.replace(/^Seller:\s*/i, ''), 180),
+    itemLocation: location,
+    shipping,
+    returnTerms: returns,
+    subtitle,
+    image,
+    itemSpecifics: aspects.slice(0, 20),
+    description: cleanField(detailLines.join(' | '), 1200),
+    detailCount: detailLines.length + aspects.length
+  };
+}
+
+async function fetchWithTimeout(fetchImpl, url, options = {}, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetchImpl(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function lookupEbayBrowseApi(itemId, options = {}) {
+  const env = options.env || process.env;
+  const credentials = getEbayCredentials(env);
+  if (!credentials) return { ok: false, source: 'ebay-api', reason: 'missing-credentials' };
+
+  const fetchImpl = options.fetch || global.fetch;
+  if (typeof fetchImpl !== 'function') return { ok: false, source: 'ebay-api', reason: 'fetch-unavailable' };
+
+  try {
+    const basicToken = Buffer.from(`${credentials.clientId}:${credentials.clientSecret}`).toString('base64');
+    const tokenResponse = await fetchWithTimeout(fetchImpl, 'https://api.ebay.com/identity/v1/oauth2/token', {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${basicToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'application/json'
+      },
+      body: new URLSearchParams({
+        grant_type: 'client_credentials',
+        scope: 'https://api.ebay.com/oauth/api_scope'
+      }).toString()
+    }, options.timeoutMs || 8000);
+    const tokenData = await tokenResponse.json().catch(() => ({}));
+    if (!tokenResponse.ok || !tokenData.access_token) {
+      return { ok: false, source: 'ebay-api', reason: 'token-failed', status: tokenResponse.status, message: cleanField(tokenData.error_description || tokenData.error || 'Unable to authorize eBay lookup.', 180) };
+    }
+
+    const itemResponse = await fetchWithTimeout(fetchImpl, `https://api.ebay.com/buy/browse/v1/item/get_item_by_legacy_id?legacy_item_id=${encodeURIComponent(itemId)}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${tokenData.access_token}`,
+        Accept: 'application/json',
+        'X-EBAY-C-MARKETPLACE-ID': credentials.marketplaceId
+      }
+    }, options.timeoutMs || 8000);
+    const itemData = await itemResponse.json().catch(() => ({}));
+    if (!itemResponse.ok) {
+      const apiMessage = itemData.errors?.[0]?.message || itemData.error_description || itemData.message || 'Item lookup was not available.';
+      return { ok: false, source: 'ebay-api', reason: 'item-failed', status: itemResponse.status, message: cleanField(apiMessage, 180) };
+    }
+
+    const bundle = buildBrowseDetailBundle(itemData, itemId);
+    if (!bundle.ok) return { ok: false, source: 'ebay-api', reason: 'no-usable-details', status: itemResponse.status };
+    return bundle;
+  } catch (error) {
+    return { ok: false, source: 'ebay-api', reason: error?.name === 'AbortError' ? 'timeout' : 'request-failed' };
+  }
+}
+
+module.exports = {
+  extractEbayItemId,
+  parseEbayItemHtml,
+  lookupEbayBrowseApi,
+  buildBrowseDetailBundle,
+  getEbayCredentials
+};

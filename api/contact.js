@@ -1,6 +1,6 @@
 // api/contact.js — Contact form handler + website review checkout starter
 const { STRIPE_SECRET_KEY, stripeRequest } = require('../lib/platform');
-const { extractEbayItemId, parseEbayItemHtml } = require('./_lib/ebay-item-lookup');
+const { extractEbayItemId, parseEbayItemHtml, lookupEbayBrowseApi } = require('./_lib/ebay-item-lookup');
 const nodemailer = require('nodemailer');
 
 const SMTP_HOST   = process.env.SMTP_HOST || 'smtp.gmail.com';
@@ -264,6 +264,14 @@ async function lookupEbayItemDetails(req, res) {
     res.status(400).json({ ok: false, message: 'Enter a valid eBay item number.' });
     return;
   }
+
+  const apiResult = await lookupEbayBrowseApi(itemId);
+  if (apiResult.ok && apiResult.title) {
+    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
+    res.status(200).json(apiResult);
+    return;
+  }
+
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 9000);
   try {
