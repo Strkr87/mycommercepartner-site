@@ -133,14 +133,14 @@
             <div class="diagnostics" id="diagnostics">
               <article class="diagnostic"><small>Title clarity</small><strong>Waiting for listing</strong><p>Checks whether the link appears to be a focused product page.</p></article>
               <article class="diagnostic"><small>Search relevance</small><strong>Waiting for listing</strong><p>Looks for basic marketplace fit signals from the URL and context.</p></article>
-              <article class="diagnostic"><small>Image trust</small><strong>Needs team review</strong><p>Image quality requires visual inspection in the free growth review.</p></article>
-              <article class="diagnostic"><small>Offer clarity</small><strong>Needs team review</strong><p>Pricing, shipping, variants, and trust cues need human review.</p></article>
-              <article class="diagnostic"><small>Conversion strength</small><strong>Waiting for context</strong><p>Uses the goal and listing type to identify what to inspect next.</p></article>
-              <article class="diagnostic"><small>Account growth fit</small><strong>Waiting for context</strong><p>Routes stronger-fit brands toward review, audit, sprint, or management.</p></article>
+              <article class="diagnostic"><small>Image trust</small><strong>Needs visual review</strong><p>Image quality is best checked from the live product page.</p></article>
+              <article class="diagnostic"><small>Offer clarity</small><strong>Needs offer review</strong><p>Pricing, shipping, variants, and trust cues are easier to judge from the live page.</p></article>
+              <article class="diagnostic"><small>Conversion strength</small><strong>Waiting for listing details</strong><p>Your goal and listing type help identify what to inspect next.</p></article>
+              <article class="diagnostic"><small>Account growth fit</small><strong>Waiting for listing details</strong><p>The score helps point you toward a review, audit, sprint, or monthly support.</p></article>
             </div>
             <div class="opportunities"><h3>Top opportunities / what to review next</h3><ol id="opportunityList"><li>Paste a listing URL and submit the form to generate a first-look priority list.</li><li>The full review should inspect title, images, offer clarity, proof, and account growth fit.</li><li>If the listing looks promising, request the free growth review for the clearest next step.</li></ol></div>
             <div class="optimizer-preview" id="optimizerPreview">
-              <div class="optimizer-head"><div><span class="section-kicker">Optimized Listing Preview</span><h3>Ready-to-use listing copy</h3></div><span class="status-pill">Results</span></div>
+              <div class="optimizer-head"><div><span class="section-kicker">Optimized Listing Preview</span><h3>Ready-to-use listing copy</h3></div><span class="status-pill">Preview</span></div>
               <div class="optimized-block"><h4>Optimized title shoppers see</h4><p class="optimized-title-output" id="optimizedTitle">Your optimized title will appear here.</p></div>
               <div class="optimized-block"><h4>Customer-facing bullets</h4><ul id="optimizedBullets"><li>Paste your listing link and submit to see buyer-focused bullets.</li></ul></div>
               <div class="optimized-block"><h4>Keyword ideas</h4><div class="keyword-chips" id="optimizedKeywords"><span>Keyword ideas will appear here.</span></div></div>
@@ -428,6 +428,7 @@
         [/shade|windscreen|wind screen|pergola|privacy|screen|cloth|sun/i, 'Shade Cloth Privacy Screen'],
         [/water bottle|tumbler|straw lid|insulated/i, 'Insulated Water Bottle'],
         [/deshedding|grooming|undercoat|pet brush/i, 'Dog Deshedding Brush'],
+        [/acoustic|sound\s*proof|soundproof|sound\s*absor|wall\s*panel/i, 'Acoustic Wall Panel'],
         [/case|cover|protector/i, 'Protective Case'],
         [/charger|cable|usb/i, 'Charging Cable'],
         [/bag|tote|backpack/i, 'Travel Bag']
@@ -511,23 +512,61 @@
       if (clean.length === 2) return `${clean[0]} and ${clean[1]}`;
       return `${clean.slice(0,-1).join(', ')}, and ${clean[clean.length-1]}`;
     }
+    function benefitCleanFact(value){
+      return firstSentenceFromPhrase(value)
+        .replace(/^[^a-z0-9]+/i, '')
+        .replace(/\b(?:add|improve|include|position|recommended|fix|missing|listing should|you should|buyer confidence gap|clear product detail to compare|make the buying decision easier|trust cues)\b/ig, ' ')
+        .replace(/\s+/g, ' ')
+        .replace(/[.;,\s]+$/,'')
+        .trim();
+    }
+    function benefitHasConnector(text){return /\b(?:so you can|helps|makes it easier|gives you|keeps|works well for|lets you)\b/i.test(text);}
+    function benefitProductPurpose(product, useText){
+      const p = cleanText(product).toLowerCase();
+      if (/acoustic|sound/.test(p)) return 'Acoustic panel wording points to sound-control use, helping you choose it for rooms where echo or noise matters.';
+      if (/shade|privacy|screen|tarp|cloth|windscreen/.test(p)) return `${titleCase(product)} helps create shade or privacy so you can make outdoor spaces more comfortable.`;
+      if (/groom|deshedding|pet|dog/.test(p)) return `${titleCase(product)} helps manage loose pet hair so grooming feels easier at home.`;
+      if (/water bottle|tumbler/.test(p)) return `${titleCase(product)} helps keep drinks ready so you can carry hydration through the day.`;
+      if (/charger|cable|usb/.test(p)) return `${titleCase(product)} helps keep compatible devices powered so you can stay connected.`;
+      if (/case|cover|protector/.test(p)) return `${titleCase(product)} helps cover the item so everyday handling feels less risky.`;
+      if (/bag|tote|backpack/.test(p)) return `${titleCase(product)} gives you carry space so daily essentials are easier to bring along.`;
+      if (useText) return `Works well for ${useText}, helping you match the item to the place or routine you have in mind.`;
+      return `${titleCase(product)} wording helps you quickly confirm the item type before you choose the right option.`;
+    }
     function buildBullets({productType, specs, phrases, useCases}){
       const product = /^product$/i.test(productType) ? 'item' : productType;
-      const useful = dedupe(phrases.map(firstSentenceFromPhrase)).filter(x => x.length > 4 && !/^(amazon|garden|patio|pools?)$/i.test(x));
-      const specText = naturalList(specs.slice(0,3));
+      const useful = dedupe(phrases.map(benefitCleanFact)).filter(x => x.length > 4 && !/^(amazon|garden|patio|pools?)$/i.test(x));
       const useText = naturalList(useCases.slice(0,4));
-      const primaryDetail = useful[0] || '';
-      const buildText = useful.find(item => /mesh|material|steel|wood|plastic|fabric|grommet|reinforced|build|color|green|black|white/i.test(item)) || primaryDetail;
-      const usePhrase = useful.find(item => /help|block|protect|cover|shade|privacy|dust|wind|debris|use|for /i.test(item)) || '';
-      const installPhrase = useful.find(item => /install|tie|included|include|with|grommet|pack|set|kit/i.test(item)) || '';
-      const bullets = [
-        ['Product Details', `${titleCase(product)}${primaryDetail ? ` with ${primaryDetail.toLowerCase()}` : ''}.`],
-        ['Size & Fit', specText ? `${titleCase(specText)} gives buyers the key size or feature details before ordering.` : `${titleCase(product)} details are kept clear and easy to scan.`],
-        ['Material & Build', buildText ? `${buildText.replace(/[.;,\s]+$/,'')}.` : `${titleCase(product)} is presented with the product details provided in the listing.`],
-        ['Everyday Use', usePhrase ? `${usePhrase.replace(/[.;,\s]+$/,'')}.` : useText ? `Made for ${useText}, helping buyers match the item to the place or routine they have in mind.` : `Made for buyers comparing this product type and checking the details that matter most.`],
-        ['Product Set', installPhrase ? `${installPhrase.replace(/[.;,\s]+$/,'')}.` : `${titleCase(product)} listing copy focuses on the supplied title, category, and product details.`]
-      ];
-      return bullets.map(([head, body]) => `${escapeHtml(`【${head}】 ${body.replace(/\s+/g,' ').trim()}`)}`);
+      const sizeSpec = specs.find(spec => /\b\d+\s?(?:ft|feet|in|inch|cm|m)?\s?[x×]\s?\d+|\b\d+(?:\.\d+)?\s?(?:ft|feet|in|inch|cm|m)\b|%/i.test(spec));
+      const packSpec = specs.find(spec => /\b\d+(?:\.\d+)?\s?(?:pack|pcs|piece|pieces)\b/i.test(spec));
+      const materialSpec = specs.find(spec => /\b(?:stainless steel|BPA-free|UV resistant|rust resistant|waterproof|leakproof|heavy duty|knitted|breathable|reinforced|grommets?|black|white|green|tan|brown|gray|grey)\b/i.test(spec));
+      const materialPhrase = useful.find(item => /mesh|material|steel|wood|plastic|fabric|grommet|build|color|black|white|green|tan|brown|gray|grey/i.test(item));
+      const usePhrase = useful.find(item => /block|protect|cover|privacy|dust|wind|debris|use|for |echo|sound|noise/i.test(item));
+      const setupPhrase = useful.find(item => /install|tie|with|grommet|kit|mount|hang/i.test(item));
+      const candidates = [];
+      function push(label, body){
+        const text = cleanText(body).replace(/\s+/g,' ').replace(/\.\./g,'.').trim();
+        if (!text || !benefitHasConnector(text)) return;
+        if (/\b(?:add|improve|include|position|listing should|you should|recommended|fix|missing|buyer confidence gap|clear product detail to compare|make the buying decision easier|trust cues)\b/i.test(text)) return;
+        const key = text.toLowerCase().replace(/[^a-z0-9]+/g,' ').split(' ').slice(0,10).join(' ');
+        if (candidates.some(item => item.key === key)) return;
+        candidates.push({label, body: text.endsWith('.') ? text : `${text}.`, key});
+      }
+      if (sizeSpec) push('Clear Fit', `${titleCase(sizeSpec)} helps you check fit, coverage, or capacity before ordering.`);
+      if (materialSpec || materialPhrase) push('Built for the Job', `${titleCase(materialSpec || materialPhrase)} gives you a clear build detail so you know what will arrive.`);
+      if (usePhrase) {
+        const useBase = usePhrase.split(/\.\s*/).find(part => /block|protect|cover|privacy|dust|wind|debris|echo|sound|noise/i.test(part)) || usePhrase;
+        push('Everyday Use', /sound|acoustic|echo|noise/i.test(useBase) ? `${useBase} helps soften room echo so calls, media, or recordings feel clearer.` : `${useBase} helps match the product to the way you plan to use it.`);
+      }
+      if (useText) push('Ready for Use', `Works well for ${useText}, helping you choose it for the right space or routine.`);
+      if (setupPhrase) push('Easy Setup', `${/grommet/i.test(setupPhrase) ? 'Grommet placement details make' : /mount|hang/i.test(setupPhrase) ? 'Wall mounting details make' : `${setupPhrase} makes`} it easier to understand setup, hanging, or placement before it arrives.`);
+      if (packSpec) push('Ready to Stock', `${titleCase(packSpec)} gives you extras on hand for replacements, projects, or shared use.`);
+      push('Clear Match', benefitProductPurpose(product, useText));
+      push('Buyer-Friendly Details', `${titleCase(product)} details help you confirm the product type and avoid guessing from the title alone.`);
+      push('Practical Choice', `${titleCase(product)} copy keeps the main product terms visible so you can decide faster.`);
+      push('Fast Scan', `${titleCase(product)} wording helps you spot the main product type quickly while comparing options.`);
+      push('Use-Case Clarity', `${titleCase(product)} terms give you a starting point so you can match the item to your intended use.`);
+      return candidates.slice(0,5).map(({label, body}) => `${escapeHtml(`【${label}】 ${body}`)}`);
     }
     function buildKeywordIdeas({productType, keyword, brand, specs, useCases}){
       const base = sanitizeListingText(keyword || productType);
@@ -564,7 +603,7 @@
           bullets: [],
           keywords: ['product title', 'product details'],
           note: 'The link was accepted, but it does not expose enough product words. Add the current title, product type, or a few details for a useful rewrite.',
-          copyEmptyState: 'This link does not contain enough product words to create honest listing copy. Add the current title, product type, or a few details above and run it again.'
+          copyEmptyState: 'This link does not contain enough product words to create honest listing copy. Enter the current title, product type, or a few details above and run it again.'
         };
       }
       const sourceText = `${sourceTitle}\n${currentCopyRaw}\n${differentiatorsRaw}`;
