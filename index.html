@@ -183,6 +183,46 @@
       if (host.includes('amazon.')) return 'Amazon';
       return 'Marketplace';
     }
+    function optDecodeUrlPart(value){
+      try { return decodeURIComponent(String(value || '').replace(/\+/g,' ')); }
+      catch (_) { return String(value || '').replace(/\+/g,' '); }
+    }
+    function optExtractUrlClue(url){
+      let parsed;
+      try { parsed = new URL(String(url || '').trim()); } catch (_) { return {title:'', marketplace:'Marketplace', id:''}; }
+      const host = parsed.hostname.replace(/^www\./,'').toLowerCase();
+      const marketplace = host.includes('ebay.') ? 'eBay' : host.includes('amazon.') ? 'Amazon' : 'Marketplace';
+      const segments = parsed.pathname.split('/').map(optDecodeUrlPart).filter(Boolean);
+      let raw = '';
+      let id = '';
+      if (marketplace === 'Amazon') {
+        const marker = segments.findIndex(seg => /^(dp|gp)$/i.test(seg));
+        if (marker > 0) raw = segments[marker - 1];
+        if (/^gp$/i.test(segments[marker]) && /^product$/i.test(segments[marker + 1] || '') && marker > 0) raw = segments[marker - 1];
+        id = (segments.find(seg => /^[A-Z0-9]{10}$/i.test(seg)) || '').toUpperCase();
+      } else if (marketplace === 'eBay') {
+        const marker = segments.findIndex(seg => /^itm$/i.test(seg));
+        if (marker >= 0) {
+          const after = segments.slice(marker + 1);
+          id = (after.find(seg => /^\d{9,15}$/.test(seg)) || '').trim();
+          raw = after.filter(seg => !/^\d{9,15}$/.test(seg)).join(' ');
+        }
+      }
+      if (!raw) raw = segments.filter(seg => !/^(dp|gp|product|itm|sch|b|s|stores|ref|sr|i|sl|ulk)$/i.test(seg) && !/^[A-Z0-9]{10}$/i.test(seg) && !/^\d{9,15}$/.test(seg)).join(' ');
+      raw = optClean(raw)
+        .replace(/[-_]+/g,' ')
+        .replace(/\.(?:html?|php)$/i,' ')
+        .replace(/\b(?:amazon|ebay|itm|dp|gp|product|listing|item|new|sale|official|ref|sr|s|p|b)\b/ig,' ')
+        .replace(/\b(?:www|com|co|uk|ca)\b/ig,' ')
+        .replace(/\b[A-Z0-9]{10}\b/ig,' ')
+        .replace(/\b\d{9,15}\b/g,' ')
+        .replace(/[^a-z0-9%&'+./\s-]/ig,' ')
+        .replace(/\s+/g,' ')
+        .trim();
+      const words = optDedupe(raw.split(/\s+/).filter(word => word.length > 1 && !/^(for|and|with|the|from|your|this|that)$/i.test(word)));
+      const title = words.length >= 2 ? optTitleCase(words.slice(0,12).join(' ')) : '';
+      return {title, marketplace, id};
+    }
     function optTitleCase(value){
       return optClean(value).replace(/\b[a-z][a-z0-9'/-]*\b/gi, word => {
         if (/^(and|or|for|with|of|to|in)$/i.test(word)) return word.toLowerCase();
@@ -245,17 +285,20 @@
       const url = optClean(data.get('siteUrl'));
       const host = optHost(url);
       const marketplace = optMarketplace(url);
+      const urlClue = optExtractUrlClue(url);
       const currentTitle = optClean(data.get('currentTitle'));
+      const sourceTitle = currentTitle || urlClue.title;
       const enteredProductType = optClean(data.get('productType'));
       const enteredKeyword = optClean(data.get('targetKeyword'));
       const details = optClean(data.get('currentCopy'));
-      const hasEnoughListingDetailForCopy = Boolean(currentTitle || details || enteredProductType || enteredKeyword);
-      const productType = optInferProduct({title: currentTitle, productType: enteredProductType, keyword: enteredKeyword, host});
+      const hasFullDetails = Boolean(currentTitle || details || enteredProductType || enteredKeyword);
+      const hasCustomerFacingSeed = Boolean(sourceTitle || details || enteredProductType || enteredKeyword);
+      const productType = optInferProduct({title: sourceTitle, productType: enteredProductType, keyword: enteredKeyword, host});
       const keyword = enteredKeyword || productType;
-      const source = `${currentTitle} ${productType} ${keyword} ${details}`;
+      const source = `${sourceTitle} ${productType} ${keyword} ${details}`;
       const specs = optExtractSpecs(source);
-      const phrases = optDedupe(optPhrases(details).concat(optPhrases(currentTitle))).filter(item => item.length > 3);
-      const brand = optExtractBrand(currentTitle);
+      const phrases = optDedupe(optPhrases(details).concat(optPhrases(sourceTitle))).filter(item => item.length > 3);
+      const brand = optExtractBrand(sourceTitle);
       const useCases = optDedupe(['work','gym','travel','patio','garden','office','home','camping','pets','fence','jobsite'].filter(item => source.toLowerCase().includes(item))).slice(0,4);
       const titleBase = `${productType} ${specs.join(' ')}`.toLowerCase();
       const keywordPart = keyword && !titleBase.includes(keyword.toLowerCase()) ? keyword : '';
@@ -263,21 +306,21 @@
         ? optDedupe([brand, productType, specs[0], specs[1], keywordPart, useCases[0] ? `for ${useCases[0]}` : ''])
         : optDedupe([brand, productType, specs[0], specs[1], specs[2], useCases.length ? `for ${useCases.join(', ')}` : '', keywordPart]);
       const sparseTitle = marketplace === 'eBay' ? 'Add Product Title for Stronger eBay Preview' : marketplace === 'Amazon' ? 'Add Product Title for Stronger Amazon Preview' : 'Add Product Title for Stronger Preview';
-      const optimizedTitle = hasEnoughListingDetailForCopy ? optCap(optTitleCase(titleParts.join(', ')), marketplace === 'eBay' ? 80 : 180) : sparseTitle;
+      const optimizedTitle = hasCustomerFacingSeed ? optCap(optTitleCase(titleParts.join(', ')), marketplace === 'eBay' ? 80 : 180) : sparseTitle;
       const specText = specs.length ? specs.slice(0,3).join(', ') : '';
       const detailText = phrases.find(item => item.length > 10) || '';
       const buildText = phrases.find(item => /mesh|material|steel|wood|plastic|fabric|grommet|reinforced|build|color|green|black|white/i.test(item)) || detailText;
       const usePhrase = phrases.find(item => /help|block|protect|cover|shade|privacy|dust|wind|debris|use|for /i.test(item)) || '';
       const installPhrase = phrases.find(item => /install|tie|included|include|with|grommet|pack|set|kit/i.test(item)) || '';
       const useText = useCases.length ? useCases.join(', ') : '';
-      const bullets = hasEnoughListingDetailForCopy ? [
+      const bullets = hasCustomerFacingSeed ? [
         ['Product Details', `${optTitleCase(productType)}${detailText ? ` with ${detailText.toLowerCase()}` : ''}.`],
         ['Size & Fit', specText ? `${optTitleCase(specText)} gives buyers the key size or feature details before ordering.` : `${optTitleCase(productType)} details are kept clear and easy to scan.`],
         ['Material & Build', buildText ? `${firstWords(buildText, 18)}.` : `${optTitleCase(productType)} is presented with the product details provided in the listing.`],
         ['Everyday Use', usePhrase ? `${firstWords(usePhrase, 18)}.` : useText ? `Made for ${useText}, giving buyers a simple match for their space or routine.` : `Made for buyers comparing this product type and checking the details that matter most.`],
-        ['What’s Included', installPhrase ? `${firstWords(installPhrase, 18)}.` : `${optTitleCase(productType)} listing copy focuses on the supplied title, category, and product details.`]
+        ['Product Set', installPhrase ? `${firstWords(installPhrase, 18)}.` : `${optTitleCase(productType)} listing copy focuses on the supplied title, category, and product details.`]
       ].map(([label, body]) => `【${label}】 ${body.replace(/\s+/g,' ').replace(/\.\./g,'.').trim()}`) : [];
-      const rawKeywordIdeas = hasEnoughListingDetailForCopy ? [
+      const rawKeywordIdeas = hasCustomerFacingSeed ? [
         keyword,
         productType,
         specs[0] && !keyword.toLowerCase().includes(specs[0].toLowerCase()) ? `${keyword} ${specs[0]}` : '',
@@ -286,21 +329,21 @@
         ...useCases.map(use => `${keyword} ${use}`),
         ...phrases.slice(0,4).map(item => item.split(/\s+/).slice(0,5).join(' '))
       ] : [];
-      const fallbackKeywords = hasEnoughListingDetailForCopy ? [] : [marketplace.toLowerCase(), 'product title', 'product details'];
+      const fallbackKeywords = hasCustomerFacingSeed ? [] : [marketplace.toLowerCase(), 'product title', 'product details'];
       const keywordIdeas = optDedupe(rawKeywordIdeas.concat(fallbackKeywords).map(item => optClean(item).toLowerCase().replace(/\b(\w+(?:\s+\w+){0,2})\s+\1\b/g, '$1'))).filter(item => item.length > 2 && !/^marketplace listing$/.test(item) && !/\b(?:amazon|ebay) listing for (?:amazon|ebay)$/.test(item)).slice(0,10);
       let score = 42;
       if (host.includes('amazon.') || host.includes('ebay.')) score += 14;
       if (/\/dp\/|\/gp\/product\//i.test(url) || /\/itm\//i.test(url)) score += 8;
-      if (currentTitle.length >= 35) score += 9;
-      if (currentTitle.length > 90 && marketplace === 'eBay') score -= 5;
+      if (sourceTitle.length >= 35) score += 9;
+      if (sourceTitle.length > 90 && marketplace === 'eBay') score -= 5;
       if (details.length >= 80) score += 10;
       if (enteredProductType) score += 6;
       if (enteredKeyword) score += 6;
       if (specs.length >= 2) score += 7;
       if (useCases.length) score += 4;
       score = Math.max(34, Math.min(92, score));
-      const fixes = hasEnoughListingDetailForCopy ? [
-        currentTitle ? 'Put the product type, main keyword, and strongest verified spec near the front of the title.' : 'Provide the current product title so the preview can be more specific.',
+      const fixes = hasCustomerFacingSeed ? [
+        currentTitle ? 'Put the product type, main keyword, and strongest verified spec near the front of the title.' : 'The link provided product words; add the live title to make the rewrite more accurate.',
         specs.length ? 'Use verified specs in the title and bullets without repeating the same phrase.' : 'Provide concrete specs such as dimensions, material, color, compatibility, pack count, or included items.',
         details.length >= 80 ? 'Convert the strongest description details into short buyer-facing bullets.' : 'Provide a short product description for more specific customer-facing bullets.',
         marketplace === 'eBay' ? 'Keep the eBay title at 80 characters or less.' : 'Keep the title readable by grouping brand, product type, specs, and use case cleanly.'
@@ -309,18 +352,18 @@
         'Include verified specs such as dimensions, material, color, compatibility, pack count, or included items.',
         'Paste visible description or feature text if the marketplace page cannot be read automatically.'
       ];
-      return {score, marketplace, host, optimizedTitle, bullets, keywordIdeas, fixes, hasDetails: hasEnoughListingDetailForCopy, copyEmptyState: 'Add the current title and key product details to generate customer-facing listing copy.'};
+      return {score, marketplace, host, optimizedTitle, bullets, keywordIdeas, fixes, hasDetails: hasFullDetails, hasCustomerFacingSeed, copyEmptyState: 'This link does not contain enough product words to create honest listing copy. Add the current title, product type, or a few details above and run it again.'};
     }
     function renderHomeOptimizer(result){
       homeOptimizerResult.hidden = false;
       homeScoreValue.textContent = result.score;
       homeScoreLabel.textContent = `${result.marketplace} readiness score`;
-      homeScoreSummary.textContent = result.hasDetails ? `Based on the public link plus the details entered for ${result.host || 'this listing'}.` : `Link-only preview for ${result.host || 'this listing'} — add optional details for a stronger result.`;
+      homeScoreSummary.textContent = result.hasDetails ? `Based on the public link plus the details entered for ${result.host || 'this listing'}.` : result.hasCustomerFacingSeed ? `Based on the public link for ${result.host || 'this listing'}. Add title/details for a stronger rewrite.` : `The link was accepted, but it does not expose enough product words. Add title/details for a useful rewrite.`;
       homeOptimizedTitle.textContent = result.optimizedTitle;
       homeOptimizedBullets.innerHTML = result.bullets.length ? result.bullets.map(item => `<li>${optEscape(item)}</li>`).join('') : `<li>${optEscape(result.copyEmptyState)}</li>`;
       homeKeywordChips.innerHTML = result.keywordIdeas.map(item => `<span class="chip">${optEscape(item)}</span>`).join('');
       homeFirstFixes.innerHTML = result.fixes.map(item => `<li>${optEscape(item)}</li>`).join('');
-      homeOptimizerStatus.textContent = result.hasDetails ? 'Your optimized result is ready below.' : 'Your link-only result is ready below. Optional details will make it stronger.';
+      homeOptimizerStatus.textContent = result.hasDetails ? 'Your optimized result is ready below.' : result.hasCustomerFacingSeed ? 'Your link-only result is ready below. Optional details will make it stronger.' : 'Add a title or product details to generate customer-facing copy from this link.';
     }
     homeOptimizerForm?.addEventListener('submit', function(event){
       event.preventDefault();

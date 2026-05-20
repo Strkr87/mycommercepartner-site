@@ -252,6 +252,46 @@
 
     function clamp(value,min,max){return Math.max(min,Math.min(max,value));}
     function hostFromUrl(value){try{return new URL(value).hostname.replace(/^www\./,'').toLowerCase();}catch(_){return '';}}
+    function decodeUrlPart(value){
+      try{return decodeURIComponent(String(value || '').replace(/\+/g,' '));}
+      catch(_){return String(value || '').replace(/\+/g,' ');}
+    }
+    function extractUrlProductClue(url){
+      let parsed;
+      try{parsed = new URL(String(url || '').trim());}catch(_){return {title:'', marketplace:'Both / not sure', id:''};}
+      const host = parsed.hostname.replace(/^www\./,'').toLowerCase();
+      const marketplace = host.includes('ebay.') ? 'eBay' : host.includes('amazon.') ? 'Amazon' : 'Both / not sure';
+      const segments = parsed.pathname.split('/').map(decodeUrlPart).filter(Boolean);
+      let raw = '';
+      let id = '';
+      if (marketplace === 'Amazon') {
+        const marker = segments.findIndex(seg => /^(dp|gp)$/i.test(seg));
+        if (marker > 0) raw = segments[marker - 1];
+        if (/^gp$/i.test(segments[marker]) && /^product$/i.test(segments[marker + 1] || '') && marker > 0) raw = segments[marker - 1];
+        id = (segments.find(seg => /^[A-Z0-9]{10}$/i.test(seg)) || '').toUpperCase();
+      } else if (marketplace === 'eBay') {
+        const marker = segments.findIndex(seg => /^itm$/i.test(seg));
+        if (marker >= 0) {
+          const after = segments.slice(marker + 1);
+          id = (after.find(seg => /^\d{9,15}$/.test(seg)) || '').trim();
+          raw = after.filter(seg => !/^\d{9,15}$/.test(seg)).join(' ');
+        }
+      }
+      if (!raw) raw = segments.filter(seg => !/^(dp|gp|product|itm|sch|b|s|stores|ref|sr|i|sl|ulk)$/i.test(seg) && !/^[A-Z0-9]{10}$/i.test(seg) && !/^\d{9,15}$/.test(seg)).join(' ');
+      raw = cleanText(raw)
+        .replace(/[-_]+/g,' ')
+        .replace(/\.(?:html?|php)$/i,' ')
+        .replace(/\b(?:amazon|ebay|itm|dp|gp|product|listing|item|new|sale|official|ref|sr|s|p|b)\b/ig,' ')
+        .replace(/\b(?:www|com|co|uk|ca)\b/ig,' ')
+        .replace(/\b[A-Z0-9]{10}\b/ig,' ')
+        .replace(/\b\d{9,15}\b/g,' ')
+        .replace(/[^a-z0-9%&'+./\s-]/ig,' ')
+        .replace(/\s+/g,' ')
+        .trim();
+      const words = dedupe(raw.split(/\s+/).filter(word => word.length > 1 && !/^(for|and|with|the|from|your|this|that)$/i.test(word)));
+      const title = words.length >= 2 ? smartTitleCase(words.slice(0,12).join(' ')) : '';
+      return {title, marketplace, id};
+    }
     function marketplaceFit(host, marketplace){
       const isAmazon = host.includes('amazon.');
       const isEbay = host.includes('ebay.');
@@ -485,7 +525,7 @@
         ['Size & Fit', specText ? `${titleCase(specText)} gives buyers the key size or feature details before ordering.` : `${titleCase(product)} details are kept clear and easy to scan.`],
         ['Material & Build', buildText ? `${buildText.replace(/[.;,\s]+$/,'')}.` : `${titleCase(product)} is presented with the product details provided in the listing.`],
         ['Everyday Use', usePhrase ? `${usePhrase.replace(/[.;,\s]+$/,'')}.` : useText ? `Made for ${useText}, helping buyers match the item to the place or routine they have in mind.` : `Made for buyers comparing this product type and checking the details that matter most.`],
-        ['What’s Included', installPhrase ? `${installPhrase.replace(/[.;,\s]+$/,'')}.` : `${titleCase(product)} listing copy focuses on the supplied title, category, and product details.`]
+        ['Product Set', installPhrase ? `${installPhrase.replace(/[.;,\s]+$/,'')}.` : `${titleCase(product)} listing copy focuses on the supplied title, category, and product details.`]
       ];
       return bullets.map(([head, body]) => `${escapeHtml(`【${head}】 ${body.replace(/\s+/g,' ').trim()}`)}`);
     }
@@ -506,31 +546,39 @@
         .slice(0,10);
     }
     function buildOptimizedPreview(data){
+      const url = cleanText(data.get('siteUrl'));
+      const urlClue = extractUrlProductClue(url);
+      const selectedMarketplace = data.get('marketplace') || '';
+      const marketplace = /^Both/i.test(selectedMarketplace) ? urlClue.marketplace : (selectedMarketplace || urlClue.marketplace);
       const currentTitle = sanitizeListingText(data.get('currentTitle'));
+      const sourceTitle = currentTitle || urlClue.title;
       const currentCopyRaw = data.get('currentCopy') || '';
       const differentiatorsRaw = data.get('differentiators') || '';
       const keyword = sanitizeListingText(data.get('targetKeyword'));
       const enteredProductType = sanitizeListingText(data.get('productType'));
-      const hasEnoughListingDetailForCopy = Boolean(currentTitle || sanitizeListingText(currentCopyRaw) || sanitizeListingText(differentiatorsRaw) || enteredProductType || keyword);
-      if (!hasEnoughListingDetailForCopy) {
+      const hasFullDetails = Boolean(currentTitle || sanitizeListingText(currentCopyRaw) || sanitizeListingText(differentiatorsRaw) || enteredProductType || keyword);
+      const hasCustomerFacingSeed = Boolean(sourceTitle || sanitizeListingText(currentCopyRaw) || sanitizeListingText(differentiatorsRaw) || enteredProductType || keyword);
+      if (!hasCustomerFacingSeed) {
         return {
           title: 'Add Product Title for Stronger Preview',
           bullets: [],
           keywords: ['product title', 'product details'],
-          copyEmptyState: 'Add the current title and key product details to generate customer-facing listing copy.'
+          note: 'The link was accepted, but it does not expose enough product words. Add the current title, product type, or a few details for a useful rewrite.',
+          copyEmptyState: 'This link does not contain enough product words to create honest listing copy. Add the current title, product type, or a few details above and run it again.'
         };
       }
-      const sourceText = `${currentTitle}\n${currentCopyRaw}\n${differentiatorsRaw}`;
-      const phrases = splitPhrases(`${differentiatorsRaw}\n${currentCopyRaw}\n${currentTitle}`);
-      const brand = extractBrand(data.get('currentTitle'));
-      const productCode = extractProductCode(`${currentTitle} ${currentCopyRaw} ${differentiatorsRaw}`);
-      const productType = inferProductType(currentTitle, enteredProductType, keyword, phrases);
+      const sourceText = `${sourceTitle}\n${currentCopyRaw}\n${differentiatorsRaw}`;
+      const phrases = splitPhrases(`${differentiatorsRaw}\n${currentCopyRaw}\n${sourceTitle}`);
+      const brand = extractBrand(sourceTitle);
+      const productCode = extractProductCode(`${sourceTitle} ${currentCopyRaw} ${differentiatorsRaw}`);
+      const productType = inferProductType(sourceTitle, enteredProductType, keyword, phrases);
       const specs = extractSpecs(sourceText);
       const useCases = extractUseCases(sourceText);
-      const title = buildAmazonTitle({brand, productType, keyword: keyword || productType, specs, useCases, currentTitle, productCode});
+      const rawTitle = buildAmazonTitle({brand, productType, keyword: keyword || productType, specs, useCases, currentTitle: sourceTitle, productCode});
+      const title = marketplace === 'eBay' ? capTitle(rawTitle, 80) : rawTitle;
       const bullets = buildBullets({productType, specs, phrases, useCases});
       const keywords = buildKeywordIdeas({productType, keyword: keyword || productType, brand, specs, useCases});
-      return {title, bullets, keywords, copyEmptyState: ''};
+      return {title, bullets, keywords, note: hasFullDetails ? '' : 'Based on the public link. Add title/details for a stronger rewrite.', copyEmptyState: ''};
     }
     function renderOptimizerPreview(preview){
       optimizedTitle.textContent = preview.title;
@@ -586,11 +634,12 @@
         ].join('\n')
       };
       statusEl.className = 'form-status ok';
+      const previewNote = optimizedPreview.note ? `${optimizedPreview.note} ` : '';
       if (!wantsFollowUp) {
-        statusEl.textContent = 'Your score preview is ready. Add an email only if you want a follow-up.';
+        statusEl.textContent = `${previewNote}Your score preview is ready. Add an email only if you want a follow-up.`;
         return;
       }
-      statusEl.textContent = 'Showing your score and sending the follow-up request...';
+      statusEl.textContent = `${previewNote}Showing your score and sending the follow-up request...`;
       try{
         const response = await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
         const responseData = await response.json().catch(()=>({}));
