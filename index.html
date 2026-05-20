@@ -25,6 +25,9 @@
   <style>
     .homepage-optimizer{padding:18px;min-width:0}.home-opt-form{display:grid;gap:13px}.home-opt-form label{display:grid;gap:7px;color:var(--soft);font-size:.82rem;font-weight:800}.home-opt-form input,.home-opt-form textarea{width:100%;min-width:0;border:1px solid rgba(255,255,255,.16);border-radius:16px;background:rgba(4,17,29,.72);color:var(--text);padding:12px 13px;outline:none}.home-opt-form input::placeholder,.home-opt-form textarea::placeholder{color:rgba(216,231,239,.56)}.home-opt-form input:focus,.home-opt-form textarea:focus{border-color:rgba(52,199,116,.72);box-shadow:0 0 0 3px rgba(52,199,116,.12)}.home-opt-form textarea{min-height:82px;resize:vertical}.home-opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;min-width:0}.home-opt-note{margin:0;color:var(--muted);font-size:.86rem}.home-opt-result{display:grid;gap:12px;margin-top:16px}.home-opt-result[hidden]{display:none}.home-opt-cta{margin:0;color:var(--soft);font-size:.9rem}.home-opt-cta a{color:var(--green2);font-weight:900;text-decoration:underline;text-underline-offset:3px}.home-fix-list{margin:8px 0 0;padding-left:20px;color:var(--soft);font-size:.91rem}.home-fix-list li+li{margin-top:5px}.bullet-list li{overflow-wrap:anywhere}.chip{overflow-wrap:anywhere}.infographics{position:relative}.infographic-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;align-items:stretch;min-width:0}.info-panel{min-width:0;border:1px solid rgba(255,255,255,.13);border-radius:28px;background:linear-gradient(180deg,rgba(16,43,64,.88),rgba(7,22,35,.92));box-shadow:0 28px 70px rgba(0,0,0,.32);padding:20px;overflow:hidden}.info-panel h3{margin:0 0 14px;font-size:1.04rem;letter-spacing:-.02em}.weakness-bars{display:grid;gap:13px}.weakness-row{display:grid;grid-template-columns:minmax(120px,170px) 1fr auto;gap:12px;align-items:center;color:var(--soft);font-weight:850;font-size:.9rem}.weakness-row span:first-child{overflow-wrap:anywhere}.weakness-row b{color:var(--gold2);font-size:.78rem;text-transform:uppercase;letter-spacing:.08em}.info-track{height:12px;border-radius:999px;background:rgba(255,255,255,.09);overflow:hidden;border:1px solid rgba(255,255,255,.08)}.info-track i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--green),var(--gold));box-shadow:0 0 24px rgba(52,199,116,.2)}.matrix-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.matrix-card{min-width:0;border:1px solid rgba(255,255,255,.12);border-radius:20px;background:rgba(4,17,29,.48);padding:14px}.matrix-card strong{display:block;color:var(--text);font-size:.95rem}.matrix-card span{display:block;margin-top:4px;color:var(--muted);font-size:.82rem}.flow-panel{grid-column:1/-1}.flow-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;counter-reset:flow}.flow-step{position:relative;min-width:0;border:1px solid rgba(156,241,186,.22);border-radius:20px;background:rgba(52,199,116,.07);padding:15px 14px}.flow-step:before{counter-increment:flow;content:counter(flow);display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--gold));color:#04140c;font-weight:950;margin-bottom:10px}.flow-step strong{display:block;color:var(--text);font-size:.93rem}.flow-step span{display:block;margin-top:4px;color:var(--muted);font-size:.8rem}.output-strip{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}.output-strip span{border:1px solid rgba(156,241,186,.28);border-radius:999px;background:rgba(52,199,116,.1);color:var(--green2);font-weight:900;font-size:.82rem;padding:8px 11px}@media(max-width:900px){.infographic-grid{grid-template-columns:1fr}.flow-steps{grid-template-columns:1fr 1fr}.weakness-row{grid-template-columns:minmax(105px,150px) 1fr auto}}@media(max-width:720px){.home-opt-grid{grid-template-columns:1fr}.homepage-optimizer{padding:14px}.home-opt-form .btn{width:100%}.info-panel{border-radius:22px;padding:16px}.weakness-row{grid-template-columns:1fr;gap:7px}.weakness-row b{justify-self:start}.matrix-grid,.flow-steps{grid-template-columns:1fr}}
   </style>
+  <style>
+    .hero{padding-bottom:72px}.hero-grid{align-items:center}.hero-grid h1{max-width:760px}.homepage-optimizer{box-shadow:0 30px 90px rgba(0,0,0,.38)}.home-opt-form{gap:11px}.home-opt-form label{gap:6px}.infographic-grid{grid-template-columns:1fr 1fr;gap:16px}.flow-steps{grid-template-columns:1fr}.output-strip{gap:8px}.compact-services{grid-template-columns:repeat(2,minmax(0,1fr));max-width:860px;margin:0 auto}.cta-section .cta-card{align-items:start}#homeScoreSummary{white-space:normal;overflow-wrap:anywhere}@media(max-width:760px){.wrap{width:min(100% - 32px,1160px)}.nav a:not(.nav-pill){display:none}.infographic-grid,.compact-services{grid-template-columns:1fr}.home-opt-grid{grid-template-columns:1fr}.hero{padding-bottom:48px}.homepage-optimizer{padding:14px}.cta-section .cta-row{display:grid}}
+  </style>
   <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
 </head>
 <body>
@@ -34,34 +37,33 @@
       <header class="site-header">
         <a class="brand" href="index.html" aria-label="MyCommercePartner home"><span class="mark">M</span><span>MyCommercePartner</span></a>
         <nav class="nav" aria-label="Main navigation">
-          <a href="#how-it-works">How it works</a>
-          <a href="#sample-output">Sample output</a>
-          <a href="#services">Services</a>
+          <a href="#sample-output">Sample</a>
+          <a href="#services">Paid help</a>
           <a href="contact.html">Contact</a>
-          <a class="nav-pill" href="/free-listing-score">Optimize a Listing</a>
+          <a class="nav-pill" href="/free-listing-score">Free Optimizer</a>
         </nav>
       </header>
       <div class="hero-grid">
         <div>
           <div class="eyebrow">Free Amazon &amp; eBay Listing Optimizer</div>
-          <h1>Fix one listing before <span class="accent">buyers bounce.</span></h1>
-          <p class="subhead">Paste a public item link and get a quick score, rewritten title, better bullets, and keyword ideas.</p>
+          <h1>Paste a listing. Get cleaner copy shoppers understand.</h1>
+          <p class="subhead">Free Amazon/eBay optimizer with a score, improved title, 5 customer-facing bullets, keyword ideas, and recommended fixes.</p>
           <div class="cta-row">
-            <a class="btn btn-primary" href="/free-listing-score">Optimize a Free Listing</a>
-            <a class="btn btn-secondary" href="#sample-output">See Sample Output</a>
+            <a class="btn btn-primary" href="#homeOptimizerForm">Use the Free Optimizer</a>
+            <a class="btn btn-secondary" href="#sample-output">See Sample</a>
           </div>
-          <div class="reassurance">No login. Public links only. Paid help is optional.</div>
+          <div class="reassurance">No login. Public links only. Add details for the strongest preview.</div>
         </div>
         <section class="dashboard homepage-optimizer" aria-label="Free Listing Optimizer">
-          <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>Free optimizer</span></div>
+          <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>Free listing optimizer</span></div>
           <form class="home-opt-form" id="homeOptimizerForm">
             <label>Public listing URL <input id="homeListingUrl" name="siteUrl" type="url" placeholder="Paste a public Amazon or eBay item URL" inputmode="url" required></label>
             <div class="home-opt-grid">
               <label>Current title <input name="currentTitle" placeholder="Optional"></label>
               <label>Category or product type <input name="productType" placeholder="Optional"></label>
             </div>
-            <label>Key product details / description <textarea name="currentCopy" placeholder="Optional: material, size, use cases, features"></textarea></label>
-            <label>Main keyword/search phrase <input name="targetKeyword" placeholder="Optional"></label>
+            <label>Product details <textarea name="currentCopy" placeholder="Optional: material, size, use cases, included items"></textarea></label>
+            <label>Main keyword <input name="targetKeyword" placeholder="Optional"></label>
             <button class="btn btn-primary" type="submit">Get My Optimized Result</button>
             <p class="home-opt-note" id="homeOptimizerStatus">No email required. Add details for a stronger preview.</p>
           </form>
@@ -81,49 +83,26 @@
     </div>
   </main>
 
-  <section class="section" id="how-it-works">
-    <div class="wrap">
-      <div class="section-head"><div><div class="kicker">Start with one listing</div><h2>Three quick steps.</h2></div><p>Score one public listing, then choose what to fix next.</p></div>
-      <div class="step-grid">
-        <article class="step"><div class="step-num">1</div><h3>Paste the item URL</h3><p>Use a public Amazon or eBay listing.</p></article>
-        <article class="step"><div class="step-num">2</div><h3>Get the score + rewrite</h3><p>See title, bullet, keyword, and first-fix ideas.</p></article>
-        <article class="step"><div class="step-num">3</div><h3>Fix it yourself or ask MCP</h3><p>Use the preview or request a second pass.</p></article>
-      </div>
-    </div>
-  </section>
-
   <section class="section infographics" id="sample-output">
     <div class="wrap">
-      <div class="section-head"><div><div class="kicker">Sample output</div><h2>What the optimizer checks.</h2></div><p>Visual priorities for one Amazon or eBay listing.</p></div>
+      <div class="section-head"><div><div class="kicker">Sample output</div><h2>Clear priorities, not a long report.</h2></div><p>The free result keeps the first fixes easy to see.</p></div>
       <div class="infographic-grid" aria-label="Listing optimizer infographics">
         <article class="info-panel" aria-label="Listing Weakness Map">
-          <h3>Listing Weakness Map</h3>
+          <h3>What gets checked</h3>
           <div class="weakness-bars">
             <div class="weakness-row"><span>Search-fit title</span><div class="info-track"><i style="width:82%"></i></div><b>High</b></div>
             <div class="weakness-row"><span>Buyer-focused bullets</span><div class="info-track"><i style="width:74%"></i></div><b>High</b></div>
-            <div class="weakness-row"><span>Trust cues</span><div class="info-track"><i style="width:62%"></i></div><b>Medium</b></div>
-            <div class="weakness-row"><span>Specs &amp; details</span><div class="info-track"><i style="width:58%"></i></div><b>Medium</b></div>
-            <div class="weakness-row"><span>Keyword coverage</span><div class="info-track"><i style="width:54%"></i></div><b>Medium</b></div>
-          </div>
-        </article>
-        <article class="info-panel" aria-label="Fix Priority Matrix">
-          <h3>Fix Priority Matrix</h3>
-          <div class="matrix-grid">
-            <div class="matrix-card"><strong>Quick wins</strong><span>Move strongest terms up front.</span></div>
-            <div class="matrix-card"><strong>Needs rewrite</strong><span>Turn clutter into clean copy.</span></div>
-            <div class="matrix-card"><strong>Add details</strong><span>Specs, fit, material, included items.</span></div>
-            <div class="matrix-card"><strong>Review manually</strong><span>Claims, images, and offer fit.</span></div>
+            <div class="weakness-row"><span>Specs, proof, keywords</span><div class="info-track"><i style="width:62%"></i></div><b>Medium</b></div>
           </div>
         </article>
         <article class="info-panel flow-panel" aria-label="Before to After Listing Flow">
-          <h3>Before → After Listing Flow</h3>
+          <h3>What you get back</h3>
           <div class="flow-steps">
             <div class="flow-step"><strong>Paste public listing</strong><span>Amazon or eBay URL.</span></div>
-            <div class="flow-step"><strong>Find weak spots</strong><span>Score, gaps, priorities.</span></div>
-            <div class="flow-step"><strong>Rewrite title + bullets</strong><span>Clearer buyer path.</span></div>
-            <div class="flow-step"><strong>Improve before buyers bounce</strong><span>Fix the first decisions.</span></div>
+            <div class="flow-step"><strong>Get cleaner copy</strong><span>Title, 5 bullets, keywords.</span></div>
+            <div class="flow-step"><strong>Fix the first gaps</strong><span>Recommended next steps.</span></div>
           </div>
-          <div class="output-strip" aria-label="What the free output gives you"><span>Score</span><span>Optimized title</span><span>5 bullets</span><span>Keywords</span><span>First fixes</span></div>
+          <div class="output-strip" aria-label="What the free output gives you"><span>Score</span><span>Title</span><span>5 bullets</span><span>Keywords</span><span>Fixes</span></div>
         </article>
       </div>
     </div>
@@ -131,43 +110,11 @@
 
   <section class="section" id="services">
     <div class="wrap">
-      <div class="section-head"><div><div class="kicker">After the free optimizer</div><h2>Pick the next path.</h2></div><p>Start free. Get help only if you want it.</p></div>
-      <div class="service-grid">
-        <article class="service-card"><h3>Free optimizer</h3><p>Start here with one public listing.</p><p><a class="btn btn-secondary" href="/free-listing-score">Start Here</a></p></article>
-        <article class="service-card"><h3>Human tune-up</h3><p>Get a second pass on the listing.</p><p><a class="btn btn-secondary" href="free-marketplace-review.html">Request a Review</a></p></article>
-        <article class="service-card"><h3>Marketplace support</h3><p>Have MCP handle priority fixes.</p><p><a class="btn btn-secondary" href="monthly-management.html">See Support</a></p></article>
+      <div class="section-head"><div><div class="kicker">Optional paid help</div><h2>Want MCP to clean it up for you?</h2></div><p>Use the free result yourself, or ask for a second pass.</p></div>
+      <div class="service-grid compact-services">
+        <article class="service-card"><h3>Listing second pass</h3><p>We review the result and recommend the clearest next fixes.</p><p><a class="btn btn-secondary" href="free-marketplace-review.html">Request Review</a></p></article>
+        <article class="service-card"><h3>Done-for-you cleanup</h3><p>For priority listings that need sharper titles, bullets, and buying cues.</p><p><a class="btn btn-secondary" href="monthly-management.html">See Support</a></p></article>
       </div>
-    </div>
-  </section>
-
-  <section class="section" id="results">
-    <div class="wrap split-grid">
-      <div class="listing-card" aria-label="Listing improvement mockup">
-        <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>Listing quality board</span></div>
-        <div class="window">
-          <div class="kicker">Priority listing refresh</div>
-          <div class="mock-row"><div class="product"></div><div class="lines"><div class="line"></div><div class="line"></div><div class="line short"></div><div class="line" style="width:82%"></div></div></div>
-          <div class="roadmap" aria-label="Priority roadmap">
-            <div class="road"><span>Buyer clarity</span><div class="track"><i style="width:88%"></i></div><b>High</b></div>
-            <div class="road"><span>Trust signals</span><div class="track"><i style="width:74%"></i></div><b>Med</b></div>
-            <div class="road"><span>Search fit</span><div class="track"><i style="width:69%"></i></div><b>Med</b></div>
-          </div>
-        </div>
-      </div>
-      <div class="split-copy">
-        <div class="kicker">Better product pages</div>
-        <h2>Create listings shoppers trust.</h2>
-        <p>After the free score, MCP can help clean up the listing.</p>
-        <ul class="checklist">
-          <li><span class="check">✓</span><span>Clearer titles and bullets.</span></li>
-          <li><span class="check">✓</span><span>Better proof, specs, and buying cues.</span></li>
-          <li><span class="check">✓</span><span>Priority listings kept easier to understand.</span></li>
-        </ul>
-      </div>
-    </div>
-    <div class="wrap quotes">
-      <article class="quote"><p>“We could see which listing fixes mattered first.”</p><b>Marketplace brand operator</b></article>
-      <article class="quote"><p>“MCP keeps listings and cleanup priorities moving.”</p><b>Amazon &amp; eBay seller</b></article>
     </div>
   </section>
 
