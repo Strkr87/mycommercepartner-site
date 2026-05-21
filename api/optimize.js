@@ -13,6 +13,85 @@ function skuBits(s) {
     .slice(0, 2);
 }
 
+function rxEscape(value) {
+  return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function cleanMarketplaceText(value) {
+  return (value || "")
+    .replace(/[|>]+/g, " ")
+    .replace(/\b(?:condition|price):\s*[^\n|,;]+/ig, " ")
+    .replace(/\bUSD\s*\d+(?:\.\d{2})?\b/ig, " ")
+    .replace(/\$\s*\d+(?:\.\d{2})?\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function categoryWords(category) {
+  return (category || "")
+    .split(/[|>]/)
+    .map((x) => x.trim())
+    .filter(Boolean);
+}
+
+function isOutOfStock(data) {
+  const source = `${data.availability || ""}\n${data.specifics || ""}\n${data.description || ""}`;
+  return /OUT_OF_STOCK|out\s+of\s+stock|Available Quantity:\s*0|estimatedAvailableQuantity[^\d]*0/i.test(source);
+}
+
+function productPhrase(data) {
+  const title = cleanMarketplaceText(data.title || "");
+  const cats = categoryWords(data.category);
+  let phrase = title;
+  for (const cat of cats) phrase = phrase.replace(new RegExp(rxEscape(cat), "ig"), " ");
+  const model = pick(/Model:\s*([^\n]+)/i, data.specifics || "");
+  if (data.brand) phrase = phrase.replace(new RegExp(rxEscape(data.brand), "ig"), " ");
+  if (model) phrase = phrase.replace(new RegExp(rxEscape(model), "ig"), " ");
+  phrase = phrase
+    .replace(/\b(?:cleaner|new|used|open box|very good|good|acceptable)\b/ig, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const compact = `${title} ${data.description || ""} ${data.category || ""}`;
+  if (/robot|vacuum/i.test(compact)) return "Robot Vacuum";
+  if (/water bottle|bottle|tumbler/i.test(compact)) return "40 oz Stainless Steel Insulated Water Bottle";
+  if (phrase) return phrase.split(" ").slice(0, 8).join(" ");
+  return cats[cats.length - 1] || "Product";
+}
+
+function descriptionFeatures(data) {
+  const source = `${data.title || ""}\n${data.specifics || ""}\n${data.description || ""}`;
+  const features = [];
+  const add = (rx, line) => { if (rx.test(source) && !features.includes(line)) features.push(line); };
+  add(/360|vision|navigation|nav/i, "360 vision navigation helps the vacuum map rooms and clean with less guesswork");
+  add(/edge/i, "Edge-cleaning design helps pick up dust along walls and room corners");
+  add(/HEPA|filter/i, "HEPA filtration helps trap fine dust while it cleans your floors");
+  add(/app|wifi|control/i, "App control lets you start, schedule, and manage cleaning from your phone");
+  add(/insulat|cold|hot/i, "Double-wall insulation helps keep drinks cold or hot through busy days");
+  add(/leak|lid|straw/i, "Leak-resistant lid and straw make it easier to carry between work, gym, and travel");
+  add(/stainless/i, "Stainless steel build gives everyday durability without a fragile feel");
+  return features;
+}
+
+function joinTitleParts(parts, max) {
+  const clean = [];
+  for (const part of parts) {
+    const value = cleanMarketplaceText(part);
+    if (!value) continue;
+    const key = value.toLowerCase();
+    if (clean.some((x) => x.toLowerCase() === key)) continue;
+    clean.push(value);
+  }
+  let title = clean.join(" - ");
+  if (max && title.length > max) {
+    const id = clean[clean.length - 1];
+    const suffix = id && /^[A-Z0-9-]{6,}$/i.test(id) ? ` - ${id}` : "";
+    const available = max - suffix.length;
+    title = `${title.slice(0, available).replace(/\s+\S*$/, "").replace(/[,-]\s*$/, "").trim()}${suffix}`;
+  }
+  return title;
+}
+
 function build80(tokens, fallback) {
   let title = "";
   const clean = [...new Set(tokens.map((x) => (x || "").replace(/\s+/g, " ").trim()).filter(Boolean))];
@@ -45,6 +124,23 @@ function build80(tokens, fallback) {
 function titleAI(data) {
   const bits = skuBits(data.sku);
   const brand = (data.brand || "").trim() || pick(/Brand:\s*([^\n]+)/i, data.specifics || "");
+  const marketplace = String(data.marketplace || data.channel || "");
+  const model = pick(/Model:\s*([^\n]+)/i, data.specifics || "");
+  const condition = String(data.condition || "").replace("Used - ", "").trim();
+
+  if (marketplace || /[|>]/.test(data.category || "")) {
+    const max = /ebay/i.test(marketplace) ? 80 : 180;
+    const leading = /amazon/i.test(marketplace)
+      ? cleanMarketplaceText(data.title || [brand, productPhrase(data)].filter(Boolean).join(" "))
+      : cleanMarketplaceText([brand, model, productPhrase(data)].filter(Boolean).join(" "));
+    const title = joinTitleParts([
+      leading,
+      condition && !/^new$/i.test(condition) ? condition : "",
+      bits[0]
+    ], max);
+    if (title) return title;
+  }
+
   let tokens = [];
 
   if (data.category === "Cell Phones & Smartphones") {
@@ -104,13 +200,22 @@ function bullets(data) {
     ];
   }
 
-  return [
-    "Lead with the clearest buyer keyword phrase",
-    "State condition with specific detail",
-    "Reinforce shipping and returns",
-    "Clarify included items",
-    "Use mobile-friendly structure"
+  const product = productPhrase(data);
+  const featureLines = descriptionFeatures(data);
+  const includedText = included === "items shown" ? "shown items" : included.toLowerCase();
+  const conditionLine = /open box/i.test(data.condition || "")
+    ? `Open-box ${product.toLowerCase()} gives you the item at a better value while keeping condition clear`
+    : `${String(data.condition || "Clean").replace("Used - ", "")} condition is stated clearly so you know what to expect`;
+  const lines = [
+    ...featureLines,
+    conditionLine,
+    `${includedText} included so the package contents are clear up front`,
+    `${data.shipping || "Clear shipping"} helps you understand delivery before checkout`
   ];
+  return lines
+    .filter(Boolean)
+    .filter((line, index, arr) => arr.findIndex((x) => x.toLowerCase() === line.toLowerCase()) === index)
+    .slice(0, 5);
 }
 
 function score(data) {
@@ -129,10 +234,15 @@ function score(data) {
   if ((data.goals || "").length > 40) comp += 10;
   if ((data.description || "").length > 120) comp += 12;
   if ((data.specifics || "").length > 60) comp += 16;
+  if (isOutOfStock(data)) {
+    seo -= 10;
+    conv -= 18;
+    comp -= 8;
+  }
 
-  seo = Math.min(seo, 96);
-  conv = Math.min(conv, 95);
-  comp = Math.min(comp, 95);
+  seo = Math.max(20, Math.min(seo, 96));
+  conv = Math.max(20, Math.min(conv, 95));
+  comp = Math.max(20, Math.min(comp, 95));
 
   return { seo, conv, all: Math.round((seo + conv + comp) / 3) };
 }
@@ -163,7 +273,7 @@ function buildResult(data) {
   const notes = pick(/Condition Notes:\s*([^\n]+)/i, data.specifics || "") || "normal signs of use";
   const included = pick(/Included(?: Accessories)?:\s*([^\n]+)/i, data.specifics || "") || "items shown in photos";
 
-  const description = `${title}. This listing is structured to give buyers the key purchase details fast and clearly.\n\nCondition: ${data.condition} with ${notes}.${battery ? ` Battery health is ${battery}.` : ""}\n${(data.sku || "").trim() ? `SKU / Model reference: ${data.sku}.\n` : ""}Included: ${included}.\n\nWhy this listing converts:\n${bulletItems.map((x) => `- ${x}`).join("\n")}\n\nShipping and support:\n${data.shipping}.\n\nPlease review photos carefully and message with any fit, compatibility, or condition questions before purchase.`;
+  const description = `${title}. Clear product details, condition, included items, and shipping information are shown up front.\n\nCondition: ${data.condition} with ${notes}.${battery ? ` Battery health is ${battery}.` : ""}\n${(data.sku || "").trim() ? `SKU / Model reference: ${data.sku}.\n` : ""}Included: ${included}.\n\nHighlights:\n${bulletItems.map((x) => `- ${x}`).join("\n")}\n\nShipping and support:\n${data.shipping}.\n\nPlease review photos carefully and message with any fit, compatibility, or condition questions before purchase.`;
 
   const actions = [
     (data.sku || "").trim()
@@ -187,12 +297,17 @@ function buildResult(data) {
         : "After copy cleanup, add richer specifics and photos to lift conversion further."
   ];
 
+  const warnings = isOutOfStock(data)
+    ? "Out of stock: this listing shows 0 available, so buyers may not be able to purchase until inventory is restored."
+    : "";
+
   return {
     scores,
     title,
     specifics: specifics.join("\n"),
     bullets: bulletItems.map((x) => `- ${x}`).join("\n"),
     description,
+    warnings,
     actions: actions.map((x, i) => `${i + 1}. ${x}`).join("\n"),
     next: `Suggested next modules:\n- Bulk optimizer for ${(data.category || "inventory").toLowerCase()} inventory\n- Competitor title gap detection\n- Saved prompts for repeatable ${String(data.condition || "").toLowerCase()} inventory\n- Team review workflow before publish\n- Seller analytics tied to listing score changes`
   };
