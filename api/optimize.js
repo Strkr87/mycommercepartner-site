@@ -21,10 +21,40 @@ function cleanMarketplaceText(value) {
   return (value || "")
     .replace(/[|>]+/g, " ")
     .replace(/\b(?:condition|price):\s*[^\n|,;]+/ig, " ")
+    .replace(/\b(?:free shipping|100% quality guaranteed|quality guaranteed|best seller|official site|buy online)\b/ig, " ")
     .replace(/\bUSD\s*\d+(?:\.\d{2})?\b/ig, " ")
     .replace(/\$\s*\d+(?:\.\d{2})?\b/g, " ")
+    .replace(/[{}_^~¬¦!$?]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function titleCase(value) {
+  return cleanMarketplaceText(value).replace(/\b[a-z][a-z0-9'/-]*\b/gi, (word) => {
+    if (/^(and|or|for|with|of|to|in|the)$/i.test(word)) return word.toLowerCase();
+    if (/^(oz|lb|lbs|ft|in)$/i.test(word)) return word.toLowerCase();
+    if (/^(bpa|usb|led|uv|pvc|hdpe|hepa|ssd|ram|gps|wifi|imei)$/i.test(word)) return word.toUpperCase();
+    if (/^\d/.test(word) || /^[A-Z0-9-]{3,}$/.test(word) || /[A-Z].*[A-Z]/.test(word)) return word;
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  });
+}
+
+function parseSpecifics(value) {
+  const out = {};
+  for (const line of String(value || "").split(/\n+/)) {
+    const match = line.match(/^\s*([^:]+):\s*(.+?)\s*$/);
+    if (!match) continue;
+    out[match[1].trim().toLowerCase()] = cleanMarketplaceText(match[2]);
+  }
+  return out;
+}
+
+function specValue(specs, names) {
+  for (const name of names) {
+    const value = specs[name.toLowerCase()];
+    if (value) return value;
+  }
+  return "";
 }
 
 function categoryWords(category) {
@@ -121,23 +151,124 @@ function build80(tokens, fallback) {
   return title.slice(0, 80).trim();
 }
 
+function compactProductType(data) {
+  const source = `${data.title || ""} ${data.category || ""} ${data.description || ""} ${data.specifics || ""}`;
+  if (/robot|vacuum/i.test(source)) return "Robot Vacuum";
+  if (/water bottle|bottle|tumbler/i.test(source)) return "Water Bottle";
+  if (/cell phones?|smartphones?|iphone|android/i.test(source)) return "Smartphone";
+  if (/laptop|notebook/i.test(source)) return "Laptop";
+  if (/watch|smartwatch/i.test(source)) return "Smart Watch";
+  return productPhrase(data);
+}
+
+function normalizeTitleWords(value) {
+  const counts = new Map();
+  const keep = new Set(["for", "with", "and", "or", "the", "of", "to", "in"]);
+  return titleCase(value)
+    .split(/\s+/)
+    .filter((word) => {
+      const key = word.toLowerCase().replace(/[^a-z0-9]+/g, "");
+      if (!key || keep.has(key)) return true;
+      const next = (counts.get(key) || 0) + 1;
+      counts.set(key, next);
+      return next <= 2;
+    })
+    .join(" ")
+    .replace(/\s+,\s+/g, ", ")
+    .replace(/,\s*,/g, ",")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function fitTitleParts(parts, max, suffix = "") {
+  const clean = [];
+  for (const part of parts) {
+    const value = normalizeTitleWords(part);
+    if (!value) continue;
+    const key = value.toLowerCase();
+    if (clean.some((x) => x.toLowerCase() === key || key.includes(x.toLowerCase()) || x.toLowerCase().includes(key))) continue;
+    clean.push(value);
+  }
+  let title = "";
+  const available = suffix ? max - suffix.length : max;
+  for (const part of clean) {
+    const next = title ? `${title} ${part}` : part;
+    if (next.length <= available) title = next;
+  }
+  return `${title.trim()}${suffix}`.trim();
+}
+
+function useCasesFromText(text) {
+  const source = String(text || "").toLowerCase();
+  return ["gym", "office", "hiking", "travel", "commute", "camping", "home", "patio", "garden", "pets", "jobsite"]
+    .filter((term) => source.includes(term))
+    .slice(0, 4);
+}
+
+function buildAmazonMarketplaceTitle(data, facts, brand, id) {
+  const product = compactProductType(data);
+  const capacity = specValue(facts, ["Capacity", "Size"]);
+  const material = specValue(facts, ["Material"]);
+  const color = specValue(facts, ["Color"]);
+  const included = specValue(facts, ["Included", "Included Accessories"]);
+  const model = specValue(facts, ["Model"]);
+  const source = `${data.title || ""} ${data.description || ""} ${data.specifics || ""}`;
+  const insulated = /insulat|cold|hot/i.test(source) && !/insulated/i.test(`${material} ${product}`) ? "Insulated" : "";
+  const leak = /leak/i.test(source) ? "Leak-Resistant" : "";
+  const includedTitle = /straw/i.test(included || source) ? "Straw Lid" : included;
+  const useCases = useCasesFromText(source);
+  const main = [capacity, material, product].filter(Boolean).join(" ");
+  const suffix = id ? ` - ${id}` : "";
+  const title = fitTitleParts([
+    brand,
+    main,
+    model && !main.toLowerCase().includes(model.toLowerCase()) ? model : "",
+    includedTitle,
+    insulated,
+    leak,
+    color,
+    useCases.length ? `for ${useCases.map(titleCase).join(", ")}` : ""
+  ], 200, suffix);
+  return title || joinTitleParts([brand, product, id], 200);
+}
+
+function buildEbayMarketplaceTitle(data, facts, brand, id) {
+  const source = `${data.title || ""} ${data.category || ""} ${data.description || ""} ${data.specifics || ""}`;
+  const model = specValue(facts, ["Model"]);
+  const storage = specValue(facts, ["Storage Capacity", "Storage"]);
+  const network = specValue(facts, ["Network", "Carrier"]);
+  const color = specValue(facts, ["Color"]);
+  const condition = String(data.condition || "").replace("Used - ", "").trim();
+  const product = compactProductType(data);
+  const suffix = id ? ` - ${id}` : "";
+
+  if (/cell phones?|smartphones?|iphone/i.test(source)) {
+    return fitTitleParts([brand, model, storage, network, color, condition], 80, suffix);
+  }
+
+  if (/robot|vacuum/i.test(source)) {
+    const leading = [brand, model, product].filter(Boolean).join(" ");
+    return joinTitleParts([leading, condition && !/^new$/i.test(condition) ? condition : "", id], 80);
+  }
+
+  const material = specValue(facts, ["Material"]);
+  const capacity = specValue(facts, ["Capacity", "Size"]);
+  return fitTitleParts([brand, model, capacity, material, product, color, condition && !/^new$/i.test(condition) ? condition : ""], 80, suffix);
+}
+
 function titleAI(data) {
   const bits = skuBits(data.sku);
-  const brand = (data.brand || "").trim() || pick(/Brand:\s*([^\n]+)/i, data.specifics || "");
+  const facts = parseSpecifics(data.specifics || "");
+  const brand = cleanMarketplaceText((data.brand || "").trim() || specValue(facts, ["Brand"]));
   const marketplace = String(data.marketplace || data.channel || "");
-  const model = pick(/Model:\s*([^\n]+)/i, data.specifics || "");
-  const condition = String(data.condition || "").replace("Used - ", "").trim();
+  const id = bits[0] || "";
 
-  if (marketplace || /[|>]/.test(data.category || "")) {
-    const max = /ebay/i.test(marketplace) ? 80 : 180;
-    const leading = /amazon/i.test(marketplace)
-      ? cleanMarketplaceText(data.title || [brand, productPhrase(data)].filter(Boolean).join(" "))
-      : cleanMarketplaceText([brand, model, productPhrase(data)].filter(Boolean).join(" "));
-    const title = joinTitleParts([
-      leading,
-      condition && !/^new$/i.test(condition) ? condition : "",
-      bits[0]
-    ], max);
+  if (/amazon/i.test(marketplace)) {
+    return buildAmazonMarketplaceTitle(data, facts, brand, id);
+  }
+
+  if (/ebay/i.test(marketplace) || /[|>]/.test(data.category || "")) {
+    const title = buildEbayMarketplaceTitle(data, facts, brand, id);
     if (title) return title;
   }
 
@@ -146,29 +277,26 @@ function titleAI(data) {
   if (data.category === "Cell Phones & Smartphones") {
     tokens = [
       brand,
-      pick(/Model:\s*([^\n]+)/i, data.specifics || ""),
-      pick(/(?:Storage|Storage Capacity):\s*([^\n]+)/i, data.specifics || ""),
-      pick(/(?:Carrier|Network):\s*([^\n]+)/i, data.specifics || ""),
-      pick(/Color:\s*([^\n]+)/i, data.specifics || "")
+      specValue(facts, ["Model"]),
+      specValue(facts, ["Storage Capacity", "Storage"]),
+      specValue(facts, ["Carrier", "Network"]),
+      specValue(facts, ["Color"])
     ];
-    const battery = pick(/Battery Health:\s*([^\n]+)/i, data.specifics || "");
+    const battery = specValue(facts, ["Battery Health"]);
     if (battery) tokens.push(`${battery} Battery`);
     tokens = tokens.concat(bits, [data.condition.replace("Used - ", "")]);
   } else if (data.category === "Fashion") {
     tokens = [
       brand,
-      pick(/Model:\s*([^\n]+)/i, data.specifics || ""),
-      pick(/Department:\s*([^\n]+)/i, data.specifics || ""),
-      `Size ${pick(/(?:US Shoe Size|Size):\s*([^\n]+)/i, data.specifics || "")}`,
-      pick(/Color:\s*([^\n]+)/i, data.specifics || ""),
+      specValue(facts, ["Model"]),
+      specValue(facts, ["Department"]),
+      `Size ${specValue(facts, ["US Shoe Size", "Size"])}`,
+      specValue(facts, ["Color"]),
       "Sneakers"
     ].concat(bits, [data.condition.replace("Used - ", "")]);
   } else {
-    tokens = [
-      brand,
-      pick(/Model:\s*([^\n]+)/i, data.specifics || "")
-    ].concat(bits, [data.condition.replace("Used - ", "")]);
-    if (tokens.filter(Boolean).length < 2) return (data.title || "").trim().slice(0, 80);
+    tokens = [brand, specValue(facts, ["Model"])].concat(bits, [data.condition.replace("Used - ", "")]);
+    if (tokens.filter(Boolean).length < 2) return cleanMarketplaceText(data.title || "").slice(0, 80);
   }
 
   return build80(tokens, data.title || "");
@@ -273,7 +401,8 @@ function buildResult(data) {
   const notes = pick(/Condition Notes:\s*([^\n]+)/i, data.specifics || "") || "normal signs of use";
   const included = pick(/Included(?: Accessories)?:\s*([^\n]+)/i, data.specifics || "") || "items shown in photos";
 
-  const description = `${title}. Clear product details, condition, included items, and shipping information are shown up front.\n\nCondition: ${data.condition} with ${notes}.${battery ? ` Battery health is ${battery}.` : ""}\n${(data.sku || "").trim() ? `SKU / Model reference: ${data.sku}.\n` : ""}Included: ${included}.\n\nHighlights:\n${bulletItems.map((x) => `- ${x}`).join("\n")}\n\nShipping and support:\n${data.shipping}.\n\nPlease review photos carefully and message with any fit, compatibility, or condition questions before purchase.`;
+  const specificationLines = specifics.map((x) => `- ${x}`).join("\n");
+  const description = `${title}. Clear product details, condition, included items, and shipping information are shown up front.\n\nCondition: ${data.condition} with ${notes}.${battery ? ` Battery health is ${battery}.` : ""}\n${(data.sku || "").trim() ? `SKU / Model reference: ${data.sku}.\n` : ""}Included: ${included}.\n\nHighlights:\n${bulletItems.map((x) => `- ${x}`).join("\n")}\n\nItem specifications:\n${specificationLines}\n\nShipping and support:\n${data.shipping}.\n\nPlease review photos carefully and message with any fit, compatibility, or condition questions before purchase.`;
 
   const actions = [
     (data.sku || "").trim()

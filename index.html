@@ -167,10 +167,37 @@
 
     function optClean(value){ return String(value || '').replace(/\s+/g,' ').trim(); }
     function optEscape(value){ return optClean(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
+    function optProductWordKey(value){
+      return optClean(value).toLowerCase().replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim();
+    }
+    function optRemoveDuplicateTitleWords(value){
+      const keep = /^(and|or|for|with|of|to|in|the|a|an)$/i;
+      const seen = new Set();
+      return optClean(value).split(/\s+/).filter(word => {
+        const key = word.toLowerCase().replace(/[^a-z0-9]+/g,'');
+        if (!key || keep.test(key)) return true;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      }).join(' ');
+    }
+    function optDedupeTitleParts(parts){
+      const seenWords = new Set();
+      const out = [];
+      for (const raw of parts.map(optClean).filter(Boolean)) {
+        const words = optProductWordKey(raw).split(/\s+/).filter(word => word && !/^(and|or|for|with|of|to|in|the|a|an|ebay|amazon|motors|parts|accessories)$/i.test(word));
+        if (!words.length) continue;
+        const duplicateCount = words.filter(word => seenWords.has(word)).length;
+        if (duplicateCount && duplicateCount / words.length > 0.5) continue;
+        out.push(raw);
+        words.forEach(word => seenWords.add(word));
+      }
+      return out;
+    }
     function optDedupe(items){
       const seen = new Set();
       return items.map(optClean).filter(Boolean).filter(item => {
-        const key = item.toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+        const key = optProductWordKey(item);
         if (!key || seen.has(key)) return false;
         seen.add(key);
         return true;
@@ -262,7 +289,8 @@
     function optTitleCase(value){
       return optClean(value).replace(/\b[a-z][a-z0-9'/-]*\b/gi, word => {
         if (/^(and|or|for|with|of|to|in)$/i.test(word)) return word.toLowerCase();
-        if (/^(bpa|usb|led|uv|pvc|hdpe|xl|xxl|oz|lb|lbs|ft|uv)$/i.test(word)) return word.toUpperCase();
+        if (/^(oz|lb|lbs|ft|in)$/i.test(word)) return word.toLowerCase();
+        if (/^(bpa|usb|led|uv|pvc|hdpe|xl|xxl)$/i.test(word)) return word.toUpperCase();
         if (/^\d/.test(word)) return word.toUpperCase();
         if (/[A-Z].*[A-Z]/.test(word)) return word;
         return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
@@ -286,9 +314,11 @@
     }
     function optInferProduct({title, productType, keyword, host}){
       const explicit = optClean(productType || keyword);
-      if (explicit && explicit.length < 55) return explicit;
-      const source = optClean(title);
+      const explicitLooksLikeCategory = /\||>|\b(?:ebay|amazon)\b.*\b(?:parts|accessories|motors|category|listing)\b/i.test(explicit);
+      if (explicit && explicit.length < 55 && !explicitLooksLikeCategory) return explicit;
+      const source = optClean(title).replace(/[“”]/g, ' in ');
       const rules = [
+        [/beadlock|carbon composite|atv wheel|wheel accessories/i, 'Carbon Composite Beadlock Ring'],
         [/water bottle|tumbler|straw lid|insulated/i, 'Insulated Water Bottle'],
         [/shade|privacy|tarp|windscreen|pergola|screen|cloth/i, 'Shade Cloth Privacy Screen'],
         [/deshedding|grooming|undercoat|pet brush|dog/i, 'Dog Grooming Tool'],
@@ -307,8 +337,13 @@
       if (/^[A-Z][A-Za-z0-9'-]{2,}$/.test(first) && !/^(New|The|Premium|Amazon|eBay)$/i.test(first)) return first;
       return '';
     }
+    function optCleanTitleSeed(title, brand){
+      const raw = optTitleCase(optClean(title).replace(/[“”]/g, ' in '));
+      const withoutBrand = brand ? raw.replace(new RegExp(`^${brand.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s+`, 'i'), '') : raw;
+      return optClean(withoutBrand.replace(/\b(?:new|sale|official|listing|item)\b/ig, ' '));
+    }
     function optCap(value, max){
-      const title = optClean(value).replace(/\s+,\s+/g, ', ').replace(/\b(\w+)(\s+\1\b)+/ig, '$1');
+      const title = optRemoveDuplicateTitleWords(optClean(value).replace(/\s+,\s+/g, ', ')).replace(/\b(\w+)(\s+\1\b)+/ig, '$1');
       if (title.length <= max) return title;
       return title.slice(0, max).replace(/\s+\S*$/,'').replace(/[,-]\s*$/,'').trim();
     }
@@ -380,6 +415,26 @@
       push('Use-Case Clarity', `${optTitleCase(product)} terms give you a starting point so you can match the item to your intended use.`);
       return candidates.slice(0,5).map(({label, body}) => `【${label}】 ${body}`);
     }
+    function optBuildTitle({marketplace, brand, productType, specs, useCases, keyword, sourceTitle}){
+      const cleanBrand = optTitleCase(brand).replace(/\b(?:Amazon|Ebay|eBay)\b/g, '').trim();
+      const titleSeed = optCleanTitleSeed(sourceTitle, cleanBrand);
+      const product = optTitleCase(productType).replace(/^(?:Amazon|eBay) Listing$/i, 'Product');
+      const source = `${sourceTitle} ${productType} ${specs.join(' ')} ${keyword}`;
+      const capacity = specs.find(spec => /\b\d+(?:\.\d+)?\s?(?:oz|lb|lbs|pack|pcs|piece|pieces|gallon|quart|mm|cm|m|ft|feet|in|inch)\b/i.test(spec));
+      const material = specs.find(spec => /\b(?:stainless steel|BPA-free|UV resistant|rust resistant|waterproof|leakproof|heavy duty|breathable|reinforced|rechargeable|cordless)\b/i.test(spec));
+      const secondary = specs.find(spec => spec !== capacity && spec !== material);
+      const keywordPart = keyword && !source.toLowerCase().includes(keyword.toLowerCase()) ? keyword : '';
+      const parts = marketplace === 'eBay'
+        ? optDedupeTitleParts([cleanBrand, titleSeed, product, capacity, material, secondary, keywordPart, useCases[0] ? `for ${useCases[0]}` : ''])
+        : optDedupeTitleParts([cleanBrand, titleSeed || [capacity, material, product].filter(Boolean).join(' '), product, secondary, useCases.length ? `for ${useCases.join(', ')}` : '', keywordPart]);
+      const max = marketplace === 'eBay' ? 80 : 200;
+      let title = '';
+      for (const part of optDedupe(parts.map(optTitleCase))) {
+        const next = title ? `${title} ${part}` : part;
+        if (next.length <= max) title = next;
+      }
+      return optCap(title || optTitleCase(parts.filter(Boolean).join(' ')), max);
+    }
     function buildHomeOptimizer(data){
       const url = optClean(data.get('siteUrl'));
       const host = optHost(url);
@@ -392,20 +447,15 @@
       const details = optClean(data.get('currentCopy'));
       const hasFullDetails = Boolean(currentTitle || details || enteredProductType || enteredKeyword);
       const hasCustomerFacingSeed = Boolean(sourceTitle || details || enteredProductType || enteredKeyword);
-      const productType = optInferProduct({title: sourceTitle, productType: enteredProductType, keyword: enteredKeyword, host});
+      const productType = optInferProduct({title: `${sourceTitle} ${details}`, productType: enteredProductType, keyword: enteredKeyword, host});
       const keyword = enteredKeyword || productType;
       const source = `${sourceTitle} ${productType} ${keyword} ${details}`;
       const specs = optExtractSpecs(source);
       const phrases = optDedupe(optPhrases(details).concat(optPhrases(sourceTitle))).filter(item => item.length > 3);
       const brand = optExtractBrand(sourceTitle);
       const useCases = optDedupe(['work','gym','travel','patio','garden','office','home','camping','pets','fence','jobsite'].filter(item => source.toLowerCase().includes(item))).slice(0,4);
-      const titleBase = `${productType} ${specs.join(' ')}`.toLowerCase();
-      const keywordPart = keyword && !titleBase.includes(keyword.toLowerCase()) ? keyword : '';
-      const titleParts = marketplace === 'eBay'
-        ? optDedupe([brand, productType, specs[0], specs[1], keywordPart, useCases[0] ? `for ${useCases[0]}` : ''])
-        : optDedupe([brand, productType, specs[0], specs[1], specs[2], useCases.length ? `for ${useCases.join(', ')}` : '', keywordPart]);
       const sparseTitle = marketplace === 'eBay' ? 'Add Product Title for Stronger eBay Preview' : marketplace === 'Amazon' ? 'Add Product Title for Stronger Amazon Preview' : 'Add Product Title for Stronger Preview';
-      const optimizedTitle = hasCustomerFacingSeed ? optCap(optTitleCase(titleParts.join(', ')), marketplace === 'eBay' ? 80 : 180) : sparseTitle;
+      const optimizedTitle = hasCustomerFacingSeed ? optBuildTitle({marketplace, brand, productType, specs, useCases, keyword, sourceTitle}) : sparseTitle;
       const bullets = hasCustomerFacingSeed ? optBuildBenefitBullets({productType, specs, phrases, useCases}) : [];
       const rawKeywordIdeas = hasCustomerFacingSeed ? [
         keyword,
