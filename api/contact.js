@@ -1,6 +1,6 @@
 // api/contact.js — Contact form handler + website review checkout starter
 const { STRIPE_SECRET_KEY, stripeRequest } = require('../lib/platform');
-const { extractEbayItemId, parseEbayItemHtml, lookupEbayBrowseApi } = require('./_lib/ebay-item-lookup');
+const { extractEbayItemId, extractEbayTitleFromUrlSlug, parseEbayItemHtml, lookupEbayBrowseApi } = require('./_lib/ebay-item-lookup');
 const nodemailer = require('nodemailer');
 
 const SMTP_HOST   = process.env.SMTP_HOST || 'smtp.gmail.com';
@@ -297,6 +297,26 @@ async function lookupEbayItemDetails(req, res) {
   } finally {
     clearTimeout(timer);
   }
+  const slugTitle = extractEbayTitleFromUrlSlug(req.body?.url || '');
+  if (slugTitle) {
+    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
+    res.status(200).json({
+      ok: true,
+      itemId,
+      source: 'ebay-url-slug',
+      title: slugTitle,
+      productType: 'eBay listing',
+      category: '',
+      condition: '',
+      price: '',
+      image: '',
+      description: `Title: ${slugTitle}`,
+      detailCount: 1,
+      message: 'We could not read the full eBay listing, but used the public title in the URL as a starter. Add condition, size, model, and description details for a stronger rewrite.'
+    });
+    return;
+  }
+
   res.setHeader('Cache-Control', 'no-store');
   res.status(200).json({
     ok: false,
