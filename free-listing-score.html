@@ -60,14 +60,14 @@
         <div>
           <div class="eyebrow">Free Marketplace Listing Score</div>
           <h1>Find out what may be holding your Amazon or eBay listing back.</h1>
-          <p class="subhead">Paste one public marketplace link and your email. We’ll try to read the public page title and description from the link first, then give a high-level score with an optimized preview. Optional details can make the preview stronger.</p>
+          <p class="subhead">Paste one public marketplace link to start. We’ll use available public listing data first, then give a high-level score with an optimized preview. Add the optional fields only if you want a sharper result.</p>
           <div class="cta-row">
             <a class="btn btn-primary" href="#score-tool">Check My Listing →</a>
             <a class="btn btn-secondary" href="#what-we-score">See what gets scored</a>
           </div>
           <div class="assurance" aria-label="Free listing score reassurance">
             <div><strong>Free</strong>Fast first look before a paid audit.</div>
-            <div><strong>No login</strong>We try to pull public page details from the link first.</div>
+            <div><strong>Link-first</strong>Start with the URL. Optional details improve the preview.</div>
             <div><strong>Helpful preview</strong>Score, sample rewrite, and clear next step.</div>
           </div>
         </div>
@@ -95,11 +95,11 @@
       <div class="wrap">
         <div class="section-title">
           <div><div class="section-kicker">Check one public listing</div><h2>Your free score starts with the visible buyer path.</h2></div>
-          <p>This tool uses the public listing link first, without needing private account access. Paste a public Amazon or eBay listing link to see the preview. If you want a follow-up, you can add your name and email, but it is not required.</p>
+          <p>This tool uses the public listing link first, without needing private account access. Paste a public Amazon or eBay listing link to see the preview. Optional fields like title, category, keywords, and product details help produce a stronger result.</p>
         </div>
         <div class="tool-shell">
           <form class="form-panel simplified-score-form" id="scoreForm">
-            <div class="field"><label for="listingUrl">Amazon or eBay listing URL</label><input id="listingUrl" name="siteUrl" type="url" inputmode="url" placeholder="https://www.amazon.com/... or https://www.ebay.com/itm/..." required><p class="field-help" id="lookupStatus">Paste the public link first. We’ll try to pull the title and page details automatically.</p></div>
+            <div class="field"><label for="listingUrl">Amazon or eBay listing URL</label><input id="listingUrl" name="siteUrl" type="url" inputmode="url" placeholder="https://www.amazon.com/... or https://www.ebay.com/itm/..." required><p class="field-help" id="lookupStatus">Start with just the public link. We’ll use available listing details automatically; optional fields make the preview stronger.</p></div>
             <div class="two-fields">
               <div class="field"><label for="name">Name <span aria-hidden="true">(optional)</span></label><input id="name" name="name" autocomplete="name" placeholder="Optional"></div>
               <div class="field"><label for="email">Email for follow-up <span aria-hidden="true">(optional)</span></label><input id="email" name="email" type="email" autocomplete="email" placeholder="Optional"></div>
@@ -108,20 +108,20 @@
             <input id="marketplace" name="marketplace" type="hidden" value="Both / not sure">
             <input id="revenue" name="revenue" type="hidden" value="Not shared">
             <details class="optional-details">
-              <summary>Optional: add more details for a stronger preview</summary>
+              <summary>Optional: add more details for a stronger result</summary>
               <div class="optional-grid">
-                <div class="field"><label for="currentTitle">Listing title we found or you want reviewed</label><input id="currentTitle" name="currentTitle" maxlength="180" placeholder="We’ll try to fill this from the link."></div>
+                <div class="field"><label for="currentTitle">Listing title we found or you want reviewed</label><input id="currentTitle" name="currentTitle" maxlength="180" placeholder="Optional — helps improve the title rewrite."></div>
                 <div class="two-fields">
                   <div class="field"><label for="productType">Product type or category</label><input id="productType" name="productType" placeholder="Example: insulated water bottle, pet grooming brush"></div>
                   <div class="field"><label for="targetKeyword">Target keyword or buyer search phrase</label><input id="targetKeyword" name="targetKeyword" placeholder="Optional: 32 oz water bottle, dog deshedding brush..."></div>
                 </div>
-                <div class="field"><label for="currentCopy">Page description, bullets, or features</label><textarea id="currentCopy" name="currentCopy" placeholder="We’ll try to fill this from the link. Add visible bullets/features if the marketplace blocks the page."></textarea></div>
+                <div class="field"><label for="currentCopy">Page description, bullets, or features</label><textarea id="currentCopy" name="currentCopy" placeholder="Optional — add visible bullets/features for a stronger preview."></textarea></div>
                 <div class="field"><label for="differentiators">Anything buyers should care about?</label><textarea id="differentiators" name="differentiators" placeholder="Optional: warranty, bundle, material, fit, use case, packaging, compatibility..."></textarea></div>
                 <div class="field"><label for="notes">Optional context</label><textarea id="notes" name="notes" placeholder="Example: best-selling product slowed down, title feels crowded, images need work..."></textarea></div>
               </div>
             </details>
             <button class="btn btn-primary" type="submit">Check My Listing</button>
-            <p class="fine-print">Only the listing link is required to see the preview. Add name and email only if you want MyCommercePartner to follow up.</p>
+            <p class="fine-print">Only the listing link is required to see the preview. Optional product details improve the result. Add name and email only if you want MyCommercePartner to follow up.</p>
             <div id="formStatus" class="form-status" role="status" aria-live="polite"></div>
           </form>
 

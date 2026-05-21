@@ -47,25 +47,26 @@
         <div>
           <div class="eyebrow">Free Amazon &amp; eBay Listing Optimizer</div>
           <h1>Paste a listing. Get cleaner copy shoppers understand.</h1>
-          <p class="subhead">Free Amazon/eBay optimizer with a score, improved title, 5 customer-facing bullets, keyword ideas, and recommended fixes.</p>
+          <p class="subhead">Paste the product link first. The optimizer will use available public listing details, then optional fields help it create a stronger title, bullets, keywords, and recommended fixes.</p>
           <div class="cta-row">
             <a class="btn btn-primary" href="#homeOptimizerForm">Use the Free Optimizer</a>
             <a class="btn btn-secondary" href="#sample-output">See Sample</a>
           </div>
-          <div class="reassurance">No login. Public links only. Add details for the strongest preview.</div>
+          <div class="reassurance">Link-only works. Add optional title, category, keywords, or product details for a sharper result.</div>
         </div>
         <section class="dashboard homepage-optimizer" aria-label="Free Listing Optimizer">
           <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>Free listing optimizer</span></div>
           <form class="home-opt-form" id="homeOptimizerForm">
             <label>Public listing URL <input id="homeListingUrl" name="siteUrl" type="url" placeholder="Paste a public Amazon or eBay item URL" inputmode="url" required></label>
+            <p class="home-opt-note">Start with just the link. We’ll use public listing data when available.</p>
             <div class="home-opt-grid">
-              <label>Current title <input name="currentTitle" placeholder="Optional"></label>
-              <label>Category or product type <input name="productType" placeholder="Optional"></label>
+              <label>Current title <input name="currentTitle" placeholder="Optional — improves the rewrite"></label>
+              <label>Category or product type <input name="productType" placeholder="Optional — improves keywords"></label>
             </div>
-            <label>Product details <textarea name="currentCopy" placeholder="Optional: material, size, use cases, included items"></textarea></label>
-            <label>Main keyword <input name="targetKeyword" placeholder="Optional"></label>
+            <label>Product details <textarea name="currentCopy" placeholder="Optional — material, size, use cases, included items"></textarea></label>
+            <label>Main keyword <input name="targetKeyword" placeholder="Optional — buyer search phrase"></label>
             <button class="btn btn-primary" type="submit">Get My Optimized Result</button>
-            <p class="home-opt-note" id="homeOptimizerStatus">No email required. Add details for a stronger preview.</p>
+            <p class="home-opt-note" id="homeOptimizerStatus">No email required. Link-only is fine; optional fields improve the preview.</p>
           </form>
           <div class="home-opt-result" id="homeOptimizerResult" aria-live="polite" hidden>
             <div class="score-strip">
@@ -98,7 +99,7 @@
         <article class="info-panel flow-panel" aria-label="Before to After Listing Flow">
           <h3>What you get back</h3>
           <div class="flow-steps">
-            <div class="flow-step"><strong>Paste public listing</strong><span>Amazon or eBay URL.</span></div>
+            <div class="flow-step"><strong>Paste public listing</strong><span>Amazon or eBay URL. Optional details improve the result.</span></div>
             <div class="flow-step"><strong>Get cleaner copy</strong><span>Title, 5 bullets, keywords.</span></div>
             <div class="flow-step"><strong>Fix the first gaps</strong><span>Recommended next steps.</span></div>
           </div>
