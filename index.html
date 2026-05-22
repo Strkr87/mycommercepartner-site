@@ -52,7 +52,7 @@
             <a class="btn btn-primary" href="#homeOptimizerForm">Use the Free Optimizer</a>
             <a class="btn btn-secondary" href="#how-it-works">How It Works</a>
           </div>
-          <div class="reassurance">A link gets you started. Add model, size, compatibility, included items, shipping, or condition notes for a sharper result.</div>
+          <div class="reassurance">A link gets you started. Add product features like size, storage, compatibility, materials, use cases, or included components for stronger bullets.</div>
         </div>
         <section class="dashboard homepage-optimizer" aria-label="Free Listing Optimizer">
           <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>Free listing optimizer</span></div>
@@ -476,12 +476,10 @@
     }
     function optBuildExactBullets({productType, productDetails, fallbackBullets}){
       const product = /^(?:product|marketplace listing|amazon listing|ebay listing)$/i.test(productType) ? 'item' : productType;
-      const model = optDetailValue(productDetails, ['Model', 'MPN', 'Manufacturer Part Number', 'Product ID', 'SKU']);
       const size = optDetailValue(productDetails, ['Storage', 'Size', 'Capacity', 'Dimensions', 'Pack Count', 'Quantity', 'Weight', 'Coverage']);
+      const material = optDetailValue(productDetails, ['Material', 'Color']);
       const compatibility = optDetailValue(productDetails, ['Compatibility', 'Compatible Brand', 'Compatible Model', 'Network', 'Carrier']);
       const included = optDetailValue(productDetails, ['Included', 'Included Accessories']);
-      const shipping = optDetailValue(productDetails, ['Shipping', 'Returns', 'Return']);
-      const condition = optDetailValue(productDetails, ['Condition']);
       const bullets = [];
       function push(body){
         const text = optClean(body);
@@ -490,12 +488,10 @@
         if (bullets.some(item => item.toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').slice(0, 10).join(' ') === key)) return;
         bullets.push(text.endsWith('.') ? text : `${text}.`);
       }
-      if (model) push(`Model / SKU: ${model} for exact-match searches and compatibility checks`);
-      if (size) push(`Size / storage / pack count: ${size} so shoppers can compare the ${optTitleCase(product)} against similar options quickly`);
-      if (compatibility) push(`Compatibility: ${compatibility} to help buyers confirm fit, carrier support, or supported models before purchase`);
-      if (included) push(`Included items: ${included} so buyers know what is in the box before checkout`);
-      if (shipping) push(`Shipping / returns: ${shipping} to make delivery and return expectations clear before checkout`);
-      if (condition) push(`Condition: ${condition} disclosed in the description so buyers know what to expect without using title space`);
+      if (size) push(`${optTitleCase(size)} gives shoppers a clear size, storage, capacity, or pack-count detail to compare before buying`);
+      if (material) push(`${optTitleCase(material)} highlights the product build or finish so shoppers can picture what they are choosing`);
+      if (compatibility) push(/^unlocked$/i.test(compatibility) ? 'Unlocked carrier support helps buyers confirm the phone can work with their preferred compatible network' : `Compatible with ${compatibility}, helping buyers confirm fit, carrier support, or supported models before purchase`);
+      if (included) push(`Includes ${included}, giving shoppers a clearer picture of the usable product package`);
       fallbackBullets.forEach(push);
       return bullets.slice(0, 6);
     }

@@ -78,6 +78,7 @@ function primaryFacts(data) {
     sku: cleanMarketplaceText((data.sku || "").trim() || factValue(data, facts, ["SKU", "MPN", "Manufacturer Part Number", "eBay Item ID", "Item ID"])),
     model: cleanMarketplaceText(factValue(data, facts, ["Model", "Model Number", "MPN", "Manufacturer Part Number"])),
     storageSize: cleanMarketplaceText(factValue(data, facts, ["Storage Capacity", "Storage", "Size", "Capacity", "Dimensions", "Pack Count", "Quantity", "Weight", "Coverage"])),
+    materialFeature: cleanMarketplaceText(factValue(data, facts, ["Material", "Color", "Finish", "Features"])),
     compatibility: cleanMarketplaceText(factValue(data, facts, ["Compatibility", "Compatible Brand", "Compatible Model", "Network", "Carrier"])),
     included: cleanMarketplaceText(factValue(data, facts, ["Included", "Included Accessories", "Items Included", "What's Included"])),
     shippingReturns: String(factValue(data, facts, ["Shipping", "Returns", "Return Policy"]) || data.shipping || "").replace(/\s+/g, " ").trim(),
@@ -102,25 +103,20 @@ function factBullets(data) {
   const exact = primaryFacts(data);
   const product = bulletProductName(data);
   const lines = [];
-  const modelParts = [exact.model, exact.sku].filter(Boolean);
 
-  if (modelParts.length) {
-    lines.push(`Model / SKU: ${modelParts.join(" / ")} for exact-match searches and compatibility checks`);
-  }
   if (exact.storageSize) {
-    lines.push(`Size / storage / pack count: ${exact.storageSize} so shoppers can compare the ${product} against similar options quickly`);
+    lines.push(`${exact.storageSize} gives shoppers a clear size, storage, capacity, or pack-count detail to compare before buying`);
+  }
+  if (exact.materialFeature) {
+    lines.push(`${exact.materialFeature} highlights the ${product} build or finish so shoppers can picture what they are choosing`);
   }
   if (exact.compatibility) {
-    lines.push(`Compatibility: ${exact.compatibility} to help buyers confirm fit, carrier support, or supported models before purchase`);
+    lines.push(/^unlocked$/i.test(exact.compatibility)
+      ? "Unlocked carrier support helps buyers confirm the phone can work with their preferred compatible network"
+      : `Compatible with ${exact.compatibility}, helping buyers confirm fit, carrier support, or supported models before purchase`);
   }
   if (exact.included) {
-    lines.push(`Included items: ${exact.included} so buyers know what is in the box before checkout`);
-  }
-  if (exact.shippingReturns) {
-    lines.push(`Shipping / returns: ${exact.shippingReturns} to make delivery and return expectations clear before checkout`);
-  }
-  if (exact.condition) {
-    lines.push(`Condition: ${exact.condition} disclosed in the description so buyers know what to expect without using title space`);
+    lines.push(`Includes ${exact.included}, giving shoppers a clearer picture of the usable product package`);
   }
 
   return lines.map(sentence);
@@ -162,13 +158,17 @@ function descriptionFeatures(data) {
   const source = `${data.title || ""}\n${data.specifics || ""}\n${data.description || ""}`;
   const features = [];
   const add = (rx, line) => { if (rx.test(source) && !features.includes(line)) features.push(line); };
-  add(/360|vision|navigation|nav/i, "360 vision navigation helps the vacuum map rooms and clean with less guesswork");
-  add(/edge/i, "Edge-cleaning design helps pick up dust along walls and room corners");
-  add(/HEPA|filter/i, "HEPA filtration helps trap fine dust while it cleans your floors");
-  add(/app|wifi|control/i, "App control lets you start, schedule, and manage cleaning from your phone");
-  add(/insulat|cold|hot/i, "Double-wall insulation helps keep drinks cold or hot through busy days");
-  add(/leak|lid|straw/i, "Leak-resistant lid and straw make it easier to carry between work, gym, and travel");
-  add(/stainless/i, "Stainless steel build gives everyday durability without a fragile feel");
+  if (/robot|vacuum/i.test(source)) {
+    add(/360|vision|navigation|nav/i, "360 vision navigation helps the vacuum map rooms and clean with less guesswork");
+    add(/edge/i, "Edge-cleaning design helps pick up dust along walls and room corners");
+    add(/HEPA|filter/i, "HEPA filtration helps trap fine dust while it cleans your floors");
+    add(/\b(?:app|wifi|wi-fi|remote|control)\b/i, "App or remote control lets shoppers manage cleaning without bending down to start the vacuum");
+  }
+  if (/water bottle|bottle|tumbler/i.test(source)) {
+    add(/insulat|cold|hot/i, "Double-wall insulation helps keep drinks cold or hot through busy days");
+    add(/leak|lid|straw/i, "Leak-resistant lid and straw make it easier to carry between work, gym, and travel");
+    add(/stainless/i, "Stainless steel build gives everyday durability without a fragile feel");
+  }
   return features;
 }
 
@@ -468,7 +468,7 @@ function buildResult(data) {
       ? "Keep compatibility details in item specifics and bullets so buyers can confirm fit without messaging first."
       : "Add compatibility, carrier, fitment, or supported-model details when they matter.",
     exact.condition
-      ? "Keep condition details in bullets and description instead of using title space for condition words."
+      ? "Keep condition details in item specifics and description instead of using title or product-benefit bullet space."
       : "Add specific condition language so buyers trust what they are getting."
   ];
 
