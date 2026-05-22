@@ -167,6 +167,47 @@ test('lookupEbayBrowseApi can recover failed legacy lookup from item summary sea
   assert.match(result.description, /Vacuum Cleaners/);
 });
 
+test('lookupEbayBrowseApi returns item details for Ken reported item when eBay search has the legacy ID', async () => {
+  const requestedUrls = [];
+  const mockFetch = async (url) => {
+    requestedUrls.push(String(url));
+    if (String(url).includes('/identity/v1/oauth2/token')) {
+      return { ok: true, status: 200, json: async () => ({ access_token: 'test-token' }) };
+    }
+    if (String(url).includes('get_item_by_legacy_id')) {
+      return { ok: false, status: 404, json: async () => ({ errors: [{ message: 'The item cannot be accessed.' }] }) };
+    }
+    return {
+      ok: true,
+      status: 200,
+      json: async () => ({
+        itemSummaries: [{
+          itemId: 'v1|336568843381|0',
+          legacyItemId: '336568843381',
+          title: 'Verified eBay Item Title From Search',
+          categoryPath: 'Business & Industrial|Retail & Services|Packing & Shipping',
+          condition: 'New',
+          price: { value: '19.95', currency: 'USD' },
+          buyingOptions: ['FIXED_PRICE'],
+          image: { imageUrl: 'https://i.ebayimg.com/images/reported-item.jpg' }
+        }]
+      })
+    };
+  };
+
+  const result = await lookupEbayBrowseApi('336568843381', {
+    fetch: mockFetch,
+    env: { EBAY_CLIENT_ID: 'client-id', EBAY_CLIENT_SECRET: 'client-secret' }
+  });
+
+  assert.ok(requestedUrls.some(url => url.includes('item_summary/search?q=336568843381')));
+  assert.equal(result.ok, true);
+  assert.equal(result.source, 'ebay-api-search');
+  assert.equal(result.itemId, '336568843381');
+  assert.equal(result.title, 'Verified eBay Item Title From Search');
+  assert.match(result.description, /Packing & Shipping/);
+});
+
 test('buildFindingDetailBundle converts eBay Finding API item data into optimizer details', () => {
   const result = buildFindingDetailBundle({
     itemId: ['267202156923'],

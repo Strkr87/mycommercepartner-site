@@ -37,10 +37,10 @@
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://www.mycommercepartner.com/ai-tools-for-small-business</loc>
-    <lastmod>2026-05-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.86</priority>
+    <loc>https://www.mycommercepartner.com/workflow-help</loc>
+    <lastmod>2026-05-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.55</priority>
   </url>
   <url>
     <loc>https://www.mycommercepartner.com/blog</loc>
@@ -89,6 +89,12 @@
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.mycommercepartner.com/amazon-ebay-marketplace-management-plan</loc>
+    <lastmod>2026-05-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.84</priority>
   </url>
   <url>
     <loc>https://www.mycommercepartner.com/blog-amazon-listing-basics</loc>
