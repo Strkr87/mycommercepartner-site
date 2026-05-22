@@ -177,6 +177,26 @@ test('homepage optimizer does not repeat brand or product words in eBay titles',
   assert.doesNotMatch(result.optimizedTitle, /,\s*for Home/i);
 });
 
+test('homepage optimizer returns product specifics for the visible results panel', () => {
+  const buildHomeOptimizer = loadHomepageOptimizer();
+  const result = buildHomeOptimizer(makeFormData({
+    siteUrl: 'https://www.amazon.com/AquaPro-Insulated-Bottle/dp/B0TEST1234',
+    currentTitle: 'AquaPro 40 oz Stainless Steel Insulated Water Bottle with Straw Lid',
+    productType: 'Sports Water Bottles',
+    currentCopy: 'Material: stainless steel\nCapacity: 40 oz\nColor: blue\nIncluded: straw lid and carry handle\nBest for gym, office, hiking, and travel.',
+    targetKeyword: 'insulated water bottle',
+    goal: '',
+    revenue: ''
+  }));
+
+  assert.deepEqual(Array.from(result.productSpecifics), [
+    'Material: Stainless Steel',
+    'Capacity: 40 oz',
+    'Color: Blue',
+    'Included: Straw Lid and Carry Handle'
+  ]);
+});
+
 test('homepage presents the free listing optimizer as the front door and frames paid help as implementation', () => {
   const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
   assert.match(html, /<title>Free Amazon &amp; eBay Listing Optimizer|<title>Free Amazon & eBay Listing Optimizer/);
