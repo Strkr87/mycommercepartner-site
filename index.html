@@ -312,7 +312,12 @@ ${bulletHtml}
           const itemSpecifics = Array.isArray(data.itemSpecifics) ? data.itemSpecifics : [];
           const details = [
             data.itemId && `Product ID: ${data.itemId}`,
+            data.category && `Category: ${data.category}`,
             data.condition && `Condition: ${data.condition}`,
+            data.price && `Price: ${data.price}`,
+            data.image && `Photo: ${data.image}`,
+            data.shipping && `Shipping: ${data.shipping}`,
+            data.returnTerms && `Returns: ${data.returnTerms}`,
             ...itemSpecifics,
             data.subtitle && `Notes: ${data.subtitle}`,
             data.description
@@ -372,7 +377,7 @@ ${bulletHtml}
     function optExtractProductDetails({text, specs, title, url}){
       const named = [];
       const detailLabels = 'brand|product id|asin|model|mpn|sku|item id|item number|ebay item id|ebay item number|manufacturer part number|material|capacity|coverage|size|dimensions?|color|colour|included|included accessories|condition|compatibility|compatible brand|compatible model|pack count|quantity|weight|storage|network|carrier|shipping|returns?';
-      const ignoredLabels = 'title|price|buying options|seller|item location|availability|available quantity|listing ends?|listing type|category|feedback|notes';
+      const ignoredLabels = 'title|price|buying options|seller|item location|availability|available quantity|listing ends?|listing type|category|feedback|notes|photo|photos?|image';
       const allLabels = `${detailLabels}|${ignoredLabels}|item specifics`;
       const source = String(text || '').replace(/\bItem specifics:\s*/ig, ' ').replace(/[|;]/g, '\n');
       const rx = new RegExp(`\\b(${allLabels}):\\s*([\\s\\S]*?)(?=\\s+(?:${allLabels}):|\\n\\s*(?:${allLabels}):|$)`, 'ig');
@@ -568,6 +573,72 @@ ${bulletHtml}
       }
       return optCap(title || optTitleCase(parts.filter(Boolean).join(' ')), max);
     }
+    function optHasAny(source, terms){
+      const text = optClean(source).toLowerCase();
+      return terms.some(term => text.includes(term.toLowerCase()));
+    }
+    function optDetailCount(productDetails){
+      return (productDetails || []).filter(item => optIsCustomerDetail(item) && !/^\s*(?:photo|image)\s*:/i.test(item)).length;
+    }
+    function optBuildReadinessScore({marketplace, url, sourceTitle, details, productDetails, specs, bullets, enteredProductType, enteredKeyword, hasCustomerFacingSeed}){
+      if (!hasCustomerFacingSeed) return {score: 28, basis: 'Needs a readable listing title or product details before MCP can estimate listing readiness.'};
+      const source = `${sourceTitle}\n${details}\n${(productDetails || []).join('\n')}`;
+      const isEbay = marketplace === 'eBay';
+      const titleLength = optClean(sourceTitle).length;
+      const specificsCount = optDetailCount(productDetails);
+      const hasCondition = optHasAny(source, ['condition:', 'cosmetic condition:', 'new', 'used', 'open box', 'refurbished']);
+      const hasShipping = optHasAny(source, ['shipping:', 'free shipping', 'delivery', 'handling']);
+      const hasReturns = optHasAny(source, ['returns:', 'return policy', 'returns accepted', '30 day', '30-day', '60 day', '60-day']);
+      const hasPhoto = optHasAny(source, ['photo:', 'photos:', 'image:', 'gallery', 'picture']);
+      const hasSellerTrust = optHasAny(source, ['seller:', 'positive', 'feedback', 'top rated']);
+      const hasPrice = optHasAny(source, ['price:', '$', 'usd ']);
+      const hasCompatibility = optHasAny(source, ['compatibility:', 'compatible', 'fits ', 'fitment', 'carrier:', 'network:']);
+      const hasIncluded = optHasAny(source, ['included:', 'included accessories:', 'items included:', 'with ']);
+      const titleMax = isEbay ? 80 : 200;
+      let titleScore = 0;
+      if (titleLength >= 55 && titleLength <= titleMax) titleScore = 24;
+      else if (titleLength >= 40 && titleLength <= titleMax) titleScore = 19;
+      else if (titleLength >= 25 && titleLength <= titleMax) titleScore = 13;
+      else if (titleLength > titleMax) titleScore = isEbay ? 10 : 14;
+      else if (titleLength) titleScore = 7;
+      if (specs.length || enteredKeyword || enteredProductType) titleScore = Math.min(25, titleScore + 2);
+      if (/\b(?:wow|rare|look|l@@k|!!!|free shipping)\b/i.test(sourceTitle)) titleScore = Math.max(0, titleScore - 4);
+
+      let specificsScore = Math.min(18, specificsCount * 3);
+      if (specs.length >= 2) specificsScore += 4;
+      if (hasCompatibility) specificsScore += 3;
+      if (hasIncluded) specificsScore += 2;
+      specificsScore = Math.min(25, specificsScore);
+
+      let descriptionScore = 0;
+      if (details.length >= 160) descriptionScore += 8;
+      else if (details.length >= 80) descriptionScore += 5;
+      else if (details.length >= 30) descriptionScore += 2;
+      descriptionScore += Math.min(5, (bullets || []).length);
+      if (hasIncluded || hasCompatibility) descriptionScore += 2;
+      descriptionScore = Math.min(15, descriptionScore);
+
+      const conditionScore = hasCondition ? 10 : 0;
+      const termsScore = (hasShipping ? 6 : 0) + (hasReturns ? 6 : 0);
+      const mediaScore = hasPhoto ? 8 : 0;
+      let marketScore = 0;
+      if (isEbay && /\/itm\//i.test(url)) marketScore += 3;
+      if (hasSellerTrust) marketScore += 3;
+      if (hasPrice) marketScore += 2;
+
+      const raw = titleScore + specificsScore + descriptionScore + conditionScore + termsScore + mediaScore + marketScore;
+      const score = Math.max(hasCustomerFacingSeed ? 34 : 20, Math.min(96, Math.round(raw)));
+      const basisParts = [
+        `title ${titleScore}/25`,
+        `item specifics ${specificsScore}/25`,
+        `description ${descriptionScore}/15`,
+        `condition ${conditionScore}/10`,
+        `shipping/returns ${termsScore}/12`,
+        `photos ${mediaScore}/8`,
+        `trust/market ${marketScore}/5`
+      ];
+      return {score, basis: `Estimated from visible eBay listing signals: ${basisParts.join(', ')}.`};
+    }
     function buildHomeOptimizer(data){
       const url = optClean(data.get('siteUrl'));
       const host = optHost(url);
@@ -607,35 +678,27 @@ ${bulletHtml}
       ] : [];
       const fallbackKeywords = hasCustomerFacingSeed ? [] : [marketplace.toLowerCase(), 'product title', 'product details'];
       const keywordIdeas = optDedupe(rawKeywordIdeas.concat(fallbackKeywords).map(item => optClean(item).toLowerCase().replace(/\b(\w+(?:\s+\w+){0,2})\s+\1\b/g, '$1'))).filter(item => item.length > 2 && !/^marketplace listing$/.test(item) && !/\b(?:amazon|ebay) listing for (?:amazon|ebay)$/.test(item)).slice(0,10);
-      let score = 42;
-      if (host.includes('amazon.') || host.includes('ebay.')) score += 14;
-      if (/\/dp\/|\/gp\/product\//i.test(url) || /\/itm\//i.test(url)) score += 8;
-      if (sourceTitle.length >= 35) score += 9;
-      if (sourceTitle.length > 90 && marketplace === 'eBay') score -= 5;
-      if (details.length >= 80) score += 10;
-      if (enteredProductType) score += 6;
-      if (enteredKeyword) score += 6;
-      if (specs.length >= 2) score += 7;
-      if (useCases.length) score += 4;
-      score = Math.max(34, Math.min(92, score));
+      const readiness = optBuildReadinessScore({marketplace, url, sourceTitle, details, productDetails, specs, bullets, enteredProductType, enteredKeyword, hasCustomerFacingSeed});
+      const score = readiness.score;
       const fixes = hasCustomerFacingSeed ? [
         currentTitle ? 'Put the product type, main keyword, and strongest verified spec near the front of the title.' : 'The link provided product words; add the live title to make the rewrite more accurate.',
         specs.length ? 'Use verified specs in the title and bullets without repeating the same phrase.' : 'Provide concrete specs such as dimensions, material, color, compatibility, pack count, or included items.',
         details.length >= 80 ? 'Convert the strongest description details into short buyer-facing bullets.' : 'Provide a short product description for more specific customer-facing bullets.',
-        marketplace === 'eBay' ? 'Keep the eBay title at 80 characters or less.' : 'Keep the title readable by grouping brand, product type, specs, and use case cleanly.'
+        marketplace === 'eBay' ? 'Keep the eBay title at 80 characters or less.' : 'Keep the title readable by grouping brand, product type, specs, and use case cleanly.',
+        marketplace === 'eBay' ? 'Add or verify photos, condition, shipping, and returns because they affect buyer trust and this readiness estimate.' : 'Add or verify photos, condition, shipping, and returns because they affect buyer trust.'
       ] : [
         'Add the current title and key product details to generate customer-facing listing copy.',
         'Include verified specs such as dimensions, material, color, compatibility, pack count, or included items.',
         'Paste visible description or feature text if the marketplace page cannot be read automatically.'
       ];
       const itemNumberOnly = homeNeedsEbayItemLookup(url);
-      return {score, marketplace, host, optimizedTitle, bullets, productDetails, keywordIdeas, fixes, ebayHtml, hasDetails: hasFullDetails, hasCustomerFacingSeed, itemNumberOnly, copyEmptyState: itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : 'This link does not contain enough product words to create honest listing copy. Enter the current title, product type, or a few details above and run it again.'};
+      return {score, scoreBasis: readiness.basis, marketplace, host, optimizedTitle, bullets, productDetails, keywordIdeas, fixes, ebayHtml, hasDetails: hasFullDetails, hasCustomerFacingSeed, itemNumberOnly, copyEmptyState: itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : 'This link does not contain enough product words to create honest listing copy. Enter the current title, product type, or a few details above and run it again.'};
     }
     function renderHomeOptimizer(result){
       homeOptimizerResult.hidden = false;
       homeScoreValue.textContent = result.score;
-      homeScoreLabel.textContent = `${result.marketplace} readiness score`;
-      homeScoreSummary.textContent = result.hasDetails ? `Based on the public link plus the details entered for ${result.host || 'this listing'}.` : result.hasCustomerFacingSeed ? `Based on the listing link for ${result.host || 'this listing'}. Add exact facts for a stronger rewrite.` : result.itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : `The link was accepted, but it does not expose enough product words. Add title/details for a useful rewrite.`;
+      homeScoreLabel.textContent = result.marketplace === 'eBay' ? 'Estimated eBay readiness score' : `${result.marketplace} readiness score`;
+      homeScoreSummary.textContent = result.hasCustomerFacingSeed && result.scoreBasis ? result.scoreBasis : result.itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : `The link was accepted, but it does not expose enough product words. Add title/details for a useful rewrite.`;
       homeOptimizedTitle.textContent = result.optimizedTitle;
       homeOptimizedBullets.innerHTML = result.bullets.length ? result.bullets.map(item => `<li>${optEscape(item)}</li>`).join('') : `<li>${optEscape(result.copyEmptyState)}</li>`;
       homeProductSpecifics.innerHTML = result.productDetails?.length ? result.productDetails.map(item => `<li>${optEscape(item)}</li>`).join('') : `<li>${result.hasCustomerFacingSeed ? 'Add brand, product ID, material, size, color, compatibility, pack count, or included items for clearer details.' : 'Add product details to generate details.'}</li>`;
