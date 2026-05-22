@@ -1,5 +1,6 @@
 const TRIAL_LIMIT = 2;
 const { authEnabled, getUserFromToken, getProfile, upsertProfile, applyCreditUse, creditState, ensureBillingPeriod } = require("../lib/platform");
+const { extractEbayItemId, extractEbayTitleFromUrlSlug, parseEbayItemHtml, lookupEbayBrowseApi } = require("./_lib/ebay-item-lookup");
 
 function pick(rx, s) {
   return (s.match(rx) || [, ""])[1];
@@ -442,6 +443,65 @@ function buildResult(data) {
   };
 }
 
+async function fetchSubmittedEbayListing(listingUrl) {
+  const inputUrl = String(listingUrl || "").trim();
+  const itemId = extractEbayItemId(inputUrl);
+  if (!itemId) return null;
+
+  const apiResult = await lookupEbayBrowseApi(itemId);
+  if (apiResult.ok && apiResult.title) return apiResult;
+
+  try {
+    const response = await fetch(`https://www.ebay.com/itm/${encodeURIComponent(itemId)}`, {
+      redirect: "follow",
+      headers: {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "accept-language": "en-US,en;q=0.9",
+        "cache-control": "no-cache"
+      }
+    });
+    const html = await response.text();
+    const parsed = parseEbayItemHtml(html, itemId);
+    if (parsed.ok && parsed.title) return parsed;
+  } catch (_) {}
+
+  const slugTitle = extractEbayTitleFromUrlSlug(inputUrl);
+  return slugTitle ? {
+    ok: true,
+    itemId,
+    title: slugTitle,
+    productType: "eBay listing",
+    category: "",
+    condition: "",
+    price: "",
+    itemSpecifics: [],
+    description: `Title: ${slugTitle}`
+  } : null;
+}
+
+function mergeEbayListingData(data, listing) {
+  if (!listing || !listing.ok) return data;
+  const next = { ...data };
+  if (!String(next.title || "").trim() && listing.title) next.title = listing.title;
+  if (!String(next.sku || "").trim() && listing.itemId) next.sku = listing.itemId;
+  if (!String(next.category || "").trim() && (listing.category || listing.productType)) next.category = listing.category || listing.productType;
+  if (!String(next.condition || "").trim() && listing.condition) next.condition = listing.condition;
+  if (!String(next.price || "").trim() && listing.price) next.price = listing.price;
+  const listingDetails = [
+    listing.itemId && `eBay Item ID: ${listing.itemId}`,
+    listing.condition && `Condition: ${listing.condition}`,
+    listing.price && `Price: ${listing.price}`,
+    listing.seller && `Seller: ${listing.seller}`,
+    listing.shipping && `Shipping: ${listing.shipping}`,
+    listing.returnTerms && `Returns: ${listing.returnTerms}`,
+    ...(Array.isArray(listing.itemSpecifics) ? listing.itemSpecifics : [])
+  ].filter(Boolean);
+  if (!String(next.specifics || "").trim() && listingDetails.length) next.specifics = listingDetails.join("\n");
+  if (!String(next.description || "").trim() && listing.description) next.description = listing.description;
+  return next;
+}
+
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
@@ -494,7 +554,14 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const result = buildResult(req.body || {});
+    const requestBody = req.body || {};
+    const listingUrl = requestBody.listingUrl || requestBody.siteUrl || requestBody.url || "";
+    let optimizedInput = requestBody;
+    if (listingUrl) {
+      const listing = await fetchSubmittedEbayListing(listingUrl);
+      optimizedInput = mergeEbayListingData(requestBody, listing);
+    }
+    const result = buildResult(optimizedInput);
     const nextUsed = hasPlan ? used : used + 1;
     const nextCreditState = hasPlan ? applyCreditUse(remoteProfile || { plan: profilePlan }) : null;
     const nextCreditsUsed = nextCreditState ? nextCreditState.nextCreditsUsed : creditsUsed;
