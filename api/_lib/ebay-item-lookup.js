@@ -1,12 +1,16 @@
 const EBAY_ITEM_ID_RE = /(?:^|\D)(\d{9,15})(?:\D|$)/;
 
+function isEbayHost(hostname) {
+  const host = String(hostname || '').replace(/^www\./, '').toLowerCase();
+  return host === 'ebay.us' || host.endsWith('.ebay.us') || /(^|\.)ebay\./i.test(host);
+}
+
 function extractEbayItemId(value) {
   const raw = String(value || '').trim();
   if (!raw) return '';
   try {
     const parsed = new URL(raw);
-    const host = parsed.hostname.replace(/^www\./, '').toLowerCase();
-    if (!/(^|\.)ebay\./i.test(host)) return '';
+    if (!isEbayHost(parsed.hostname)) return '';
     const segments = parsed.pathname.split('/').map(segment => {
       try { return decodeURIComponent(segment); } catch (_) { return segment; }
     }).filter(Boolean);
@@ -29,8 +33,7 @@ function extractEbayTitleFromUrlSlug(value) {
   if (!raw) return '';
   try {
     const parsed = new URL(raw);
-    const host = parsed.hostname.replace(/^www\./, '').toLowerCase();
-    if (!/(^|\.)ebay\./i.test(host)) return '';
+    if (!isEbayHost(parsed.hostname)) return '';
     const segments = parsed.pathname.split('/').map(segment => {
       try { return decodeURIComponent(segment); } catch (_) { return segment; }
     }).filter(Boolean);
@@ -143,6 +146,21 @@ function parseEbayItemHtml(html, itemId = '') {
     detailCount: [title, price, condition, category, image, description].filter(Boolean).length,
     blocked
   };
+}
+
+function extractEbayItemIdFromHtml(html) {
+  const body = String(html || '');
+  const canonical = cleanField(
+    (body.match(/<link\b(?=[^>]*rel=["']canonical["'])(?=[^>]*href=["']([^"']+)["'])[^>]*>/i) || [])[1] ||
+    metaContent(body, ['og:url']),
+    500
+  );
+  if (canonical) {
+    const canonicalId = extractEbayItemId(canonical);
+    if (canonicalId) return canonicalId;
+  }
+  const match = body.match(/\/itm\/(?:[^"'<>/\s]+\/)?(\d{9,15})(?:[?#/"'<\s]|$)/i);
+  return match ? match[1] : '';
 }
 
 function getEbayCredentials(env = process.env) {
@@ -391,6 +409,61 @@ async function fetchWithTimeout(fetchImpl, url, options = {}, timeoutMs = 8000) 
   }
 }
 
+async function resolveEbayItemUrl(value, options = {}) {
+  const raw = String(value || '').trim();
+  if (!raw) return { ok: false, source: 'ebay-url-resolver', reason: 'missing-url' };
+
+  let parsed;
+  try {
+    parsed = new URL(raw);
+  } catch (_) {
+    return { ok: false, source: 'ebay-url-resolver', reason: 'invalid-url' };
+  }
+  if (!isEbayHost(parsed.hostname)) {
+    return { ok: false, source: 'ebay-url-resolver', reason: 'not-ebay-url' };
+  }
+
+  const directItemId = extractEbayItemId(raw);
+  if (directItemId) {
+    return { ok: true, source: 'ebay-url-resolver', itemId: directItemId, url: raw, html: '' };
+  }
+
+  const fetchImpl = options.fetch || global.fetch;
+  if (typeof fetchImpl !== 'function') {
+    return { ok: false, source: 'ebay-url-resolver', reason: 'fetch-unavailable' };
+  }
+
+  try {
+    const response = await fetchWithTimeout(fetchImpl, raw, {
+      method: 'GET',
+      redirect: 'follow',
+      headers: {
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'accept-language': 'en-US,en;q=0.9',
+        'cache-control': 'no-cache'
+      }
+    }, options.timeoutMs || 9000);
+    const html = await response.text().catch(() => '');
+    const finalUrl = String(response.url || raw);
+    const itemId = extractEbayItemId(finalUrl) || extractEbayItemIdFromHtml(html);
+    return {
+      ok: Boolean(itemId),
+      source: 'ebay-url-resolver',
+      itemId,
+      url: finalUrl,
+      html,
+      status: response.status
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      source: 'ebay-url-resolver',
+      reason: error?.name === 'AbortError' ? 'timeout' : 'request-failed'
+    };
+  }
+}
+
 async function lookupEbayBrowseApi(itemId, options = {}) {
   const env = options.env || process.env;
   const credentials = getEbayCredentials(env);
@@ -473,6 +546,7 @@ async function lookupEbayBrowseApi(itemId, options = {}) {
 module.exports = {
   extractEbayItemId,
   extractEbayTitleFromUrlSlug,
+  resolveEbayItemUrl,
   parseEbayItemHtml,
   lookupEbayBrowseApi,
   buildBrowseDetailBundle,

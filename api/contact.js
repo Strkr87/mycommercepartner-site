@@ -1,6 +1,6 @@
 // api/contact.js — Contact form handler + website review checkout starter
 const { STRIPE_SECRET_KEY, stripeRequest } = require('../lib/platform');
-const { extractEbayItemId, extractEbayTitleFromUrlSlug, parseEbayItemHtml, lookupEbayBrowseApi } = require('./_lib/ebay-item-lookup');
+const { extractEbayItemId, extractEbayTitleFromUrlSlug, resolveEbayItemUrl, parseEbayItemHtml, lookupEbayBrowseApi } = require('./_lib/ebay-item-lookup');
 const nodemailer = require('nodemailer');
 
 const SMTP_HOST   = process.env.SMTP_HOST || 'smtp.gmail.com';
@@ -259,7 +259,20 @@ async function startMarketplaceAuditCheckout(req, res) {
 }
 
 async function lookupEbayItemDetails(req, res) {
-  const itemId = extractEbayItemId(req.body?.itemId || req.body?.url || '');
+  const inputUrl = String(req.body?.url || '').trim();
+  let itemId = extractEbayItemId(req.body?.itemId || inputUrl || '');
+  let resolvedUrl = inputUrl;
+  let resolvedHtml = '';
+
+  if (!itemId && inputUrl) {
+    const resolved = await resolveEbayItemUrl(inputUrl);
+    if (resolved.itemId) {
+      itemId = resolved.itemId;
+      resolvedUrl = resolved.url || inputUrl;
+      resolvedHtml = resolved.html || '';
+    }
+  }
+
   if (!itemId) {
     res.status(400).json({ ok: false, message: 'Enter a valid eBay item number.' });
     return;
@@ -270,6 +283,15 @@ async function lookupEbayItemDetails(req, res) {
     res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
     res.status(200).json(apiResult);
     return;
+  }
+
+  if (resolvedHtml) {
+    const parsed = parseEbayItemHtml(resolvedHtml, itemId);
+    if (parsed.ok) {
+      res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
+      res.status(200).json(parsed);
+      return;
+    }
   }
 
   const controller = new AbortController();
@@ -297,7 +319,7 @@ async function lookupEbayItemDetails(req, res) {
   } finally {
     clearTimeout(timer);
   }
-  const slugTitle = extractEbayTitleFromUrlSlug(req.body?.url || '');
+  const slugTitle = extractEbayTitleFromUrlSlug(resolvedUrl || inputUrl || '');
   if (slugTitle) {
     res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
     res.status(200).json({

@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const { extractEbayItemId, extractEbayTitleFromUrlSlug, parseEbayItemHtml, lookupEbayBrowseApi, buildFindingDetailBundle } = require('../api/_lib/ebay-item-lookup');
+const { extractEbayItemId, extractEbayTitleFromUrlSlug, resolveEbayItemUrl, parseEbayItemHtml, lookupEbayBrowseApi, buildFindingDetailBundle } = require('../api/_lib/ebay-item-lookup');
 
 test('extractEbayItemId finds numeric item ID from eBay item URL without title slug', () => {
   assert.equal(extractEbayItemId('https://www.ebay.com/itm/336568091037'), '336568091037');
@@ -13,6 +13,28 @@ test('extractEbayItemId finds numeric item ID when title slug is present', () =>
 
 test('extractEbayItemId rejects non-eBay URLs', () => {
   assert.equal(extractEbayItemId('https://example.com/itm/336568091037'), '');
+});
+
+test('resolveEbayItemUrl follows eBay mobile share URLs to the listing item ID', async () => {
+  const calls = [];
+  const result = await resolveEbayItemUrl('https://ebay.us/m/BmvHq2', {
+    fetch: async (url, options = {}) => {
+      calls.push({ url: String(url), options });
+      return {
+        ok: true,
+        status: 200,
+        url: 'https://www.ebay.com/itm/sample-product-title/336568091037?mkcid=16&mkevt=1',
+        text: async () => '<!doctype html><html><head></head><body></body></html>'
+      };
+    }
+  });
+
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].url, 'https://ebay.us/m/BmvHq2');
+  assert.equal(calls[0].options.redirect, 'follow');
+  assert.equal(result.ok, true);
+  assert.equal(result.itemId, '336568091037');
+  assert.equal(result.url, 'https://www.ebay.com/itm/sample-product-title/336568091037?mkcid=16&mkevt=1');
 });
 
 test('extractEbayTitleFromUrlSlug gets starter title when eBay API and page fetch fail', () => {
