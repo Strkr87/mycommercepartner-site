@@ -573,13 +573,14 @@ ${bulletHtml}
       }
       return '';
     }
-    function optBuildExactBullets({productType, productDetails, fallbackBullets}){
+    function optBuildExactBullets({productType, productDetails, fallbackBullets, sourceTitle}){
       const brand = optDetailValue(productDetails, ['Brand']);
       const product = optCustomerProductName(productType, brand);
       const size = optDetailValue(productDetails, ['Storage', 'Size', 'Capacity', 'Dimensions', 'Pack Count', 'Quantity', 'Weight', 'Coverage']);
       const material = optDetailValue(productDetails, ['Material', 'Color']);
       const compatibility = optDetailValue(productDetails, ['Compatibility', 'Compatible Brand', 'Compatible Model', 'Network', 'Carrier']);
       const included = optDetailValue(productDetails, ['Included', 'Included Accessories']);
+      const titleSource = optClean(`${sourceTitle || ''} ${productType || ''}`);
       const bullets = [];
       function push(body){
         const text = optClean(body);
@@ -597,6 +598,15 @@ ${bulletHtml}
       if (material) push(/black/i.test(material) ? 'Black finish gives the installed hardware a clean, low-profile look' : `${optTitleCase(material)} finish gives the ${optTitleCase(product)} a clean, ready-to-use look`);
       if (compatibility) push(/^unlocked$/i.test(compatibility) ? 'Unlocked carrier support works with compatible networks' : `Fits ${compatibility} for easier fit confirmation`);
       if (included) push(`Includes ${included} so the main components are ready for installation or use`);
+      const wheelSize = (titleSource.match(/\b\d+(?:\.\d+)?\s?[xÃ—]\s?\d+(?:\.\d+)?\b/i) || [''])[0];
+      const boltPattern = (titleSource.match(/\b\d\s?[xÃ—]\s?\d{3}(?:\.\d+)?\b/i) || [''])[0];
+      const offset = (titleSource.match(/\b\d\s?\+\s?\d\b/i) || [''])[0];
+      if (wheelSize && !size) push(`${wheelSize.replace(/\s+/g, '')} sizing helps confirm the right wheel dimensions before purchase`);
+      if (/\bbeadlock\b/i.test(titleSource)) push(/single beadlock/i.test(titleSource) ? 'Single beadlock design gives shoppers a clear wheel-construction detail before checkout' : 'Beadlock design gives shoppers a clear wheel-construction detail before checkout');
+      if (/\bfront wheel\b/i.test(titleSource)) push('Front wheel placement helps shoppers match the wheel to the intended position');
+      else if (/\brear wheel\b/i.test(titleSource)) push('Rear wheel placement helps shoppers match the wheel to the intended position');
+      if (offset) push(`${offset.replace(/\s+/g, '')} offset helps shoppers compare fitment against their setup`);
+      if (boltPattern) push(`${boltPattern.replace(/\s+/g, '')} bolt pattern helps shoppers verify compatibility before ordering`);
       fallbackBullets.forEach(push);
       return bullets.slice(0, 5);
     }
@@ -725,7 +735,7 @@ ${bulletHtml}
       const sparseTitle = marketplace === 'eBay' ? 'Add Product Title for Stronger eBay Preview' : marketplace === 'Amazon' ? 'Add Product Title for Stronger Amazon Preview' : 'Add Product Title for Stronger Preview';
       const optimizedTitle = hasCustomerFacingSeed ? optBuildTitle({marketplace, brand, productType, specs, useCases, keyword, sourceTitle}) : sparseTitle;
       const fallbackBullets = hasCustomerFacingSeed ? optBuildBenefitBullets({productType, specs, phrases, useCases}) : [];
-      const bullets = hasCustomerFacingSeed ? optBuildExactBullets({productType, productDetails, fallbackBullets}) : [];
+      const bullets = hasCustomerFacingSeed ? optBuildExactBullets({productType, productDetails, fallbackBullets, sourceTitle}) : [];
       const ebayHtml = marketplace === 'eBay' && hasCustomerFacingSeed ? optBuildEbayDescriptionHtml({title: optimizedTitle, bullets, productDetails}) : '';
       const rawKeywordIdeas = hasCustomerFacingSeed ? [
         keyword,

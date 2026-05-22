@@ -296,6 +296,25 @@ test('homepage product details remove marketplace noise from eBay lookup text', 
   assert.doesNotMatch(result.productDetails.join(' '), /Price|Seller|Buying Options|Item Location|Shipping|Feedback|Title:/i);
 });
 
+test('homepage eBay product description shows five customer-facing bullets from visible title facts', () => {
+  const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
+  const result = buildHomeOptimizer(makeFormData({
+    siteUrl: 'https://www.ebay.com/itm/397348619110',
+    currentTitle: 'HiPer ATV TECH 3 Single Beadlock Front Wheel 10x5, 4+1, 4x156 - 1050-YPFF-SBL-BK',
+    productType: 'eBay Motors|Parts & Accessories|ATV Wheels',
+    currentCopy: 'Brand: HiPer\nCondition: New\nColor: Black',
+    targetKeyword: '',
+    goal: '',
+    revenue: ''
+  }));
+
+  const highlights = result.ebayHtml.match(/<h3[^>]*>Highlights<\/h3>\s*<ul[^>]*>([\s\S]*?)<\/ul>/i)?.[1] || '';
+  const bulletLines = [...highlights.matchAll(/<li>(.*?)<\/li>/g)].map(match => match[1]);
+  assert.equal(bulletLines.length, 5);
+  assert.match(bulletLines.join(' '), /10x5|beadlock|front wheel|4\+1|4x156/i);
+  assert.doesNotMatch(bulletLines.join(' '), /Product ID|Condition:|SKU|MPN|Seller|Price|Notes:/i);
+});
+
 test('homepage presents the free listing optimizer as the front door and frames paid help as implementation', () => {
   const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
   assert.match(html, /<title>Free Amazon &amp; eBay Listing Optimizer|<title>Free Amazon & eBay Listing Optimizer/);
