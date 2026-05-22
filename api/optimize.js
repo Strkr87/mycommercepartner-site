@@ -93,6 +93,15 @@ function sentence(value) {
   return /[.!?]$/.test(text) ? text : `${text}.`;
 }
 
+function htmlEscape(value) {
+  return cleanMarketplaceText(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function bulletProductName(data) {
   const product = compactProductType(data);
   return /^(?:product|item|marketplace listing|amazon listing|ebay listing)$/i.test(product)
@@ -318,7 +327,8 @@ function buildEbayMarketplaceTitle(data, facts, brand, id) {
   const storage = specValue(facts, ["Storage Capacity", "Storage"]);
   const network = specValue(facts, ["Network", "Carrier"]);
   const color = specValue(facts, ["Color"]);
-  const product = compactProductType(data);
+  let product = compactProductType(data);
+  if (brand) product = product.replace(new RegExp(`\\b${rxEscape(brand)}\\b`, "ig"), " ").replace(/\s+/g, " ").trim();
   const suffix = id ? ` - ${id}` : "";
 
   if (/cell phones?|smartphones?|iphone/i.test(source)) {
@@ -393,6 +403,42 @@ function bullets(data) {
     .slice(0, 6);
 }
 
+function isCustomerFacingSpecific(line) {
+  return !/^\s*(?:ebay item id|item id|product id|sku|seller|price)\s*:/i.test(line || "");
+}
+
+function buildEbayDescriptionHtml(title, bulletItems, specifics, exact, data) {
+  const detailLines = [
+    exact.model && `Model: ${exact.model}`,
+    exact.storageSize && `Storage / size / pack count: ${exact.storageSize}`,
+    exact.compatibility && `Compatibility: ${exact.compatibility}`,
+    exact.included && `Included items: ${exact.included}`,
+    exact.shippingReturns && `Shipping / returns: ${exact.shippingReturns}`,
+    exact.condition && `Condition: ${exact.condition}`
+  ]
+    .concat((specifics || []).filter(isCustomerFacingSpecific))
+    .filter(Boolean)
+    .filter((line, index, arr) => arr.findIndex((item) => item.toLowerCase() === line.toLowerCase()) === index)
+    .slice(0, 9);
+
+  const highlightHtml = (bulletItems.length ? bulletItems : [`${compactProductType(data)} details are organized so buyers can confirm fit and use quickly.`])
+    .map((line) => `    <li>${htmlEscape(line)}</li>`)
+    .join("\n");
+  const detailHtml = detailLines.length
+    ? `\n  <h3 style="font-size:18px;margin:18px 0 8px;">Product Details</h3>\n  <ul style="margin:0 0 16px 20px;padding:0;">\n${detailLines.map((line) => `    <li>${htmlEscape(line)}</li>`).join("\n")}\n  </ul>`
+    : "";
+
+  return `<div style="font-family:Arial,Helvetica,sans-serif;color:#222;line-height:1.55;font-size:16px;">
+  <h2 style="font-size:22px;margin:0 0 12px;">${htmlEscape(title)}</h2>
+  <p style="margin:0 0 16px;">Review the highlights below to confirm this item is the right fit for your needs.</p>
+  <h3 style="font-size:18px;margin:0 0 8px;">Highlights</h3>
+  <ul style="margin:0 0 16px 20px;padding:0;">
+${highlightHtml}
+  </ul>${detailHtml}
+  <p style="margin:0;">Please review the photos and listing details before purchase.</p>
+</div>`;
+}
+
 function score(data) {
   let seo = 58;
   let conv = 55;
@@ -460,6 +506,7 @@ function buildResult(data) {
     exact.condition && `Condition: ${exact.condition}`
   ].filter(Boolean).map((x) => `- ${x}`).join("\n");
   const description = `${title}. Clear product facts are shown up front so buyers can confirm fit, contents, and checkout expectations quickly.\n\nExact facts:\n${exactFactLines || "- Add model, size, compatibility, included items, shipping, and condition details for a stronger description."}${battery ? `\n- Battery health: ${battery}` : ""}\n\nCondition note:\n${notes}.\n\nIncluded:\n${included}.\n\nHighlights:\n${bulletItems.map((x) => `- ${x}`).join("\n")}\n\nItem specifications:\n${specificationLines}\n\nShipping and support:\n${exact.shippingReturns || data.shipping || "Calculated at checkout"}.\n\nPlease review photos carefully and message with any fit, compatibility, or condition questions before purchase.`;
+  const descriptionHtml = buildEbayDescriptionHtml(title, bulletItems, specifics, exact, data);
 
   const actions = [
     (data.sku || "").trim()
@@ -491,6 +538,7 @@ function buildResult(data) {
     specifics: specifics.join("\n"),
     bullets: bulletItems.map((x) => `- ${x}`).join("\n"),
     description,
+    descriptionHtml,
     warnings,
     actions: actions.map((x, i) => `${i + 1}. ${x}`).join("\n"),
     next: `Suggested next modules:\n- Bulk optimizer for ${(data.category || "inventory").toLowerCase()} inventory\n- Competitor title gap detection\n- Saved prompts for repeatable ${String(data.condition || "").toLowerCase()} inventory\n- Team review workflow before publish\n- Seller analytics tied to listing score changes`
@@ -537,6 +585,7 @@ async function fetchSubmittedEbayListing(listingUrl) {
 function mergeEbayListingData(data, listing) {
   if (!listing || !listing.ok) return data;
   const next = { ...data };
+  next.marketplace = "eBay";
   if (!String(next.title || "").trim() && listing.title) next.title = listing.title;
   if (!String(next.sku || "").trim() && listing.itemId) next.sku = listing.itemId;
   if (!String(next.category || "").trim() && (listing.category || listing.productType)) next.category = listing.category || listing.productType;
