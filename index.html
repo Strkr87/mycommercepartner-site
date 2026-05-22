@@ -598,7 +598,7 @@ ${bulletHtml}
       if (compatibility) push(/^unlocked$/i.test(compatibility) ? 'Unlocked carrier support works with compatible networks' : `Fits ${compatibility} for easier fit confirmation`);
       if (included) push(`Includes ${included} so the main components are ready for installation or use`);
       fallbackBullets.forEach(push);
-      return bullets.slice(0, 6);
+      return bullets.slice(0, 5);
     }
     function optBuildTitle({marketplace, brand, productType, specs, useCases, keyword, sourceTitle}){
       const cleanBrand = optTitleCase(brand).replace(/\b(?:Amazon|Ebay|eBay)\b/g, '').trim();

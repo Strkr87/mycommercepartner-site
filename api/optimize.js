@@ -1,6 +1,6 @@
 const TRIAL_LIMIT = 2;
 const { authEnabled, getUserFromToken, getProfile, upsertProfile, applyCreditUse, creditState, ensureBillingPeriod } = require("../lib/platform");
-const { extractEbayItemId, extractEbayTitleFromUrlSlug, parseEbayItemHtml, lookupEbayBrowseApi } = require("./_lib/ebay-item-lookup");
+const { extractEbayItemId, extractEbayTitleFromUrlSlug, parseEbayItemHtml, lookupEbayBrowseApi, searchEbayBrowseApi } = require("./_lib/ebay-item-lookup");
 
 function pick(rx, s) {
   return (s.match(rx) || [, ""])[1];
@@ -11,7 +11,6 @@ function skuBits(s) {
     .split(/[|,]/)
     .map((x) => x.trim())
     .filter(Boolean)
-    .filter((x) => !/^\d{9,15}$/.test(x))
     .slice(0, 2);
 }
 
@@ -79,12 +78,36 @@ function primaryFacts(data) {
     sku: cleanMarketplaceText((data.sku || "").trim() || factValue(data, facts, ["SKU", "MPN", "Manufacturer Part Number", "eBay Item ID", "Item ID"])),
     model: cleanMarketplaceText(factValue(data, facts, ["Model", "Model Number", "MPN", "Manufacturer Part Number"])),
     storageSize: cleanMarketplaceText(factValue(data, facts, ["Storage Capacity", "Storage", "Size", "Capacity", "Dimensions", "Pack Count", "Quantity", "Weight", "Coverage"])),
-    materialFeature: cleanMarketplaceText(factValue(data, facts, ["Material", "Color", "Finish", "Features"])),
+    materialFeature: cleanMarketplaceText(factValue(data, facts, ["Material", "Color", "Finish"])),
     compatibility: cleanMarketplaceText(factValue(data, facts, ["Compatibility", "Compatible Brand", "Compatible Model", "Network", "Carrier"])),
     included: cleanMarketplaceText(factValue(data, facts, ["Included", "Included Accessories", "Items Included", "What's Included"])),
     shippingReturns: String(factValue(data, facts, ["Shipping", "Returns", "Return Policy"]) || data.shipping || "").replace(/\s+/g, " ").trim(),
     condition: cleanMarketplaceText(factValue(data, facts, ["Condition", "Cosmetic Condition", "Condition Notes"]) || data.condition || "")
   };
+}
+
+function isSearchableProductIdentifier(value) {
+  const text = cleanMarketplaceText(value);
+  if (!text) return false;
+  if (/^\d{9,15}$/.test(text)) return false;
+  if (text.length < 3 || text.length > 80) return false;
+  return /[a-z]/i.test(text) && /(?:\d|[-/])/.test(text);
+}
+
+function productIdentifierSearchQuery(data) {
+  const exact = primaryFacts(data);
+  const facts = exact.facts || {};
+  const candidates = [
+    exact.model,
+    specValue(facts, ["MPN", "Manufacturer Part Number", "Part Number"]),
+    specValue(facts, ["Product Line"]),
+    exact.sku
+  ].filter(isSearchableProductIdentifier);
+  const identifier = candidates[0] || "";
+  if (!identifier) return "";
+  const brand = cleanMarketplaceText((data.brand || "").trim() || specValue(facts, ["Brand"]));
+  const product = compactProductType(data).replace(/\b(?:item|product|marketplace listing|ebay listing)\b/ig, "").trim();
+  return [brand, identifier, product].filter(Boolean).join(" ").slice(0, 160);
 }
 
 function sentence(value) {
@@ -126,7 +149,7 @@ function factBullets(data) {
   if (exact.materialFeature) {
     lines.push(/black/i.test(exact.materialFeature)
       ? "Black finish gives the installed hardware a clean, low-profile look"
-      : `${exact.materialFeature} finish gives the ${product} a clean, ready-to-use look`);
+      : `${exact.materialFeature} details highlight a visible product feature or build quality`);
   }
   if (exact.compatibility) {
     lines.push(/^unlocked$/i.test(exact.compatibility)
@@ -138,6 +161,55 @@ function factBullets(data) {
   }
 
   return lines.map(sentence);
+}
+
+function cleanBulletLine(value) {
+  return sentence(value)
+    .replace(/\b(?:product id|item id|ebay item id|sku|mpn|condition|notes|seller|price)\s*:\s*[^.;]+[.;]?/ig, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function sourcedCustomerBullets(data, existing = []) {
+  const exact = primaryFacts(data);
+  const product = bulletProductName(data);
+  const source = `${data.title || ""}\n${data.category || ""}\n${data.description || ""}\n${data.specifics || ""}`;
+  const candidates = existing.slice();
+
+  const add = (line) => {
+    const cleaned = cleanBulletLine(line);
+    if (!cleaned) return;
+    if (/\b(?:product id|item id|ebay item id|sku|mpn|seller|price|condition|notes)\b/i.test(cleaned)) return;
+    const key = cleaned.toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ").slice(0, 8).join(" ");
+    if (candidates.some((item) => item.toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ").slice(0, 8).join(" ") === key)) return;
+    candidates.push(cleaned);
+  };
+
+  if (exact.model && !/^\d{9,15}$/.test(exact.model)) add(`${exact.model} model details help buyers confirm they are choosing the right ${product}`);
+  if (exact.storageSize) add(`${exact.storageSize} details make it easier to confirm size, capacity, or quantity before checkout`);
+  if (exact.materialFeature) add(`${exact.materialFeature} details give shoppers a clear sense of the material, finish, or visible product feature`);
+  if (exact.compatibility) add(`Compatibility with ${exact.compatibility} helps buyers confirm fit before purchase`);
+  if (exact.included) add(`Included ${exact.included} lets shoppers see what comes with the order at a glance`);
+  if (exact.shippingReturns) add(`${exact.shippingReturns} information helps set clear delivery and return expectations`);
+
+  if (/\b(?:easy|simple|quick|tool-free|ready to use|install|installation|setup)\b/i.test(source)) {
+    add(`${titleCase(product)} setup details help shoppers understand how it fits into everyday use`);
+  }
+  if (/\b(?:durable|heavy duty|stainless|steel|aluminum|carbon|composite|reinforced|mesh)\b/i.test(source)) {
+    add(`Durable construction details help shoppers compare build quality before purchase`);
+  }
+  if (/\b(?:compact|lightweight|portable|low-profile|small|travel)\b/i.test(source)) {
+    add(`Compact or lightweight design details help shoppers picture where the ${product} will fit`);
+  }
+  if (/\b(?:clean|protect|protection|cover|shade|filter|support|secure|replacement)\b/i.test(source)) {
+    add(`${titleCase(product)} features are presented around the practical benefit shoppers are trying to solve`);
+  }
+
+  return candidates
+    .map(cleanBulletLine)
+    .filter(Boolean)
+    .filter((line, index, arr) => arr.findIndex((x) => x.toLowerCase() === line.toLowerCase()) === index)
+    .slice(0, 5);
 }
 
 function categoryWords(category) {
@@ -327,22 +399,23 @@ function buildEbayMarketplaceTitle(data, facts, brand, id) {
   const storage = specValue(facts, ["Storage Capacity", "Storage"]);
   const network = specValue(facts, ["Network", "Carrier"]);
   const color = specValue(facts, ["Color"]);
+  const condition = cleanMarketplaceText(data.condition || specValue(facts, ["Condition"])).replace(/^Used\s*-\s*/i, "");
   let product = compactProductType(data);
   if (brand) product = product.replace(new RegExp(`\\b${rxEscape(brand)}\\b`, "ig"), " ").replace(/\s+/g, " ").trim();
   const suffix = id ? ` - ${id}` : "";
 
   if (/cell phones?|smartphones?|iphone/i.test(source)) {
-    return fitTitleParts([brand, model, storage, network, color], 80, suffix);
+    return fitTitleParts([brand, model, storage, network, color, condition], 80, suffix);
   }
 
   if (/robot|vacuum/i.test(source)) {
     const leading = [brand, model, product].filter(Boolean).join(" ");
-    return joinTitleParts([leading, id], 80);
+    return joinTitleParts([leading, condition, id], 80);
   }
 
   const material = specValue(facts, ["Material"]);
   const capacity = specValue(facts, ["Capacity", "Size"]);
-  return fitTitleParts([brand, model, capacity, material, product, color], 80, suffix);
+  return fitTitleParts([brand, model, capacity, material, product, color, condition], 80, suffix);
 }
 
 function titleAI(data) {
@@ -396,11 +469,10 @@ function bullets(data) {
   const product = compactProductType(data);
   const featureLines = descriptionFeatures(data);
   const lines = exactLines.concat(featureLines.map(sentence));
-  if (!lines.length) lines.push(`${product} details are organized so buyers can compare the listing faster.`);
-  return lines
+  return sourcedCustomerBullets(data, lines)
     .filter(Boolean)
     .filter((line, index, arr) => arr.findIndex((x) => x.toLowerCase() === line.toLowerCase()) === index)
-    .slice(0, 6);
+    .slice(0, 5);
 }
 
 function isCustomerFacingSpecific(line) {
@@ -605,6 +677,38 @@ function mergeEbayListingData(data, listing) {
   return next;
 }
 
+function mergeEbaySearchEnrichment(data, enrichment) {
+  if (!enrichment || !enrichment.ok) return data;
+  const next = { ...data };
+  const existingSpecifics = String(next.specifics || "").trim();
+  const enrichmentDetails = [
+    enrichment.category && `Category: ${enrichment.category}`,
+    enrichment.condition && `Condition: ${enrichment.condition}`,
+    enrichment.shipping && `Shipping: ${enrichment.shipping}`,
+    enrichment.returnTerms && `Returns: ${enrichment.returnTerms}`,
+    ...(Array.isArray(enrichment.itemSpecifics) ? enrichment.itemSpecifics : [])
+  ].filter(Boolean);
+  const mergedSpecifics = existingSpecifics
+    ? `${existingSpecifics}\n${enrichmentDetails.join("\n")}`
+    : enrichmentDetails.join("\n");
+  if (mergedSpecifics.trim()) {
+    next.specifics = mergedSpecifics
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .filter((line, index, arr) => arr.findIndex((item) => item.toLowerCase() === line.toLowerCase()) === index)
+      .join("\n");
+  }
+  if (!String(next.brand || "").trim()) {
+    const brand = specValue(parseSpecifics(next.specifics || ""), ["Brand"]);
+    if (brand) next.brand = brand;
+  }
+  if (!String(next.description || "").trim() && enrichment.description) next.description = enrichment.description;
+  next.enrichmentSource = enrichment.source || "ebay-api-search";
+  next.enrichmentQuery = enrichment.query || "";
+  return next;
+}
+
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
@@ -663,6 +767,13 @@ module.exports = async (req, res) => {
     if (listingUrl) {
       const listing = await fetchSubmittedEbayListing(listingUrl);
       optimizedInput = mergeEbayListingData(requestBody, listing);
+    }
+    if (/ebay/i.test(String(optimizedInput.marketplace || optimizedInput.channel || ""))) {
+      const enrichmentQuery = productIdentifierSearchQuery(optimizedInput);
+      if (enrichmentQuery) {
+        const enrichment = await searchEbayBrowseApi(enrichmentQuery, { limit: 5, timeoutMs: 7000 });
+        optimizedInput = mergeEbaySearchEnrichment(optimizedInput, enrichment);
+      }
     }
     const result = buildResult(optimizedInput);
     const nextUsed = hasPlan ? used : used + 1;

@@ -543,12 +543,67 @@ async function lookupEbayBrowseApi(itemId, options = {}) {
   }
 }
 
+async function searchEbayBrowseApi(query, options = {}) {
+  const term = cleanField(query, 160);
+  if (!term) return { ok: false, source: 'ebay-api-search', reason: 'missing-query' };
+
+  const env = options.env || process.env;
+  const credentials = getEbayCredentials(env);
+  if (!credentials) return { ok: false, source: 'ebay-api-search', reason: 'missing-credentials' };
+
+  const fetchImpl = options.fetch || global.fetch;
+  if (typeof fetchImpl !== 'function') return { ok: false, source: 'ebay-api-search', reason: 'fetch-unavailable' };
+
+  try {
+    const basicToken = Buffer.from(`${credentials.clientId}:${credentials.clientSecret}`).toString('base64');
+    const tokenResponse = await fetchWithTimeout(fetchImpl, 'https://api.ebay.com/identity/v1/oauth2/token', {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${basicToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'application/json'
+      },
+      body: new URLSearchParams({
+        grant_type: 'client_credentials',
+        scope: 'https://api.ebay.com/oauth/api_scope'
+      }).toString()
+    }, options.timeoutMs || 8000);
+    const tokenData = await tokenResponse.json().catch(() => ({}));
+    if (!tokenResponse.ok || !tokenData.access_token) {
+      return { ok: false, source: 'ebay-api-search', reason: 'token-failed', status: tokenResponse.status };
+    }
+
+    const normalizedTerm = term.toLowerCase();
+    for (const marketplaceId of credentials.marketplaceIds) {
+      const params = new URLSearchParams({ q: term, limit: String(options.limit || 5) });
+      const { response, data } = await fetchBrowseJson(
+        fetchImpl,
+        `https://api.ebay.com/buy/browse/v1/item_summary/search?${params.toString()}`,
+        tokenData.access_token,
+        marketplaceId,
+        options.timeoutMs || 8000
+      );
+      if (!response.ok) continue;
+      const summaries = Array.isArray(data.itemSummaries) ? data.itemSummaries : [];
+      const matched = summaries.find(item => String(item.title || '').toLowerCase().includes(normalizedTerm)) || summaries[0];
+      if (matched) {
+        const bundle = buildBrowseDetailBundle(matched, String(matched.legacyItemId || matched.itemId || ''));
+        if (bundle.ok) return { ...bundle, source: 'ebay-api-search', marketplaceId, query: term };
+      }
+    }
+    return { ok: false, source: 'ebay-api-search', reason: 'no-results' };
+  } catch (error) {
+    return { ok: false, source: 'ebay-api-search', reason: error?.name === 'AbortError' ? 'timeout' : 'request-failed' };
+  }
+}
+
 module.exports = {
   extractEbayItemId,
   extractEbayTitleFromUrlSlug,
   resolveEbayItemUrl,
   parseEbayItemHtml,
   lookupEbayBrowseApi,
+  searchEbayBrowseApi,
   buildBrowseDetailBundle,
   buildFindingDetailBundle,
   getEbayCredentials

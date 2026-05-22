@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const { extractEbayItemId, extractEbayTitleFromUrlSlug, resolveEbayItemUrl, parseEbayItemHtml, lookupEbayBrowseApi, buildFindingDetailBundle } = require('../api/_lib/ebay-item-lookup');
+const { extractEbayItemId, extractEbayTitleFromUrlSlug, resolveEbayItemUrl, parseEbayItemHtml, lookupEbayBrowseApi, searchEbayBrowseApi, buildFindingDetailBundle } = require('../api/_lib/ebay-item-lookup');
 
 test('extractEbayItemId finds numeric item ID from eBay item URL without title slug', () => {
   assert.equal(extractEbayItemId('https://www.ebay.com/itm/336568091037'), '336568091037');
@@ -187,6 +187,48 @@ test('lookupEbayBrowseApi can recover failed legacy lookup from item summary sea
   assert.equal(result.source, 'ebay-api-search');
   assert.equal(result.title, 'Dyson V7 Motorhead Cordless Vacuum Cleaner');
   assert.match(result.description, /Vacuum Cleaners/);
+});
+
+test('searchEbayBrowseApi searches a real model query and returns usable marketplace facts', async () => {
+  const calls = [];
+  const mockFetch = async (url, options = {}) => {
+    calls.push(String(url));
+    if (String(url).includes('/identity/v1/oauth2/token')) {
+      return { ok: true, status: 200, json: async () => ({ access_token: 'test-token' }) };
+    }
+    assert.match(String(url), /item_summary\/search\?q=Dyson\+V7\+Motorhead/);
+    assert.equal(options.headers['X-EBAY-C-MARKETPLACE-ID'], 'EBAY_US');
+    return {
+      ok: true,
+      status: 200,
+      json: async () => ({
+        itemSummaries: [{
+          itemId: 'v1|267202156923|0',
+          legacyItemId: '267202156923',
+          title: 'Dyson V7 Motorhead Cordless Vacuum Cleaner',
+          categoryPath: 'Home & Garden|Vacuum Cleaners',
+          condition: 'Used',
+          price: { value: '89.99', currency: 'USD' },
+          localizedAspects: [
+            { name: 'Brand', value: ['Dyson'] },
+            { name: 'Model', value: ['V7 Motorhead'] },
+            { name: 'Included Accessories', value: ['Charger, wand, motorhead'] }
+          ]
+        }]
+      })
+    };
+  };
+
+  const result = await searchEbayBrowseApi('Dyson V7 Motorhead', {
+    fetch: mockFetch,
+    env: { EBAY_CLIENT_ID: 'client-id', EBAY_CLIENT_SECRET: 'client-secret', EBAY_MARKETPLACE_ID: 'EBAY_US' }
+  });
+
+  assert.equal(calls.length, 2);
+  assert.equal(result.ok, true);
+  assert.equal(result.source, 'ebay-api-search');
+  assert.equal(result.query, 'Dyson V7 Motorhead');
+  assert.match(result.itemSpecifics.join('\n'), /Included Accessories: Charger, wand, motorhead/);
 });
 
 test('buildFindingDetailBundle converts eBay Finding API item data into optimizer details', () => {

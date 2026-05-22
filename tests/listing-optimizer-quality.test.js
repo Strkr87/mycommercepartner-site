@@ -39,7 +39,7 @@ function loadHomepageOptimizer() {
     Date,
     FormData,
     fetch: async () => ({ ok: false, json: async () => ({}) }),
-    document: { getElementById() { return element; } }
+    document: { getElementById() { return element; }, querySelector() { return element; } }
   };
   vm.createContext(context);
   vm.runInContext(`${script}\nglobalThis.__buildHomeOptimizer = buildHomeOptimizer;\nglobalThis.__homeNeedsEbayItemLookup = homeNeedsEbayItemLookup;`, context);
@@ -97,6 +97,73 @@ test('optimizer adds item specifications immediately after the 5 shopper bullets
 
   assert.equal(statusCode, 200);
   assert.match(payload.description, /Highlights:\n(?:- .+\n){5}\nItem specifications:\n- Brand: Dyson\n- Model: 360 Vis Nav\n- Size: 12\.6 x 12\.6 x 3\.8 in\n- Weight: 10 lb\n- Available Quantity: 3\n- Included: Dock and charger/);
+});
+
+test('eBay optimizer enriches sparse model-number listings before writing 5 description bullets', async () => {
+  const oldFetch = global.fetch;
+  const oldEnv = {
+    EBAY_CLIENT_ID: process.env.EBAY_CLIENT_ID,
+    EBAY_CLIENT_SECRET: process.env.EBAY_CLIENT_SECRET,
+    EBAY_MARKETPLACE_ID: process.env.EBAY_MARKETPLACE_ID
+  };
+  process.env.EBAY_CLIENT_ID = 'client-id';
+  process.env.EBAY_CLIENT_SECRET = 'client-secret';
+  process.env.EBAY_MARKETPLACE_ID = 'EBAY_US';
+  global.fetch = async (url, options = {}) => {
+    if (String(url).includes('/identity/v1/oauth2/token')) {
+      return { ok: true, status: 200, json: async () => ({ access_token: 'test-token' }) };
+    }
+    assert.match(String(url), /item_summary\/search/);
+    assert.match(String(url), /Dyson\+V7\+Motorhead/);
+    assert.equal(options.headers['X-EBAY-C-MARKETPLACE-ID'], 'EBAY_US');
+    return {
+      ok: true,
+      status: 200,
+      json: async () => ({
+        itemSummaries: [{
+          itemId: 'v1|267202156923|0',
+          legacyItemId: '267202156923',
+          title: 'Dyson V7 Motorhead Cordless Vacuum Cleaner',
+          categoryPath: 'Home & Garden|Vacuum Cleaners',
+          condition: 'Used',
+          localizedAspects: [
+            { name: 'Brand', value: ['Dyson'] },
+            { name: 'Model', value: ['V7 Motorhead'] },
+            { name: 'Included Accessories', value: ['Charger and motorhead'] },
+            { name: 'Features', value: ['Cordless, lightweight'] }
+          ],
+          shippingOptions: [{ shippingCost: { value: '0.00', currency: 'USD' } }],
+          returnTerms: { returnsAccepted: true, returnPeriod: { value: 30, unit: 'DAY' } }
+        }]
+      })
+    };
+  };
+
+  try {
+    const { statusCode, payload } = await runOptimize({
+      marketplace: 'eBay',
+      title: 'Dyson V7 Motorhead',
+      brand: 'Dyson',
+      category: 'Vacuum Cleaners',
+      condition: 'Used',
+      specifics: 'Model: V7 Motorhead',
+      description: ''
+    });
+
+    assert.equal(statusCode, 200);
+    const htmlBullets = [...payload.descriptionHtml.matchAll(/<li>(.*?)<\/li>/g)]
+      .map((match) => match[1])
+      .slice(0, 5);
+    assert.equal(htmlBullets.length, 5);
+    assert.match(payload.specifics, /Included Accessories: Charger and motorhead/);
+    assert.doesNotMatch(htmlBullets.join(' '), /Product ID|eBay Item ID|Condition:|SKU|MPN|Seller|Price/i);
+  } finally {
+    global.fetch = oldFetch;
+    for (const [key, value] of Object.entries(oldEnv)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  }
 });
 
 test('optimizer flags out-of-stock listings with a clear warning and lower score', async () => {
