@@ -506,7 +506,7 @@ ${bulletHtml}
       }
       if (useText) push(`Works well for ${useText}, making it easier to match the item to the right space or routine`);
       if (setupPhrase) push(`${/grommet/i.test(setupPhrase) ? 'Grommet details support' : /mount|hang/i.test(setupPhrase) ? 'Mounting details support' : 'Setup details support'} easier placement, hanging, or installation`);
-      if (packSpec) push(`${optTitleCase(packSpec)} pack count is useful for replacements, projects, or shared use`);
+      if (packSpec) push(`${optTitleCase(packSpec)} quantity is useful for replacements, projects, or shared use`);
       return bullets.slice(0,5).map(({body}) => body);
     }
     function optDetailValue(details, labels){
@@ -583,7 +583,10 @@ ${bulletHtml}
       const productDetails = hasCustomerFacingSeed ? optExtractProductDetails({text: details, specs, title: sourceTitle, url}) : [];
       const phrases = optDedupe(optPhrases(details).concat(optPhrases(sourceTitle))).filter(item => item.length > 3);
       const brand = optExtractBrand(sourceTitle);
-      const useCases = optDedupe(['work','gym','travel','patio','garden','office','home','camping','pets','fence','jobsite'].filter(item => source.toLowerCase().includes(item))).slice(0,4);
+      let useCases = optDedupe(['work','gym','travel','patio','garden','office','home','camping','pets','fence','jobsite'].filter(item => source.toLowerCase().includes(item))).slice(0,4);
+      if (/\b(?:steering|wheel|bolt|screw|motorsport|automotive|vehicle)\b/i.test(source)) {
+        useCases = useCases.filter(item => !/^(?:home|office|garden|patio|pets|gym|camping)$/.test(item));
+      }
       const sparseTitle = marketplace === 'eBay' ? 'Add Product Title for Stronger eBay Preview' : marketplace === 'Amazon' ? 'Add Product Title for Stronger Amazon Preview' : 'Add Product Title for Stronger Preview';
       const optimizedTitle = hasCustomerFacingSeed ? optBuildTitle({marketplace, brand, productType, specs, useCases, keyword, sourceTitle}) : sparseTitle;
       const fallbackBullets = hasCustomerFacingSeed ? optBuildBenefitBullets({productType, specs, phrases, useCases}) : [];
