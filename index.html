@@ -413,6 +413,8 @@
     function optBenefitFact(value){
       return firstWords(value, 22)
         .replace(/^[^a-z0-9]+/i, '')
+        .replace(/\b(?:product id|item id|ebay item id|condition|notes|title):\s*[^|;\n.]+/ig, ' ')
+        .replace(/\b\d{9,15}\b/g, ' ')
         .replace(/\b(?:add|improve|include|position|recommended|fix|missing|listing should|you should|buyer confidence gap|clear product detail to compare|make the buying decision easier|trust cues)\b/ig, ' ')
         .replace(/\s+/g, ' ')
         .replace(/[.;,\s]+$/,'')
@@ -441,30 +443,31 @@
       const materialPhrase = useful.find(item => /mesh|material|steel|wood|plastic|fabric|grommet|build|color|black|white|green|tan|brown|gray|grey/i.test(item));
       const usePhrase = useful.find(item => /block|protect|cover|privacy|dust|wind|debris|use|for |echo|sound|noise/i.test(item));
       const setupPhrase = useful.find(item => /install|tie|with|grommet|kit|mount|hang/i.test(item));
-      const candidates = [];
-      function push(label, body){
+      const bullets = [];
+      function push(body){
         const text = optClean(body).replace(/\s+/g,' ').replace(/\.\./g,'.').trim();
-        if (!text || !optBenefitHasConnector(text)) return;
-        if (/\b(?:add|improve|include|position|listing should|you should|recommended|fix|missing|buyer confidence gap|clear product detail to compare|make the buying decision easier|trust cues)\b/i.test(text)) return;
+        if (!text) return;
+        if (/\b(?:product id|item id|ebay item id|condition|notes|title|sku|mpn|listing should|you should|recommended|fix|missing|buyer confidence gap|clear product detail|make the buying decision easier|trust cues)\b/i.test(text)) return;
         const key = text.toLowerCase().replace(/[^a-z0-9]+/g,' ').split(' ').slice(0,10).join(' ');
-        if (candidates.some(item => item.key === key)) return;
-        candidates.push({label, body: text.endsWith('.') ? text : `${text}.`, key});
+        if (bullets.some(item => item.key === key)) return;
+        bullets.push({body: text.endsWith('.') ? text : `${text}.`, key});
       }
-      if (sizeSpec) push('Clear Fit', `${optTitleCase(sizeSpec)} helps you check fit, coverage, or capacity before ordering.`);
-      if (materialSpec || materialPhrase) push('Built for the Job', `${optTitleCase(materialSpec || materialPhrase)} gives you a clear build detail so you know what will arrive.`);
+      if (sizeSpec) {
+        if (/(?:^|\d|\s)(?:gb|tb)\b/i.test(sizeSpec)) push(`${optTitleCase(sizeSpec)} storage provides clear capacity for apps, photos, video, and everyday use`);
+        else if (/\b(?:pack|pcs|piece|pieces|count)\b/i.test(sizeSpec)) push(`${optTitleCase(sizeSpec)} pack count gives you the quantity needed for the job`);
+        else push(`${optTitleCase(sizeSpec)} sizing helps confirm the right fit before purchase`);
+      }
+      if (materialSpec) push(`${optTitleCase(materialSpec)} construction adds a clear product feature for everyday use`);
+      if (materialPhrase && !materialSpec) push(`${optTitleCase(materialPhrase)} highlights a visible product feature or finish`);
       if (usePhrase) {
         const useBase = usePhrase.split(/\.\s*/).find(part => /block|protect|cover|privacy|dust|wind|debris|echo|sound|noise/i.test(part)) || usePhrase;
-        push('Everyday Use', /sound|acoustic|echo|noise/i.test(useBase) ? `${useBase} helps soften room echo so calls, media, or recordings feel clearer.` : `${useBase} helps match the product to the way you plan to use it.`);
+        push(/sound|acoustic|echo|noise/i.test(useBase) ? `${useBase} helps soften room echo for clearer calls, media, or recordings` : `${useBase} supports the intended use without extra guesswork`);
       }
-      if (useText) push('Ready for Use', `Works well for ${useText}, helping you choose it for the right space or routine.`);
-      if (setupPhrase) push('Easy Setup', `${/grommet/i.test(setupPhrase) ? 'Grommet placement details make' : /mount|hang/i.test(setupPhrase) ? 'Wall mounting details make' : `${setupPhrase} makes`} it easier to understand setup, hanging, or placement before it arrives.`);
-      if (packSpec) push('Ready to Stock', `${optTitleCase(packSpec)} gives you extras on hand for replacements, projects, or shared use.`);
-      push('Clear Match', optProductPurpose(product, useText));
-      push('Buyer-Friendly Details', `${optTitleCase(product)} details help you confirm the product type and avoid guessing from the title alone.`);
-      push('Practical Choice', `${optTitleCase(product)} copy keeps the main product terms visible so you can decide faster.`);
-      push('Fast Scan', `${optTitleCase(product)} wording helps you spot the main product type quickly while comparing options.`);
-      push('Use-Case Clarity', `${optTitleCase(product)} terms give you a starting point so you can match the item to your intended use.`);
-      return candidates.slice(0,5).map(({label, body}) => `【${label}】 ${body}`);
+      if (useText) push(`Works well for ${useText}, making it easier to match the product to the right space or routine`);
+      if (setupPhrase) push(`${/grommet/i.test(setupPhrase) ? 'Grommet details support' : /mount|hang/i.test(setupPhrase) ? 'Mounting details support' : 'Setup details support'} easier placement, hanging, or installation`);
+      if (packSpec) push(`${optTitleCase(packSpec)} pack count is useful for replacements, projects, or shared use`);
+      push(`${optTitleCase(product)} design keeps the main product purpose easy to understand at a glance`);
+      return bullets.slice(0,5).map(({body}) => body);
     }
     function optDetailValue(details, labels){
       for (const label of labels) {
@@ -484,14 +487,19 @@
       function push(body){
         const text = optClean(body);
         if (!text) return;
+        if (/\b(?:product id|item id|ebay item id|condition|notes|title|sku|mpn)\b/i.test(text)) return;
         const key = text.toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').slice(0, 10).join(' ');
         if (bullets.some(item => item.toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').slice(0, 10).join(' ') === key)) return;
         bullets.push(text.endsWith('.') ? text : `${text}.`);
       }
-      if (size) push(`${optTitleCase(size)} gives shoppers a clear size, storage, capacity, or pack-count detail to compare before buying`);
-      if (material) push(`${optTitleCase(material)} highlights the product build or finish so shoppers can picture what they are choosing`);
-      if (compatibility) push(/^unlocked$/i.test(compatibility) ? 'Unlocked carrier support helps buyers confirm the phone can work with their preferred compatible network' : `Compatible with ${compatibility}, helping buyers confirm fit, carrier support, or supported models before purchase`);
-      if (included) push(`Includes ${included}, giving shoppers a clearer picture of the usable product package`);
+      if (size) {
+        if (/(?:^|\d|\s)(?:gb|tb)\b/i.test(size)) push(`${optTitleCase(size)} storage provides clear capacity for apps, photos, video, and everyday use`);
+        else if (/\b(?:pack|pcs|piece|pieces|count)\b/i.test(size)) push(`${optTitleCase(size)} pack count gives you the quantity needed for the job`);
+        else push(`${optTitleCase(size)} sizing helps confirm the right fit before purchase`);
+      }
+      if (material) push(`${optTitleCase(material)} finish adds a clean product look for the intended setup`);
+      if (compatibility) push(/^unlocked$/i.test(compatibility) ? 'Unlocked carrier support works with compatible networks' : `Compatible with ${compatibility} for easier fit confirmation`);
+      if (included) push(`Includes ${included} for a more complete usable package`);
       fallbackBullets.forEach(push);
       return bullets.slice(0, 6);
     }

@@ -11,6 +11,7 @@ function skuBits(s) {
     .split(/[|,]/)
     .map((x) => x.trim())
     .filter(Boolean)
+    .filter((x) => !/^\d{9,15}$/.test(x))
     .slice(0, 2);
 }
 
@@ -105,18 +106,24 @@ function factBullets(data) {
   const lines = [];
 
   if (exact.storageSize) {
-    lines.push(`${exact.storageSize} gives shoppers a clear size, storage, capacity, or pack-count detail to compare before buying`);
+    if (/(?:^|\d|\s)(?:gb|tb)\b/i.test(exact.storageSize)) {
+      lines.push(`${exact.storageSize} storage provides clear capacity for apps, photos, video, and everyday use`);
+    } else if (/\b(?:pack|pcs|piece|pieces|count)\b/i.test(exact.storageSize)) {
+      lines.push(`${exact.storageSize} pack count gives you the quantity needed for the job`);
+    } else {
+      lines.push(`${exact.storageSize} sizing helps confirm the right fit before purchase`);
+    }
   }
   if (exact.materialFeature) {
-    lines.push(`${exact.materialFeature} highlights the ${product} build or finish so shoppers can picture what they are choosing`);
+    lines.push(`${exact.materialFeature} finish adds a clean product look for the intended setup`);
   }
   if (exact.compatibility) {
     lines.push(/^unlocked$/i.test(exact.compatibility)
-      ? "Unlocked carrier support helps buyers confirm the phone can work with their preferred compatible network"
-      : `Compatible with ${exact.compatibility}, helping buyers confirm fit, carrier support, or supported models before purchase`);
+      ? "Unlocked carrier support works with compatible networks"
+      : `Compatible with ${exact.compatibility} for easier fit confirmation`);
   }
   if (exact.included) {
-    lines.push(`Includes ${exact.included}, giving shoppers a clearer picture of the usable product package`);
+    lines.push(`Includes ${exact.included} for a more complete usable package`);
   }
 
   return lines.map(sentence);
@@ -257,7 +264,7 @@ function fitTitleParts(parts, max, suffix = "") {
     const value = normalizeTitleWords(part);
     if (!value) continue;
     const key = value.toLowerCase();
-    if (clean.some((x) => x.toLowerCase() === key || key.includes(x.toLowerCase()) || x.toLowerCase().includes(key))) continue;
+    if (clean.some((x) => x.toLowerCase() === key || x.toLowerCase().includes(key))) continue;
     clean.push(value);
   }
   let title = "";
