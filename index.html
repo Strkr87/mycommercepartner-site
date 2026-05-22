@@ -28,6 +28,9 @@
   <style>
     .hero{padding-bottom:72px}.hero-grid{align-items:center}.hero-grid h1{max-width:760px}.hero.has-result .hero-grid{grid-template-columns:minmax(0,860px);justify-content:center;align-items:start}.hero.has-result .hero-intro{display:none}.hero.has-result .homepage-optimizer{width:100%;justify-self:center}.homepage-optimizer{box-shadow:0 30px 90px rgba(0,0,0,.38)}.home-opt-form{gap:11px}.home-opt-form label{gap:6px}.infographic-grid{grid-template-columns:1fr 1fr;gap:16px}.flow-steps{grid-template-columns:1fr}.output-strip{gap:8px}.compact-services{grid-template-columns:repeat(2,minmax(0,1fr));max-width:860px;margin:0 auto}.cta-section .cta-card{align-items:start}#homeScoreSummary{white-space:normal;overflow-wrap:anywhere}@media(max-width:760px){.wrap{width:min(100% - 32px,1160px)}.nav a:not(.nav-pill){display:none}.infographic-grid,.compact-services{grid-template-columns:1fr}.home-opt-grid{grid-template-columns:1fr}.hero{padding-bottom:48px}.homepage-optimizer{padding:14px}.cta-section .cta-row{display:grid}}
   </style>
+  <style>
+    .home-optional-fields{border:1px solid rgba(156,241,186,.22);border-radius:18px;background:rgba(52,199,116,.06);padding:0;overflow:hidden}.home-optional-fields summary{cursor:pointer;list-style:none;padding:13px 14px;color:var(--green2);font-weight:950;text-transform:uppercase;letter-spacing:.08em;font-size:.78rem}.home-optional-fields summary::-webkit-details-marker{display:none}.home-optional-fields summary:after{content:"+";float:right;color:var(--gold2);font-size:1rem;line-height:1}.home-optional-fields[open] summary{border-bottom:1px solid rgba(156,241,186,.18)}.home-optional-fields[open] summary:after{content:"-"}.home-optional-fields .home-opt-note,.home-optional-fields .home-opt-grid,.home-optional-fields>label{margin:12px 14px}.home-optional-fields>label:last-child{margin-bottom:14px}
+  </style>
   <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
 </head>
 <body>
@@ -58,13 +61,17 @@
           <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>Free listing optimizer</span></div>
           <form class="home-opt-form" id="homeOptimizerForm">
             <label>Public listing URL <input id="homeListingUrl" name="siteUrl" type="url" placeholder="Paste a public Amazon or eBay item URL" inputmode="url" required></label>
-            <p class="home-opt-note">Start with the link, then add a few known facts when you have them.</p>
+            <p class="home-opt-note">Start with the link. Add optional product details below for a stronger score, better eBay description, and more accurate recommendations.</p>
+            <details class="home-optional-fields">
+              <summary>Add optional product information</summary>
+              <p class="home-opt-note">Optional details like exact title, category, size, material, compatibility, included items, shipping, returns, and condition help MCP produce a better result.</p>
             <div class="home-opt-grid">
               <label>Current title <input name="currentTitle" placeholder="Optional — improves the rewrite"></label>
               <label>Category or product type <input name="productType" placeholder="Optional — improves keywords"></label>
             </div>
             <label>Product details <textarea name="currentCopy" placeholder="Optional — material, size, use cases, included items"></textarea></label>
             <label>Main keyword <input name="targetKeyword" placeholder="Optional — buyer search phrase"></label>
+            </details>
             <button class="btn btn-primary" type="submit">Get My Optimized Result</button>
             <p class="home-opt-note" id="homeOptimizerStatus">No email required. Exact details make the title, bullets, and fixes more useful.</p>
           </form>
