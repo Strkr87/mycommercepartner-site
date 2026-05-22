@@ -74,11 +74,8 @@
               <div class="url-card"><small id="homeScoreLabel">Readiness score</small><div class="url-field" id="homeScoreSummary">Your result will appear here.</div></div>
             </div>
             <p class="home-result-disclaimer">Basic Listing Optimizer notice: this is a starter optimization based on the existing listing information MCP could read plus any details you entered. It can get stronger when you add more product information such as size, material, compatibility, included items, shipping, returns, and condition notes.</p>
-            <article class="output-card"><small>Optimized title shoppers see</small><p class="title-preview" id="homeOptimizedTitle"></p></article>
-            <article class="output-card"><small>Customer-facing bullets</small><ul class="bullet-list" id="homeOptimizedBullets"></ul></article>
-            <article class="output-card"><small>Product Details</small><ul class="bullet-list" id="homeProductSpecifics"></ul></article>
-            <article class="output-card" id="homeEbayHtmlCard" hidden><small>eBay HTML description</small><textarea class="home-html-output" id="homeEbayHtmlOutput" readonly spellcheck="false"></textarea></article>
             <article class="output-card" id="homeEbayPreviewCard" hidden><small>eBay HTML preview</small><iframe class="home-html-preview" id="homeEbayHtmlPreview" title="eBay HTML description preview" sandbox=""></iframe></article>
+            <article class="output-card" id="homeEbayHtmlCard" hidden><small>eBay HTML description</small><textarea class="home-html-output" id="homeEbayHtmlOutput" readonly spellcheck="false"></textarea></article>
             <article class="output-card"><small>Keyword ideas</small><div class="chips" id="homeKeywordChips"></div></article>
             <article class="output-card"><small>Recommended fixes</small><ol class="home-fix-list" id="homeFirstFixes"></ol></article>
             <p class="home-opt-cta">Want a second pass? <a href="free-marketplace-review.html">Ask MCP to review the listing.</a></p>
@@ -104,7 +101,7 @@
           <h3>Simple path</h3>
           <div class="flow-steps">
             <div class="flow-step"><strong>1. Paste the link</strong><span>Use an Amazon or eBay item URL, then add exact facts for a stronger result.</span></div>
-            <div class="flow-step"><strong>2. Get the preview</strong><span>Score, cleaner title, 5 shopper-facing bullets, product details, and keyword ideas.</span></div>
+            <div class="flow-step"><strong>2. Get the preview</strong><span>Score, rendered eBay HTML preview, copy-ready HTML, keyword ideas, and recommended fixes.</span></div>
             <div class="flow-step"><strong>3. Choose the next step</strong><span>Use it yourself or ask MCP for a second pass.</span></div>
           </div>
           <div class="output-strip" aria-label="What the free output gives you"><span>No login</span><span>Free</span><span>Link-first</span><span>Optional help</span></div>
@@ -166,9 +163,6 @@
     const homeScoreValue = document.getElementById('homeScoreValue');
     const homeScoreLabel = document.getElementById('homeScoreLabel');
     const homeScoreSummary = document.getElementById('homeScoreSummary');
-    const homeOptimizedTitle = document.getElementById('homeOptimizedTitle');
-    const homeOptimizedBullets = document.getElementById('homeOptimizedBullets');
-    const homeProductSpecifics = document.getElementById('homeProductSpecifics');
     const homeEbayHtmlCard = document.getElementById('homeEbayHtmlCard');
     const homeEbayHtmlOutput = document.getElementById('homeEbayHtmlOutput');
     const homeEbayPreviewCard = document.getElementById('homeEbayPreviewCard');
@@ -701,9 +695,6 @@ ${bulletHtml}
       homeScoreValue.textContent = result.score;
       homeScoreLabel.textContent = result.marketplace === 'eBay' ? 'Estimated eBay readiness score' : `${result.marketplace} readiness score`;
       homeScoreSummary.textContent = result.hasCustomerFacingSeed && result.scoreBasis ? result.scoreBasis : result.itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : `The link was accepted, but it does not expose enough product words. Add title/details for a useful rewrite.`;
-      homeOptimizedTitle.textContent = result.optimizedTitle;
-      homeOptimizedBullets.innerHTML = result.bullets.length ? result.bullets.map(item => `<li>${optEscape(item)}</li>`).join('') : `<li>${optEscape(result.copyEmptyState)}</li>`;
-      homeProductSpecifics.innerHTML = result.productDetails?.length ? result.productDetails.map(item => `<li>${optEscape(item)}</li>`).join('') : `<li>${result.hasCustomerFacingSeed ? 'Add brand, product ID, material, size, color, compatibility, pack count, or included items for clearer details.' : 'Add product details to generate details.'}</li>`;
       if (homeEbayHtmlCard && homeEbayHtmlOutput) {
         homeEbayHtmlCard.hidden = !result.ebayHtml;
         homeEbayHtmlOutput.value = result.ebayHtml || '';
