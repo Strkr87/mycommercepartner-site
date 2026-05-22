@@ -31,6 +31,9 @@
   <style>
     .home-optional-fields{border:1px solid rgba(156,241,186,.22);border-radius:18px;background:rgba(52,199,116,.06);padding:0;overflow:hidden}.home-optional-fields summary{cursor:pointer;list-style:none;padding:13px 14px;color:var(--green2);font-weight:950;text-transform:uppercase;letter-spacing:.08em;font-size:.78rem}.home-optional-fields summary::-webkit-details-marker{display:none}.home-optional-fields summary:after{content:"+";float:right;color:var(--gold2);font-size:1rem;line-height:1}.home-optional-fields[open] summary{border-bottom:1px solid rgba(156,241,186,.18)}.home-optional-fields[open] summary:after{content:"-"}.home-optional-fields .home-opt-note,.home-optional-fields .home-opt-grid,.home-optional-fields>label{margin:12px 14px}.home-optional-fields>label:last-child{margin-bottom:14px}
   </style>
+  <style>
+    .premium-preview-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:18px;align-items:stretch}.upgrade-panel,.premium-ebay-preview{border:1px solid rgba(255,255,255,.13);border-radius:28px;background:linear-gradient(180deg,rgba(16,43,64,.88),rgba(7,22,35,.92));box-shadow:0 28px 70px rgba(0,0,0,.32);padding:20px;min-width:0}.upgrade-panel h3,.premium-ebay-preview h3{margin:0 0 12px;font-size:1.05rem}.upgrade-list{display:grid;gap:10px;margin:14px 0 18px}.upgrade-item{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;color:var(--soft);font-size:.9rem}.upgrade-item b{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--green),var(--gold));color:#04140c;font-size:.8rem}.upgrade-item strong{display:block;color:var(--text);font-size:.92rem}.upgrade-item span{display:block;color:var(--muted);font-size:.82rem;margin-top:2px}.premium-pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.premium-pill-row span{border:1px solid rgba(156,241,186,.28);border-radius:999px;background:rgba(52,199,116,.1);color:var(--green2);font-weight:900;font-size:.78rem;padding:7px 10px}.premium-mock{overflow:hidden;border:1px solid rgba(255,255,255,.16);border-radius:22px;background:#fff;color:#20242a}.premium-hero{padding:22px;background:linear-gradient(135deg,#f7faf8,#e9f7ef);border-bottom:1px solid #d7e7dc}.premium-hero small{display:block;color:#207444;text-transform:uppercase;letter-spacing:.12em;font-weight:900;font-size:.72rem}.premium-hero h3{color:#18231d;margin:7px 0 8px;font-size:1.35rem;line-height:1.12}.premium-hero p{color:#405047;margin:0;font-size:.9rem}.premium-mock-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px}.premium-feature{border:1px solid #e1e7e4;border-radius:16px;padding:13px;background:#fbfdfb}.premium-feature strong{display:block;color:#17231d;font-size:.9rem}.premium-feature span{display:block;color:#53615a;font-size:.8rem;margin-top:4px}.premium-band{margin:0 16px 16px;padding:14px;border-radius:16px;background:#102b40;color:#f6fbff}.premium-band strong{display:block;color:#9cf1ba}.premium-band span{display:block;color:#d8e7ef;font-size:.82rem;margin-top:4px}.premium-cta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}@media(max-width:900px){.premium-preview-grid{grid-template-columns:1fr}.premium-mock-grid{grid-template-columns:1fr}}
+  </style>
   <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
 </head>
 <body>
@@ -94,24 +97,35 @@
 
   <section class="section infographics" id="how-it-works">
     <div class="wrap">
-      <div class="section-head"><div><div class="kicker">How it works</div><h2>Start free, then decide if you want help.</h2></div><p>Use the free preview yourself, or ask MyCommercePartner to review the listing and recommend the clearest next fixes.</p></div>
-      <div class="infographic-grid" aria-label="Listing optimizer infographics">
-        <article class="info-panel" aria-label="Listing Weakness Map">
-          <h3>Why sellers use it</h3>
-          <div class="weakness-bars">
-            <div class="weakness-row"><span>Cleaner title</span><div class="info-track"><i style="width:82%"></i></div><b>Free</b></div>
-            <div class="weakness-row"><span>Buyer-focused bullets</span><div class="info-track"><i style="width:74%"></i></div><b>Free</b></div>
-            <div class="weakness-row"><span>Keyword ideas</span><div class="info-track"><i style="width:62%"></i></div><b>Free</b></div>
+      <div class="section-head"><div><div class="kicker">Premium listing upgrade</div><h2>Free gets you started. Enhanced A+ content makes the listing feel built to sell.</h2></div><p>The basic optimizer creates a useful first pass. MCP's enhanced eBay listing revision turns the same product facts into a fuller product story with stronger trust cues, richer layout, and cleaner buyer decision paths.</p></div>
+      <div class="premium-preview-grid" aria-label="Enhanced eBay content preview">
+        <article class="upgrade-panel">
+          <h3>What the paid revision adds</h3>
+          <div class="upgrade-list">
+            <div class="upgrade-item"><b>1</b><div><strong>Premium product story</strong><span>Sharper opening copy that explains who the item is for and why it matters.</span></div></div>
+            <div class="upgrade-item"><b>2</b><div><strong>Buyer-confidence sections</strong><span>Fit, included items, condition, shipping, returns, and trust cues organized where shoppers expect them.</span></div></div>
+            <div class="upgrade-item"><b>3</b><div><strong>eBay-ready HTML layout</strong><span>Clean, copy-ready HTML with structured sections that feel more polished than a plain description.</span></div></div>
+            <div class="upgrade-item"><b>4</b><div><strong>Human review</strong><span>MCP checks the listing context and revises the copy beyond what the free basic optimizer can infer.</span></div></div>
           </div>
+          <div class="premium-pill-row"><span>Enhanced copy</span><span>HTML layout</span><span>Trust cues</span><span>Human pass</span></div>
+          <div class="premium-cta-row"><a class="btn btn-primary" href="contact.html?interest=Enhanced%20eBay%20A%2B%20Content%20Listing%20Revision">Request Enhanced Revision</a><a class="btn btn-secondary" href="marketplace-listing-audit.html">See Audit Options</a></div>
         </article>
-        <article class="info-panel flow-panel" aria-label="Before to After Listing Flow">
-          <h3>Simple path</h3>
-          <div class="flow-steps">
-            <div class="flow-step"><strong>1. Paste the link</strong><span>Use an Amazon or eBay item URL, then add exact facts for a stronger result.</span></div>
-            <div class="flow-step"><strong>2. Get the preview</strong><span>Score, rendered eBay HTML preview, copy-ready HTML, keyword ideas, and recommended fixes.</span></div>
-            <div class="flow-step"><strong>3. Choose the next step</strong><span>Use it yourself or ask MCP for a second pass.</span></div>
+        <article class="premium-ebay-preview">
+          <h3>Example enhanced eBay product description</h3>
+          <div class="premium-mock" aria-label="Premium eBay description mockup">
+            <div class="premium-hero">
+              <small>Enhanced eBay A+ style content</small>
+              <h3>Motorsport Hardware Kit Built for a Cleaner Wheel Install</h3>
+              <p>A polished opening section helps buyers quickly understand fit, finish, included parts, and why this kit is the right choice.</p>
+            </div>
+            <div class="premium-mock-grid">
+              <div class="premium-feature"><strong>Fit & compatibility</strong><span>Clear model and fitment language reduces buyer hesitation before checkout.</span></div>
+              <div class="premium-feature"><strong>What's included</strong><span>Included components are listed clearly so shoppers know exactly what arrives.</span></div>
+              <div class="premium-feature"><strong>Condition clarity</strong><span>Condition and inspection notes are placed where buyers can trust them.</span></div>
+              <div class="premium-feature"><strong>Shipping & returns</strong><span>Fulfillment and return details support a faster, more confident purchase decision.</span></div>
+            </div>
+            <div class="premium-band"><strong>Designed to copy into eBay</strong><span>Delivered as cleaner HTML plus customer-facing copy, so the listing feels more complete than the free basic version.</span></div>
           </div>
-          <div class="output-strip" aria-label="What the free output gives you"><span>No login</span><span>Free</span><span>Link-first</span><span>Optional help</span></div>
         </article>
       </div>
     </div>
