@@ -107,23 +107,25 @@ function factBullets(data) {
 
   if (exact.storageSize) {
     if (/(?:^|\d|\s)(?:gb|tb)\b/i.test(exact.storageSize)) {
-      lines.push(`${exact.storageSize} storage provides clear capacity for apps, photos, video, and everyday use`);
+      lines.push(`${exact.storageSize} storage gives plenty of room for apps, photos, video, and everyday use`);
     } else if (/\b(?:pack|pcs|piece|pieces|count)\b/i.test(exact.storageSize)) {
-      lines.push(`${exact.storageSize} pack count gives you the quantity needed for the job`);
+      lines.push(`${exact.storageSize} pack count provides the quantity needed for installation, replacement, or shared use`);
     } else {
       lines.push(`${exact.storageSize} sizing helps confirm the right fit before purchase`);
     }
   }
   if (exact.materialFeature) {
-    lines.push(`${exact.materialFeature} finish adds a clean product look for the intended setup`);
+    lines.push(/black/i.test(exact.materialFeature)
+      ? "Black finish gives the installed hardware a clean, low-profile look"
+      : `${exact.materialFeature} finish gives the ${product} a clean, ready-to-use look`);
   }
   if (exact.compatibility) {
     lines.push(/^unlocked$/i.test(exact.compatibility)
       ? "Unlocked carrier support works with compatible networks"
-      : `Compatible with ${exact.compatibility} for easier fit confirmation`);
+      : `Fits ${exact.compatibility} for easier fit confirmation`);
   }
   if (exact.included) {
-    lines.push(`Includes ${exact.included} for a more complete usable package`);
+    lines.push(`Includes ${exact.included} so the main components are ready for installation or use`);
   }
 
   return lines.map(sentence);

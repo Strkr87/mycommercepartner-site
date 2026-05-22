@@ -433,6 +433,16 @@
       if (useText) return `Works well for ${useText}, helping you match the item to the place or routine you have in mind.`;
       return `${optTitleCase(product)} wording helps you quickly confirm the item type before you choose the right option.`;
     }
+    function optCustomerProductName(value, brand){
+      let product = optClean(value).replace(/\b(?:amazon|ebay|listing|product)\b/ig, ' ');
+      if (brand) product = product.replace(new RegExp(`\\b${brand.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'ig'), ' ');
+      product = product
+        .replace(/\b(?:product id|item id|condition|notes|new|used|black|white|gray|grey|tan|brown|green)\b.*$/ig, ' ')
+        .replace(/\b\d{9,15}\b/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      return product || 'item';
+    }
     function optBuildBenefitBullets({productType, specs, phrases, useCases}){
       const product = /^(?:product|marketplace listing|amazon listing|ebay listing)$/i.test(productType) ? 'item' : productType;
       const useful = optDedupe(phrases.map(optBenefitFact)).filter(x => x.length > 4 && !/^(amazon|ebay|garden|patio|pools?)$/i.test(x));
@@ -453,20 +463,19 @@
         bullets.push({body: text.endsWith('.') ? text : `${text}.`, key});
       }
       if (sizeSpec) {
-        if (/(?:^|\d|\s)(?:gb|tb)\b/i.test(sizeSpec)) push(`${optTitleCase(sizeSpec)} storage provides clear capacity for apps, photos, video, and everyday use`);
-        else if (/\b(?:pack|pcs|piece|pieces|count)\b/i.test(sizeSpec)) push(`${optTitleCase(sizeSpec)} pack count gives you the quantity needed for the job`);
+        if (/(?:^|\d|\s)(?:gb|tb)\b/i.test(sizeSpec)) push(`${optTitleCase(sizeSpec)} storage gives plenty of room for apps, photos, video, and everyday use`);
+        else if (/\b(?:pack|pcs|piece|pieces|count)\b/i.test(sizeSpec)) push(`${optTitleCase(sizeSpec)} pack count provides the quantity needed for installation, replacement, or shared use`);
         else push(`${optTitleCase(sizeSpec)} sizing helps confirm the right fit before purchase`);
       }
-      if (materialSpec) push(`${optTitleCase(materialSpec)} construction adds a clear product feature for everyday use`);
+      if (materialSpec) push(/black/i.test(materialSpec) ? 'Black finish gives the installed hardware a clean, low-profile look' : `${optTitleCase(materialSpec)} construction supports everyday use`);
       if (materialPhrase && !materialSpec) push(`${optTitleCase(materialPhrase)} highlights a visible product feature or finish`);
       if (usePhrase) {
         const useBase = usePhrase.split(/\.\s*/).find(part => /block|protect|cover|privacy|dust|wind|debris|echo|sound|noise/i.test(part)) || usePhrase;
         push(/sound|acoustic|echo|noise/i.test(useBase) ? `${useBase} helps soften room echo for clearer calls, media, or recordings` : `${useBase} supports the intended use without extra guesswork`);
       }
-      if (useText) push(`Works well for ${useText}, making it easier to match the product to the right space or routine`);
+      if (useText) push(`Works well for ${useText}, making it easier to match the item to the right space or routine`);
       if (setupPhrase) push(`${/grommet/i.test(setupPhrase) ? 'Grommet details support' : /mount|hang/i.test(setupPhrase) ? 'Mounting details support' : 'Setup details support'} easier placement, hanging, or installation`);
       if (packSpec) push(`${optTitleCase(packSpec)} pack count is useful for replacements, projects, or shared use`);
-      push(`${optTitleCase(product)} design keeps the main product purpose easy to understand at a glance`);
       return bullets.slice(0,5).map(({body}) => body);
     }
     function optDetailValue(details, labels){
@@ -478,7 +487,8 @@
       return '';
     }
     function optBuildExactBullets({productType, productDetails, fallbackBullets}){
-      const product = /^(?:product|marketplace listing|amazon listing|ebay listing)$/i.test(productType) ? 'item' : productType;
+      const brand = optDetailValue(productDetails, ['Brand']);
+      const product = optCustomerProductName(productType, brand);
       const size = optDetailValue(productDetails, ['Storage', 'Size', 'Capacity', 'Dimensions', 'Pack Count', 'Quantity', 'Weight', 'Coverage']);
       const material = optDetailValue(productDetails, ['Material', 'Color']);
       const compatibility = optDetailValue(productDetails, ['Compatibility', 'Compatible Brand', 'Compatible Model', 'Network', 'Carrier']);
@@ -493,13 +503,13 @@
         bullets.push(text.endsWith('.') ? text : `${text}.`);
       }
       if (size) {
-        if (/(?:^|\d|\s)(?:gb|tb)\b/i.test(size)) push(`${optTitleCase(size)} storage provides clear capacity for apps, photos, video, and everyday use`);
-        else if (/\b(?:pack|pcs|piece|pieces|count)\b/i.test(size)) push(`${optTitleCase(size)} pack count gives you the quantity needed for the job`);
+        if (/(?:^|\d|\s)(?:gb|tb)\b/i.test(size)) push(`${optTitleCase(size)} storage gives plenty of room for apps, photos, video, and everyday use`);
+        else if (/\b(?:pack|pcs|piece|pieces|count)\b/i.test(size)) push(`${optTitleCase(size)} pack count provides the quantity needed for installation, replacement, or shared use`);
         else push(`${optTitleCase(size)} sizing helps confirm the right fit before purchase`);
       }
-      if (material) push(`${optTitleCase(material)} finish adds a clean product look for the intended setup`);
-      if (compatibility) push(/^unlocked$/i.test(compatibility) ? 'Unlocked carrier support works with compatible networks' : `Compatible with ${compatibility} for easier fit confirmation`);
-      if (included) push(`Includes ${included} for a more complete usable package`);
+      if (material) push(/black/i.test(material) ? 'Black finish gives the installed hardware a clean, low-profile look' : `${optTitleCase(material)} finish gives the ${optTitleCase(product)} a clean, ready-to-use look`);
+      if (compatibility) push(/^unlocked$/i.test(compatibility) ? 'Unlocked carrier support works with compatible networks' : `Fits ${compatibility} for easier fit confirmation`);
+      if (included) push(`Includes ${included} so the main components are ready for installation or use`);
       fallbackBullets.forEach(push);
       return bullets.slice(0, 6);
     }
