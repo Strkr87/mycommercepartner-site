@@ -345,8 +345,8 @@ ${bulletHtml}
       const patterns = [
         /\b\d+\s?(?:-|to)\s?\d+\s?%/ig,
         /\b\d+\s?(?:ft|feet|in|inch|cm|m)?\s?[x×]\s?\d+\s?(?:ft|feet|in|inch|cm|m)?\b/ig,
-        /\b\d+(?:\.\d+)?\s?(?:oz|lb|lbs|pack|pcs|piece|pieces|gallon|quart|mm|cm|m|ft|feet|in|inch)\b/ig,
-        /\b(?:waterproof|leakproof|BPA-free|UV resistant|rust resistant|stainless steel|heavy duty|breathable|reinforced|rechargeable|cordless)\b/ig
+        /\b\d+(?:\.\d+)?[\s-]?(?:oz|lb|lbs|pack|pcs|piece|pieces|gallon|quart|mm|cm|m|ft|feet|in|inch)\b/ig,
+        /\b(?:waterproof|leakproof|BPA-free|UV resistant|rust resistant|stainless steel|heavy duty|breathable|reinforced|rechargeable|cordless|black|white|green|tan|brown|gray|grey)\b/ig
       ];
       patterns.forEach(rx => (source.match(rx) || []).forEach(item => specs.push(item)));
       return optDedupe(specs).slice(0,8);
@@ -385,9 +385,11 @@ ${bulletHtml}
       const clue = optExtractUrlClue(url || '');
       if (clue.id) add('Product ID', clue.id);
       for (const match of source.matchAll(rx)) add(match[1], match[2]);
-      const fallback = named.length >= 3 ? [] : (specs || []).map(spec => {
-        if (/stainless steel|BPA-free|UV resistant|rust resistant|waterproof|leakproof|heavy duty|breathable|reinforced|rechargeable|cordless/i.test(spec)) return `Material / Feature: ${optTitleCase(spec)}`;
-        if (/\b\d+(?:\.\d+)?\s?(?:oz|lb|lbs|pack|pcs|piece|pieces|gallon|quart|mm|cm|m|ft|feet|in|inch)\b/i.test(spec)) return `Size / Quantity: ${optTitleCase(spec)}`;
+      const customerNamedCount = named.filter(optIsCustomerDetail).length;
+      const fallback = customerNamedCount >= 3 ? [] : (specs || []).map(spec => {
+        if (/stainless steel|BPA-free|UV resistant|rust resistant|waterproof|leakproof|heavy duty|breathable|reinforced|rechargeable|cordless|black|white|green|tan|brown|gray|grey/i.test(spec)) return `Material / Feature: ${optTitleCase(spec)}`;
+        if (/\b\d+(?:\.\d+)?[\s-]?(?:pack|pcs|piece|pieces)\b/i.test(spec)) return `Pack Count: ${optTitleCase(spec)}`;
+        if (/\b\d+(?:\.\d+)?[\s-]?(?:oz|lb|lbs|gallon|quart|mm|cm|m|ft|feet|in|inch)\b/i.test(spec)) return `Size: ${optTitleCase(spec)}`;
         return `Product Detail: ${optTitleCase(spec)}`;
       });
       return optDedupe(named.concat(fallback)).slice(0,6);
@@ -476,8 +478,8 @@ ${bulletHtml}
       const product = /^(?:product|marketplace listing|amazon listing|ebay listing)$/i.test(productType) ? 'item' : productType;
       const useful = optDedupe(phrases.map(optBenefitFact)).filter(x => x.length > 4 && !/^(amazon|ebay|garden|patio|pools?)$/i.test(x));
       const useText = optNaturalList(useCases.slice(0,4));
-      const sizeSpec = specs.find(spec => /\b\d+\s?(?:ft|feet|in|inch|cm|m)?\s?[x×]\s?\d+|\b\d+(?:\.\d+)?\s?(?:ft|feet|in|inch|cm|m)\b|%/i.test(spec));
-      const packSpec = specs.find(spec => /\b\d+(?:\.\d+)?\s?(?:pack|pcs|piece|pieces)\b/i.test(spec));
+      const sizeSpec = specs.find(spec => /\b\d+\s?(?:ft|feet|in|inch|cm|m)?\s?[x×]\s?\d+|\b\d+(?:\.\d+)?[\s-]?(?:ft|feet|in|inch|cm|mm|m)\b|%/i.test(spec));
+      const packSpec = specs.find(spec => /\b\d+(?:\.\d+)?[\s-]?(?:pack|pcs|piece|pieces)\b/i.test(spec));
       const materialSpec = specs.find(spec => /\b(?:stainless steel|BPA-free|UV resistant|rust resistant|waterproof|leakproof|heavy duty|breathable|reinforced|grommets?|black|white|green|tan|brown|gray|grey)\b/i.test(spec));
       const materialPhrase = useful.find(item => /mesh|material|steel|wood|plastic|fabric|grommet|build|color|black|white|green|tan|brown|gray|grey/i.test(item));
       const usePhrase = useful.find(item => /block|protect|cover|privacy|dust|wind|debris|use|for |echo|sound|noise/i.test(item));
