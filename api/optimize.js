@@ -58,6 +58,74 @@ function specValue(specs, names) {
   return "";
 }
 
+function factValue(data, facts, names) {
+  for (const name of names) {
+    const value = specValue(facts, [name]);
+    if (value) return value;
+  }
+  const source = `${data.specifics || ""}\n${data.description || ""}`;
+  for (const name of names) {
+    const match = source.match(new RegExp(`(?:^|\\n)\\s*${rxEscape(name)}\\s*:\\s*([^\\n]+)`, "i"));
+    if (match) return cleanMarketplaceText(match[1]);
+  }
+  return "";
+}
+
+function primaryFacts(data) {
+  const facts = parseSpecifics(data.specifics || "");
+  return {
+    facts,
+    sku: cleanMarketplaceText((data.sku || "").trim() || factValue(data, facts, ["SKU", "MPN", "Manufacturer Part Number", "eBay Item ID", "Item ID"])),
+    model: cleanMarketplaceText(factValue(data, facts, ["Model", "Model Number", "MPN", "Manufacturer Part Number"])),
+    storageSize: cleanMarketplaceText(factValue(data, facts, ["Storage Capacity", "Storage", "Size", "Capacity", "Dimensions", "Pack Count", "Quantity", "Weight", "Coverage"])),
+    compatibility: cleanMarketplaceText(factValue(data, facts, ["Compatibility", "Compatible Brand", "Compatible Model", "Network", "Carrier"])),
+    included: cleanMarketplaceText(factValue(data, facts, ["Included", "Included Accessories", "Items Included", "What's Included"])),
+    shippingReturns: String(factValue(data, facts, ["Shipping", "Returns", "Return Policy"]) || data.shipping || "").replace(/\s+/g, " ").trim(),
+    condition: cleanMarketplaceText(factValue(data, facts, ["Condition", "Cosmetic Condition", "Condition Notes"]) || data.condition || "")
+  };
+}
+
+function sentence(value) {
+  const text = String(value || "").replace(/\s+/g, " ").replace(/\s+([,.;:])/g, "$1").trim();
+  if (!text) return "";
+  return /[.!?]$/.test(text) ? text : `${text}.`;
+}
+
+function bulletProductName(data) {
+  const product = compactProductType(data);
+  return /^(?:product|item|marketplace listing|amazon listing|ebay listing)$/i.test(product)
+    ? "item"
+    : product.toLowerCase();
+}
+
+function factBullets(data) {
+  const exact = primaryFacts(data);
+  const product = bulletProductName(data);
+  const lines = [];
+  const modelParts = [exact.model, exact.sku].filter(Boolean);
+
+  if (modelParts.length) {
+    lines.push(`Model / SKU: ${modelParts.join(" / ")} for exact-match searches and compatibility checks`);
+  }
+  if (exact.storageSize) {
+    lines.push(`Size / storage / pack count: ${exact.storageSize} so shoppers can compare the ${product} against similar options quickly`);
+  }
+  if (exact.compatibility) {
+    lines.push(`Compatibility: ${exact.compatibility} to help buyers confirm fit, carrier support, or supported models before purchase`);
+  }
+  if (exact.included) {
+    lines.push(`Included items: ${exact.included} so buyers know what is in the box before checkout`);
+  }
+  if (exact.shippingReturns) {
+    lines.push(`Shipping / returns: ${exact.shippingReturns} to make delivery and return expectations clear before checkout`);
+  }
+  if (exact.condition) {
+    lines.push(`Condition: ${exact.condition} disclosed in the description so buyers know what to expect without using title space`);
+  }
+
+  return lines.map(sentence);
+}
+
 function categoryWords(category) {
   return (category || "")
     .split(/[|>]/)
@@ -79,7 +147,7 @@ function productPhrase(data) {
   if (data.brand) phrase = phrase.replace(new RegExp(rxEscape(data.brand), "ig"), " ");
   if (model) phrase = phrase.replace(new RegExp(rxEscape(model), "ig"), " ");
   phrase = phrase
-    .replace(/\b(?:cleaner|new|used|open box|very good|good|acceptable)\b/ig, " ")
+    .replace(/\b(?:cleaner|new|used|open box|very good|good condition|good|acceptable|condition|refurbished|seller refurbished|for parts)\b/ig, " ")
     .replace(/\s+/g, " ")
     .trim();
 
@@ -139,10 +207,12 @@ function build80(tokens, fallback) {
     .replace(/\s+/g, " ")
     .trim()
     .split(" ")
-    .filter(Boolean);
+    .filter(Boolean)
+    .filter((word) => !/^(good|very|condition|used|new|open|box|acceptable|refurbished|seller|parts)$/i.test(word));
 
   for (const word of extras) {
-    if (clean.includes(word)) continue;
+    const lower = word.toLowerCase();
+    if (clean.some((token) => token.toLowerCase().includes(lower))) continue;
     const next = title ? `${title} ${word}` : word;
     if (next.length <= 80) title = next;
     else break;
@@ -239,22 +309,21 @@ function buildEbayMarketplaceTitle(data, facts, brand, id) {
   const storage = specValue(facts, ["Storage Capacity", "Storage"]);
   const network = specValue(facts, ["Network", "Carrier"]);
   const color = specValue(facts, ["Color"]);
-  const condition = String(data.condition || "").replace("Used - ", "").trim();
   const product = compactProductType(data);
   const suffix = id ? ` - ${id}` : "";
 
   if (/cell phones?|smartphones?|iphone/i.test(source)) {
-    return fitTitleParts([brand, model, storage, network, color, condition], 80, suffix);
+    return fitTitleParts([brand, model, storage, network, color], 80, suffix);
   }
 
   if (/robot|vacuum/i.test(source)) {
     const leading = [brand, model, product].filter(Boolean).join(" ");
-    return joinTitleParts([leading, condition && !/^new$/i.test(condition) ? condition : "", id], 80);
+    return joinTitleParts([leading, id], 80);
   }
 
   const material = specValue(facts, ["Material"]);
   const capacity = specValue(facts, ["Capacity", "Size"]);
-  return fitTitleParts([brand, model, capacity, material, product, color, condition && !/^new$/i.test(condition) ? condition : ""], 80, suffix);
+  return fitTitleParts([brand, model, capacity, material, product, color], 80, suffix);
 }
 
 function titleAI(data) {
@@ -285,7 +354,7 @@ function titleAI(data) {
     ];
     const battery = specValue(facts, ["Battery Health"]);
     if (battery) tokens.push(`${battery} Battery`);
-    tokens = tokens.concat(bits, [data.condition.replace("Used - ", "")]);
+    tokens = tokens.concat(bits);
   } else if (data.category === "Fashion") {
     tokens = [
       brand,
@@ -294,9 +363,9 @@ function titleAI(data) {
       `Size ${specValue(facts, ["US Shoe Size", "Size"])}`,
       specValue(facts, ["Color"]),
       "Sneakers"
-    ].concat(bits, [data.condition.replace("Used - ", "")]);
+    ].concat(bits);
   } else {
-    tokens = [brand, specValue(facts, ["Model"])].concat(bits, [data.condition.replace("Used - ", "")]);
+    tokens = [brand, specValue(facts, ["Model"])].concat(bits);
     if (tokens.filter(Boolean).length < 2) return cleanMarketplaceText(data.title || "").slice(0, 80);
   }
 
@@ -304,47 +373,15 @@ function titleAI(data) {
 }
 
 function bullets(data) {
-  const storage = pick(/(?:Storage|Storage Capacity):\s*([^\n]+)/i, data.specifics || "");
-  const battery = pick(/Battery Health:\s*([^\n]+)/i, data.specifics || "");
-  const included = pick(/Included(?: Accessories)?:\s*([^\n]+)/i, data.specifics || "") || "items shown";
-  const notes = pick(/Condition Notes:\s*([^\n]+)/i, data.specifics || "") || "normal signs of wear";
-
-  if (data.category === "Cell Phones & Smartphones") {
-    return [
-      "Factory unlocked for flexible carrier activation",
-      `${storage || "High-capacity"} storage ready for apps, video, and photos`,
-      "Tested for full functionality before shipment",
-      battery ? `${battery} battery health disclosed up front` : "Battery status described clearly",
-      `${data.shipping} plus ${included.toLowerCase()} included`
-    ];
-  }
-
-  if (data.category === "Fashion") {
-    return [
-      `Authentic ${(data.title || "").split(" ").slice(0, 4).join(" ")} styling for everyday wear`,
-      `Condition notes called out clearly: ${notes}`,
-      "Packed carefully and shipped fast",
-      "Buyer-friendly listing structure for mobile shoppers",
-      `${data.shipping} for added confidence`
-    ];
-  }
-
-  const product = productPhrase(data);
+  const exactLines = factBullets(data);
+  const product = compactProductType(data);
   const featureLines = descriptionFeatures(data);
-  const includedText = included === "items shown" ? "shown items" : included.toLowerCase();
-  const conditionLine = /open box/i.test(data.condition || "")
-    ? `Open-box ${product.toLowerCase()} gives you the item at a better value while keeping condition clear`
-    : `${String(data.condition || "Clean").replace("Used - ", "")} condition is stated clearly so you know what to expect`;
-  const lines = [
-    ...featureLines,
-    conditionLine,
-    `${includedText} included so the package contents are clear up front`,
-    `${data.shipping || "Clear shipping"} helps you understand delivery before checkout`
-  ];
+  const lines = exactLines.concat(featureLines.map(sentence));
+  if (!lines.length) lines.push(`${product} details are organized so buyers can compare the listing faster.`);
   return lines
     .filter(Boolean)
     .filter((line, index, arr) => arr.findIndex((x) => x.toLowerCase() === line.toLowerCase()) === index)
-    .slice(0, 5);
+    .slice(0, 6);
 }
 
 function score(data) {
@@ -380,6 +417,7 @@ function buildResult(data) {
   const scores = score(data);
   const title = titleAI(data);
   const bulletItems = bullets(data);
+  const exact = primaryFacts(data);
   const specifics = (data.specifics || "")
     .split("\n")
     .map((x) => x.trim())
@@ -399,32 +437,39 @@ function buildResult(data) {
   }
 
   const battery = pick(/Battery Health:\s*([^\n]+)/i, data.specifics || "");
-  const notes = pick(/Condition Notes:\s*([^\n]+)/i, data.specifics || "") || "normal signs of use";
-  const included = pick(/Included(?: Accessories)?:\s*([^\n]+)/i, data.specifics || "") || "items shown in photos";
+  const notes = exact.condition || pick(/Condition Notes:\s*([^\n]+)/i, data.specifics || "") || "normal signs of use";
+  const included = exact.included || "items shown in photos";
 
   const specificationLines = specifics.map((x) => `- ${x}`).join("\n");
-  const description = `${title}. Clear product details, condition, included items, and shipping information are shown up front.\n\nCondition: ${data.condition} with ${notes}.${battery ? ` Battery health is ${battery}.` : ""}\n${(data.sku || "").trim() ? `SKU / Model reference: ${data.sku}.\n` : ""}Included: ${included}.\n\nHighlights:\n${bulletItems.map((x) => `- ${x}`).join("\n")}\n\nItem specifications:\n${specificationLines}\n\nShipping and support:\n${data.shipping}.\n\nPlease review photos carefully and message with any fit, compatibility, or condition questions before purchase.`;
+  const exactFactLines = [
+    exact.model && `Model: ${exact.model}`,
+    exact.sku && `SKU / item ID: ${exact.sku}`,
+    exact.storageSize && `Storage / size / pack count: ${exact.storageSize}`,
+    exact.compatibility && `Compatibility: ${exact.compatibility}`,
+    exact.included && `Included items: ${exact.included}`,
+    exact.shippingReturns && `Shipping / returns: ${exact.shippingReturns}`,
+    exact.condition && `Condition: ${exact.condition}`
+  ].filter(Boolean).map((x) => `- ${x}`).join("\n");
+  const description = `${title}. Clear product facts are shown up front so buyers can confirm fit, contents, and checkout expectations quickly.\n\nExact facts:\n${exactFactLines || "- Add model, size, compatibility, included items, shipping, and condition details for a stronger description."}${battery ? `\n- Battery health: ${battery}` : ""}\n\nCondition note:\n${notes}.\n\nIncluded:\n${included}.\n\nHighlights:\n${bulletItems.map((x) => `- ${x}`).join("\n")}\n\nItem specifications:\n${specificationLines}\n\nShipping and support:\n${exact.shippingReturns || data.shipping || "Calculated at checkout"}.\n\nPlease review photos carefully and message with any fit, compatibility, or condition questions before purchase.`;
 
   const actions = [
     (data.sku || "").trim()
-      ? "Keep the strongest SKU or model number in the title so B2B buyers can find the exact part faster."
+      ? "Keep the strongest SKU or model number visible in the title or first detail line so exact-match buyers can qualify it faster."
       : (data.title || "").length > 75
         ? "Shorten the title slightly so important keywords stay visible on mobile."
         : "Move the strongest buyer-intent phrase to the front of the title.",
-    /return/i.test(data.shipping || "")
+    /return/i.test(exact.shippingReturns || "")
       ? "Repeat your shipping and returns offer inside the description, not just near price."
       : "Add a clear returns promise to strengthen trust and reduce hesitation.",
-    /included|box|cable|accessories/i.test((data.description || "") + (data.specifics || ""))
+    exact.included || /included|box|cable|accessories/i.test((data.description || "") + (data.specifics || ""))
       ? "Keep included accessories near the top so buyers qualify themselves faster."
       : "State exactly what is included to cut down on buyer questions.",
-    /condition|wear|clean|scratch|battery/i.test((data.description || "") + (data.specifics || ""))
-      ? "Translate condition notes into plain buyer language instead of shorthand."
-      : "Add more specific condition language so buyers trust what they are getting.",
-    (data.sku || "").trim()
-      ? "Mirror the SKU or model number in item specifics and description for exact-match search visibility."
-      : scores.all >= 80
-        ? "Duplicate this structure across similar SKUs for faster listing production."
-        : "After copy cleanup, add richer specifics and photos to lift conversion further."
+    exact.compatibility
+      ? "Keep compatibility details in item specifics and bullets so buyers can confirm fit without messaging first."
+      : "Add compatibility, carrier, fitment, or supported-model details when they matter.",
+    exact.condition
+      ? "Keep condition details in bullets and description instead of using title space for condition words."
+      : "Add specific condition language so buyers trust what they are getting."
   ];
 
   const warnings = isOutOfStock(data)

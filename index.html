@@ -47,18 +47,18 @@
         <div>
           <div class="eyebrow">Free Amazon &amp; eBay Listing Optimizer</div>
           <h1>Paste a listing. Get cleaner copy shoppers understand.</h1>
-          <p class="subhead">Paste the product link first. The optimizer will use available public listing details, then optional fields help it create a stronger title, bullets, keywords, and recommended fixes.</p>
+          <p class="subhead">Start with a listing link, then add a few details for a stronger result. The optimizer uses public details when available and gives clearer copy when you include exact facts.</p>
           <div class="cta-row">
             <a class="btn btn-primary" href="#homeOptimizerForm">Use the Free Optimizer</a>
             <a class="btn btn-secondary" href="#how-it-works">How It Works</a>
           </div>
-          <div class="reassurance">Link-only works. Add optional title, category, keywords, or product details for a sharper result.</div>
+          <div class="reassurance">A link gets you started. Add model, size, compatibility, included items, shipping, or condition notes for a sharper result.</div>
         </div>
         <section class="dashboard homepage-optimizer" aria-label="Free Listing Optimizer">
           <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>Free listing optimizer</span></div>
           <form class="home-opt-form" id="homeOptimizerForm">
             <label>Public listing URL <input id="homeListingUrl" name="siteUrl" type="url" placeholder="Paste a public Amazon or eBay item URL" inputmode="url" required></label>
-            <p class="home-opt-note">Start with just the link. We’ll use public listing data when available.</p>
+            <p class="home-opt-note">Start with the link, then add a few known facts when you have them.</p>
             <div class="home-opt-grid">
               <label>Current title <input name="currentTitle" placeholder="Optional — improves the rewrite"></label>
               <label>Category or product type <input name="productType" placeholder="Optional — improves keywords"></label>
@@ -66,7 +66,7 @@
             <label>Product details <textarea name="currentCopy" placeholder="Optional — material, size, use cases, included items"></textarea></label>
             <label>Main keyword <input name="targetKeyword" placeholder="Optional — buyer search phrase"></label>
             <button class="btn btn-primary" type="submit">Get My Optimized Result</button>
-            <p class="home-opt-note" id="homeOptimizerStatus">No email required. Link-only is fine; optional fields improve the preview.</p>
+            <p class="home-opt-note" id="homeOptimizerStatus">No email required. Exact details make the title, bullets, and fixes more useful.</p>
           </form>
           <div class="home-opt-result" id="homeOptimizerResult" aria-live="polite" hidden>
             <div class="score-strip">
@@ -100,7 +100,7 @@
         <article class="info-panel flow-panel" aria-label="Before to After Listing Flow">
           <h3>Simple path</h3>
           <div class="flow-steps">
-            <div class="flow-step"><strong>1. Paste the link</strong><span>Use an Amazon or eBay item URL. Optional fields improve the result.</span></div>
+            <div class="flow-step"><strong>1. Paste the link</strong><span>Use an Amazon or eBay item URL, then add exact facts for a stronger result.</span></div>
             <div class="flow-step"><strong>2. Get the preview</strong><span>Score, cleaner title, 5 shopper-facing bullets, product details, and keyword ideas.</span></div>
             <div class="flow-step"><strong>3. Choose the next step</strong><span>Use it yourself or ask MCP for a second pass.</span></div>
           </div>
@@ -126,7 +126,7 @@
         <div>
           <div class="eyebrow">Free diagnosis first</div>
           <h2>Start with the free listing optimizer.</h2>
-          <p>Paste one public product link for a quick score and rewrite preview.</p>
+          <p>Paste one public product link, then add a few product facts for a stronger score and rewrite preview.</p>
           <div class="cta-row" style="justify-content:flex-start"><a class="btn btn-primary" href="/free-listing-score">Optimize a Free Listing</a><a class="btn btn-secondary" href="free-marketplace-review.html">Request Human Review</a></div>
         </div>
         <form class="form" id="contactForm">
@@ -338,8 +338,8 @@
     }
     function optExtractProductDetails({text, specs, title, url}){
       const named = [];
-      const detailLabels = 'brand|product id|asin|model|mpn|sku|item id|item number|ebay item id|ebay item number|manufacturer part number|material|capacity|coverage|size|dimensions?|color|colour|included|included accessories|condition|compatibility|pack count|quantity|weight|storage|network|carrier';
-      const ignoredLabels = 'title|price|buying options|seller|item location|shipping|returns?|availability|available quantity|listing ends?|listing type|category|feedback|notes';
+      const detailLabels = 'brand|product id|asin|model|mpn|sku|item id|item number|ebay item id|ebay item number|manufacturer part number|material|capacity|coverage|size|dimensions?|color|colour|included|included accessories|condition|compatibility|compatible brand|compatible model|pack count|quantity|weight|storage|network|carrier|shipping|returns?';
+      const ignoredLabels = 'title|price|buying options|seller|item location|availability|available quantity|listing ends?|listing type|category|feedback|notes';
       const allLabels = `${detailLabels}|${ignoredLabels}|item specifics`;
       const source = String(text || '').replace(/\bItem specifics:\s*/ig, ' ').replace(/[|;]/g, '\n');
       const rx = new RegExp(`\\b(${allLabels}):\\s*([\\s\\S]*?)(?=\\s+(?:${allLabels}):|\\n\\s*(?:${allLabels}):|$)`, 'ig');
@@ -391,7 +391,7 @@
     function optCleanTitleSeed(title, brand){
       const raw = optTitleCase(optClean(title).replace(/[“”]/g, ' in '));
       const withoutBrand = brand ? raw.replace(new RegExp(`^${brand.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s+`, 'i'), '') : raw;
-      return optClean(withoutBrand.replace(/\b(?:new|sale|official|listing|item)\b/ig, ' '));
+      return optClean(withoutBrand.replace(/\b(?:new|used|open box|very good|good condition|good|acceptable|refurbished|seller refurbished|for parts|condition|sale|official|listing|item)\b/ig, ' '));
     }
     function optCap(value, max){
       const title = optRemoveDuplicateTitleWords(optClean(value).replace(/\s+,\s+/g, ', ')).replace(/\b(\w+)(\s+\1\b)+/ig, '$1');
@@ -466,6 +466,39 @@
       push('Use-Case Clarity', `${optTitleCase(product)} terms give you a starting point so you can match the item to your intended use.`);
       return candidates.slice(0,5).map(({label, body}) => `【${label}】 ${body}`);
     }
+    function optDetailValue(details, labels){
+      for (const label of labels) {
+        const rx = new RegExp(`^${label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}:\\s*(.+)$`, 'i');
+        const hit = (details || []).map(item => String(item || '').match(rx)).find(Boolean);
+        if (hit) return optClean(hit[1]);
+      }
+      return '';
+    }
+    function optBuildExactBullets({productType, productDetails, fallbackBullets}){
+      const product = /^(?:product|marketplace listing|amazon listing|ebay listing)$/i.test(productType) ? 'item' : productType;
+      const model = optDetailValue(productDetails, ['Model', 'MPN', 'Manufacturer Part Number', 'Product ID', 'SKU']);
+      const size = optDetailValue(productDetails, ['Storage', 'Size', 'Capacity', 'Dimensions', 'Pack Count', 'Quantity', 'Weight', 'Coverage']);
+      const compatibility = optDetailValue(productDetails, ['Compatibility', 'Compatible Brand', 'Compatible Model', 'Network', 'Carrier']);
+      const included = optDetailValue(productDetails, ['Included', 'Included Accessories']);
+      const shipping = optDetailValue(productDetails, ['Shipping', 'Returns', 'Return']);
+      const condition = optDetailValue(productDetails, ['Condition']);
+      const bullets = [];
+      function push(body){
+        const text = optClean(body);
+        if (!text) return;
+        const key = text.toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').slice(0, 10).join(' ');
+        if (bullets.some(item => item.toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').slice(0, 10).join(' ') === key)) return;
+        bullets.push(text.endsWith('.') ? text : `${text}.`);
+      }
+      if (model) push(`Model / SKU: ${model} for exact-match searches and compatibility checks`);
+      if (size) push(`Size / storage / pack count: ${size} so shoppers can compare the ${optTitleCase(product)} against similar options quickly`);
+      if (compatibility) push(`Compatibility: ${compatibility} to help buyers confirm fit, carrier support, or supported models before purchase`);
+      if (included) push(`Included items: ${included} so buyers know what is in the box before checkout`);
+      if (shipping) push(`Shipping / returns: ${shipping} to make delivery and return expectations clear before checkout`);
+      if (condition) push(`Condition: ${condition} disclosed in the description so buyers know what to expect without using title space`);
+      fallbackBullets.forEach(push);
+      return bullets.slice(0, 6);
+    }
     function optBuildTitle({marketplace, brand, productType, specs, useCases, keyword, sourceTitle}){
       const cleanBrand = optTitleCase(brand).replace(/\b(?:Amazon|Ebay|eBay)\b/g, '').trim();
       const titleSeed = optCleanTitleSeed(sourceTitle, cleanBrand);
@@ -508,7 +541,8 @@
       const useCases = optDedupe(['work','gym','travel','patio','garden','office','home','camping','pets','fence','jobsite'].filter(item => source.toLowerCase().includes(item))).slice(0,4);
       const sparseTitle = marketplace === 'eBay' ? 'Add Product Title for Stronger eBay Preview' : marketplace === 'Amazon' ? 'Add Product Title for Stronger Amazon Preview' : 'Add Product Title for Stronger Preview';
       const optimizedTitle = hasCustomerFacingSeed ? optBuildTitle({marketplace, brand, productType, specs, useCases, keyword, sourceTitle}) : sparseTitle;
-      const bullets = hasCustomerFacingSeed ? optBuildBenefitBullets({productType, specs, phrases, useCases}) : [];
+      const fallbackBullets = hasCustomerFacingSeed ? optBuildBenefitBullets({productType, specs, phrases, useCases}) : [];
+      const bullets = hasCustomerFacingSeed ? optBuildExactBullets({productType, productDetails, fallbackBullets}) : [];
       const rawKeywordIdeas = hasCustomerFacingSeed ? [
         keyword,
         productType,
@@ -548,13 +582,13 @@
       homeOptimizerResult.hidden = false;
       homeScoreValue.textContent = result.score;
       homeScoreLabel.textContent = `${result.marketplace} readiness score`;
-      homeScoreSummary.textContent = result.hasDetails ? `Based on the public link plus the details entered for ${result.host || 'this listing'}.` : result.hasCustomerFacingSeed ? `Based on the public link for ${result.host || 'this listing'}. Add title/details for a stronger rewrite.` : result.itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : `The link was accepted, but it does not expose enough product words. Add title/details for a useful rewrite.`;
+      homeScoreSummary.textContent = result.hasDetails ? `Based on the public link plus the details entered for ${result.host || 'this listing'}.` : result.hasCustomerFacingSeed ? `Based on the listing link for ${result.host || 'this listing'}. Add exact facts for a stronger rewrite.` : result.itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : `The link was accepted, but it does not expose enough product words. Add title/details for a useful rewrite.`;
       homeOptimizedTitle.textContent = result.optimizedTitle;
       homeOptimizedBullets.innerHTML = result.bullets.length ? result.bullets.map(item => `<li>${optEscape(item)}</li>`).join('') : `<li>${optEscape(result.copyEmptyState)}</li>`;
       homeProductSpecifics.innerHTML = result.productDetails?.length ? result.productDetails.map(item => `<li>${optEscape(item)}</li>`).join('') : `<li>${result.hasCustomerFacingSeed ? 'Add brand, product ID, material, size, color, compatibility, pack count, or included items for clearer details.' : 'Add product details to generate details.'}</li>`;
       homeKeywordChips.innerHTML = result.keywordIdeas.map(item => `<span class="chip">${optEscape(item)}</span>`).join('');
       homeFirstFixes.innerHTML = result.fixes.map(item => `<li>${optEscape(item)}</li>`).join('');
-      homeOptimizerStatus.textContent = result.hasDetails ? 'Your optimized result is ready below.' : result.hasCustomerFacingSeed ? 'Your link-only result is ready below. Optional details will make it stronger.' : result.itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : 'Add a title or product details to generate customer-facing copy from this link.';
+      homeOptimizerStatus.textContent = result.hasDetails ? 'Your optimized result is ready below.' : result.hasCustomerFacingSeed ? 'Your link-started result is ready below. Exact details will make it stronger.' : result.itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : 'Add a title or product details to generate customer-facing copy from this link.';
     }
     homeOptimizerForm?.addEventListener('submit', async function(event){
       event.preventDefault();
