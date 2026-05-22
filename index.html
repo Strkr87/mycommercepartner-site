@@ -75,7 +75,7 @@
             </div>
             <article class="output-card"><small>Optimized title shoppers see</small><p class="title-preview" id="homeOptimizedTitle"></p></article>
             <article class="output-card"><small>Customer-facing bullets</small><ul class="bullet-list" id="homeOptimizedBullets"></ul></article>
-            <article class="output-card"><small>Product specifics</small><ul class="bullet-list" id="homeProductSpecifics"></ul></article>
+            <article class="output-card"><small>Product Details</small><ul class="bullet-list" id="homeProductSpecifics"></ul></article>
             <article class="output-card"><small>Keyword ideas</small><div class="chips" id="homeKeywordChips"></div></article>
             <article class="output-card"><small>Recommended fixes</small><ol class="home-fix-list" id="homeFirstFixes"></ol></article>
             <p class="home-opt-cta">Want a second pass? <a href="free-marketplace-review.html">Ask MCP to review the listing.</a></p>
@@ -101,7 +101,7 @@
           <h3>Simple path</h3>
           <div class="flow-steps">
             <div class="flow-step"><strong>1. Paste the link</strong><span>Use an Amazon or eBay item URL. Optional fields improve the result.</span></div>
-            <div class="flow-step"><strong>2. Get the preview</strong><span>Score, cleaner title, 5 shopper-facing bullets, product specifics, and keyword ideas.</span></div>
+            <div class="flow-step"><strong>2. Get the preview</strong><span>Score, cleaner title, 5 shopper-facing bullets, product details, and keyword ideas.</span></div>
             <div class="flow-step"><strong>3. Choose the next step</strong><span>Use it yourself or ask MCP for a second pass.</span></div>
           </div>
           <div class="output-strip" aria-label="What the free output gives you"><span>No login</span><span>Free</span><span>Link-first</span><span>Optional help</span></div>
@@ -276,7 +276,14 @@
         const data = await response.json().catch(()=>({}));
         if (response.ok && data.ok && data.title) {
           if (titleInput && !titleInput.value.trim()) titleInput.value = data.title;
-          const details = [data.condition && `Condition: ${data.condition}`, data.price && `Price: ${data.price}`, data.category && `Category: ${data.category}`, data.description].filter(Boolean).join('\n');
+          const itemSpecifics = Array.isArray(data.itemSpecifics) ? data.itemSpecifics : [];
+          const details = [
+            data.itemId && `Product ID: ${data.itemId}`,
+            data.condition && `Condition: ${data.condition}`,
+            ...itemSpecifics,
+            data.subtitle && `Notes: ${data.subtitle}`,
+            data.description
+          ].filter(Boolean).join('\n');
           if (detailsInput && details && !detailsInput.value.trim()) detailsInput.value = details;
           if (productTypeInput && data.category && !productTypeInput.value.trim()) productTypeInput.value = data.category;
           homeOptimizerStatus.textContent = 'Found listing details from the eBay item number.';
@@ -315,19 +322,44 @@
       patterns.forEach(rx => (source.match(rx) || []).forEach(item => specs.push(item)));
       return optDedupe(specs).slice(0,8);
     }
-    function optExtractProductSpecifics(text, specs){
+    function optNormalizeDetailLabel(label){
+      return optTitleCase(label.replace(/\s+/g, ' ').trim())
+        .replace(/^Colour$/i, 'Color')
+        .replace(/^Asin$/i, 'Product ID')
+        .replace(/^(Ebay )?Item (Number|Id)$/i, 'Product ID')
+        .replace(/^Sku$/i, 'Product ID')
+        .replace(/^Mpn$/i, 'MPN');
+    }
+    function optCleanDetailValue(value){
+      return optTitleCase(String(value || '')
+        .replace(/\b(?:best for|great for|works for|ideal for)\b[\s\S]*$/i, '')
+        .replace(/[.;,\s]+$/,'')
+        .trim());
+    }
+    function optExtractProductDetails({text, specs, title, url}){
       const named = [];
-      const labels = 'brand|model|mpn|sku|material|capacity|size|dimensions?|color|colour|included|included accessories|condition|compatibility|pack count|quantity|weight|storage|network|carrier';
-      const rx = new RegExp(`\\b(${labels}):\\s*([\\s\\S]*?)(?=\\s+(?:${labels}):|$)`, 'ig');
-      for (const match of String(text || '').matchAll(rx)) {
-        const label = optTitleCase(match[1].replace(/\s+/g, ' ').trim()).replace(/^Colour$/i, 'Color');
-        const value = optTitleCase(match[2].replace(/\b(?:best for|great for|works for|ideal for)\b[\s\S]*$/i, '').replace(/[.;,\s]+$/,'').trim());
-        if (value) named.push(`${label}: ${value}`);
+      const detailLabels = 'brand|product id|asin|model|mpn|sku|item id|item number|ebay item id|ebay item number|manufacturer part number|material|capacity|coverage|size|dimensions?|color|colour|included|included accessories|condition|compatibility|pack count|quantity|weight|storage|network|carrier';
+      const ignoredLabels = 'title|price|buying options|seller|item location|shipping|returns?|availability|available quantity|listing ends?|listing type|category|feedback|notes';
+      const allLabels = `${detailLabels}|${ignoredLabels}|item specifics`;
+      const source = String(text || '').replace(/\bItem specifics:\s*/ig, ' ').replace(/[|;]/g, '\n');
+      const rx = new RegExp(`\\b(${allLabels}):\\s*([\\s\\S]*?)(?=\\s+(?:${allLabels}):|\\n\\s*(?:${allLabels}):|$)`, 'ig');
+      function add(label, value){
+        const normalized = optNormalizeDetailLabel(label);
+        if (new RegExp(`^(?:${ignoredLabels})$`, 'i').test(normalized)) return;
+        const cleanValue = optCleanDetailValue(value);
+        if (!cleanValue || cleanValue.length > 140) return;
+        if (/\b(?:USD|FIXED_PRICE|Feedback|Seller|Shipping|Item Location|Buying Options|Title:)\b/i.test(cleanValue)) return;
+        named.push(`${normalized}: ${cleanValue}`);
       }
-      const fallback = named.length ? [] : (specs || []).map(spec => {
-        if (/stainless steel|BPA-free|UV resistant|rust resistant|waterproof|leakproof|heavy duty|breathable|reinforced|rechargeable|cordless/i.test(spec)) return `Material / feature: ${optTitleCase(spec)}`;
-        if (/\b\d+(?:\.\d+)?\s?(?:oz|lb|lbs|pack|pcs|piece|pieces|gallon|quart|mm|cm|m|ft|feet|in|inch)\b/i.test(spec)) return `Size / quantity: ${optTitleCase(spec)}`;
-        return `Product detail: ${optTitleCase(spec)}`;
+      const brand = optExtractBrand(title || '');
+      if (brand) add('Brand', brand);
+      const clue = optExtractUrlClue(url || '');
+      if (clue.id) add('Product ID', clue.id);
+      for (const match of source.matchAll(rx)) add(match[1], match[2]);
+      const fallback = named.length >= 3 ? [] : (specs || []).map(spec => {
+        if (/stainless steel|BPA-free|UV resistant|rust resistant|waterproof|leakproof|heavy duty|breathable|reinforced|rechargeable|cordless/i.test(spec)) return `Material / Feature: ${optTitleCase(spec)}`;
+        if (/\b\d+(?:\.\d+)?\s?(?:oz|lb|lbs|pack|pcs|piece|pieces|gallon|quart|mm|cm|m|ft|feet|in|inch)\b/i.test(spec)) return `Size / Quantity: ${optTitleCase(spec)}`;
+        return `Product Detail: ${optTitleCase(spec)}`;
       });
       return optDedupe(named.concat(fallback)).slice(0,6);
     }
@@ -470,7 +502,7 @@
       const keyword = enteredKeyword || productType;
       const source = `${sourceTitle} ${productType} ${keyword} ${details}`;
       const specs = optExtractSpecs(source);
-      const productSpecifics = hasCustomerFacingSeed ? optExtractProductSpecifics(details, specs) : [];
+      const productDetails = hasCustomerFacingSeed ? optExtractProductDetails({text: details, specs, title: sourceTitle, url}) : [];
       const phrases = optDedupe(optPhrases(details).concat(optPhrases(sourceTitle))).filter(item => item.length > 3);
       const brand = optExtractBrand(sourceTitle);
       const useCases = optDedupe(['work','gym','travel','patio','garden','office','home','camping','pets','fence','jobsite'].filter(item => source.toLowerCase().includes(item))).slice(0,4);
@@ -510,7 +542,7 @@
         'Paste visible description or feature text if the marketplace page cannot be read automatically.'
       ];
       const itemNumberOnly = homeNeedsEbayItemLookup(url);
-      return {score, marketplace, host, optimizedTitle, bullets, productSpecifics, keywordIdeas, fixes, hasDetails: hasFullDetails, hasCustomerFacingSeed, itemNumberOnly, copyEmptyState: itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : 'This link does not contain enough product words to create honest listing copy. Enter the current title, product type, or a few details above and run it again.'};
+      return {score, marketplace, host, optimizedTitle, bullets, productDetails, keywordIdeas, fixes, hasDetails: hasFullDetails, hasCustomerFacingSeed, itemNumberOnly, copyEmptyState: itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : 'This link does not contain enough product words to create honest listing copy. Enter the current title, product type, or a few details above and run it again.'};
     }
     function renderHomeOptimizer(result){
       homeOptimizerResult.hidden = false;
@@ -519,7 +551,7 @@
       homeScoreSummary.textContent = result.hasDetails ? `Based on the public link plus the details entered for ${result.host || 'this listing'}.` : result.hasCustomerFacingSeed ? `Based on the public link for ${result.host || 'this listing'}. Add title/details for a stronger rewrite.` : result.itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : `The link was accepted, but it does not expose enough product words. Add title/details for a useful rewrite.`;
       homeOptimizedTitle.textContent = result.optimizedTitle;
       homeOptimizedBullets.innerHTML = result.bullets.length ? result.bullets.map(item => `<li>${optEscape(item)}</li>`).join('') : `<li>${optEscape(result.copyEmptyState)}</li>`;
-      homeProductSpecifics.innerHTML = result.productSpecifics?.length ? result.productSpecifics.map(item => `<li>${optEscape(item)}</li>`).join('') : `<li>${result.hasCustomerFacingSeed ? 'Add material, size, color, compatibility, pack count, or included items for clearer specifics.' : 'Add product details to generate specifics.'}</li>`;
+      homeProductSpecifics.innerHTML = result.productDetails?.length ? result.productDetails.map(item => `<li>${optEscape(item)}</li>`).join('') : `<li>${result.hasCustomerFacingSeed ? 'Add brand, product ID, material, size, color, compatibility, pack count, or included items for clearer details.' : 'Add product details to generate details.'}</li>`;
       homeKeywordChips.innerHTML = result.keywordIdeas.map(item => `<span class="chip">${optEscape(item)}</span>`).join('');
       homeFirstFixes.innerHTML = result.fixes.map(item => `<li>${optEscape(item)}</li>`).join('');
       homeOptimizerStatus.textContent = result.hasDetails ? 'Your optimized result is ready below.' : result.hasCustomerFacingSeed ? 'Your link-only result is ready below. Optional details will make it stronger.' : result.itemNumberOnly ? 'We found the eBay item number, but could not read enough public listing details. Add the current title or product details for a stronger rewrite.' : 'Add a title or product details to generate customer-facing copy from this link.';

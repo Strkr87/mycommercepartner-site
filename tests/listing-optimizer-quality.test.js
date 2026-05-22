@@ -184,7 +184,7 @@ test('homepage optimizer looks up eBay mobile share URLs without item IDs', () =
   assert.equal(homeNeedsEbayItemLookup('https://www.amazon.com/AquaPro-Insulated-Bottle/dp/B0TEST1234'), false);
 });
 
-test('homepage optimizer returns product specifics for the visible results panel', () => {
+test('homepage optimizer returns product details for the visible results panel', () => {
   const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
   const result = buildHomeOptimizer(makeFormData({
     siteUrl: 'https://www.amazon.com/AquaPro-Insulated-Bottle/dp/B0TEST1234',
@@ -196,12 +196,37 @@ test('homepage optimizer returns product specifics for the visible results panel
     revenue: ''
   }));
 
-  assert.deepEqual(Array.from(result.productSpecifics), [
+  assert.deepEqual(Array.from(result.productDetails), [
+    'Brand: AquaPro',
+    'Product ID: B0TEST1234',
     'Material: Stainless Steel',
     'Capacity: 40 oz',
     'Color: Blue',
     'Included: Straw Lid and Carry Handle'
   ]);
+});
+
+test('homepage product details remove marketplace noise from eBay lookup text', () => {
+  const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
+  const result = buildHomeOptimizer(makeFormData({
+    siteUrl: 'https://www.ebay.com/itm/395248277355',
+    currentTitle: 'WindscreenSupplyCo Heavy Duty Mesh Tarp Sun Shade Cover 60-70% Blockage Black',
+    productType: 'Garden & Patio|Shade Sails & Tarps',
+    currentCopy: 'Condition: New Price: USD 149.95 Title: WindscreenSupplyCo Heavy Duty Mesh Tarp Sun Shade Cover 60-70% Blockage Black | Buying Options: FIXED_PRICE | Seller: Ncsnainc, 100.0% Positive, 170 Feedback | Item Location: 917**, US | Shipping: USD 0.00 - 2026-05-26T07:00:00.000Z to 2026-05-29T07:00:00.000Z | Item specifics: Brand: WindscreenSupplyCo; Material: Heavy Duty Mesh; Color: Black; Coverage: 60-70% Blockage',
+    targetKeyword: '',
+    goal: '',
+    revenue: ''
+  }));
+
+  assert.deepEqual(Array.from(result.productDetails), [
+    'Brand: WindscreenSupplyCo',
+    'Product ID: 395248277355',
+    'Condition: New',
+    'Material: Heavy Duty Mesh',
+    'Color: Black',
+    'Coverage: 60-70% Blockage'
+  ]);
+  assert.doesNotMatch(result.productDetails.join(' '), /Price|Seller|Buying Options|Item Location|Shipping|Feedback|Title:/i);
 });
 
 test('homepage presents the free listing optimizer as the front door and frames paid help as implementation', () => {
