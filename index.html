@@ -255,7 +255,7 @@
     }
     function homeNeedsEbayItemLookup(url){
       const clue = optExtractUrlClue(url);
-      return clue.marketplace === 'eBay' && clue.id && !clue.title;
+      return clue.marketplace === 'eBay' && (!clue.title || Boolean(clue.id));
     }
     async function lookupHomeEbayItemIfNeeded(){
       const urlInput = homeOptimizerForm?.querySelector('[name="siteUrl"]');

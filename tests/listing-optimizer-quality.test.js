@@ -42,8 +42,8 @@ function loadHomepageOptimizer() {
     document: { getElementById() { return element; } }
   };
   vm.createContext(context);
-  vm.runInContext(`${script}\nglobalThis.__buildHomeOptimizer = buildHomeOptimizer;`, context);
-  return context.__buildHomeOptimizer;
+  vm.runInContext(`${script}\nglobalThis.__buildHomeOptimizer = buildHomeOptimizer;\nglobalThis.__homeNeedsEbayItemLookup = homeNeedsEbayItemLookup;`, context);
+  return context;
 }
 
 function makeFormData(entries) {
@@ -159,7 +159,7 @@ test('eBay optimizer creates an 80-character keyword title with brand, model, sp
 });
 
 test('homepage optimizer does not repeat brand or product words in eBay titles', () => {
-  const buildHomeOptimizer = loadHomepageOptimizer();
+  const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
   const result = buildHomeOptimizer(makeFormData({
     siteUrl: 'https://www.ebay.com/itm/395248277355',
     currentTitle: 'HiPer 9” Black Carbon Composite',
@@ -177,8 +177,15 @@ test('homepage optimizer does not repeat brand or product words in eBay titles',
   assert.doesNotMatch(result.optimizedTitle, /,\s*for Home/i);
 });
 
+test('homepage optimizer looks up eBay mobile share URLs without item IDs', () => {
+  const { __homeNeedsEbayItemLookup: homeNeedsEbayItemLookup } = loadHomepageOptimizer();
+  assert.equal(homeNeedsEbayItemLookup('https://ebay.us/m/BmvHq2'), true);
+  assert.equal(homeNeedsEbayItemLookup('https://www.ebay.com/itm/395248277355'), true);
+  assert.equal(homeNeedsEbayItemLookup('https://www.amazon.com/AquaPro-Insulated-Bottle/dp/B0TEST1234'), false);
+});
+
 test('homepage optimizer returns product specifics for the visible results panel', () => {
-  const buildHomeOptimizer = loadHomepageOptimizer();
+  const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
   const result = buildHomeOptimizer(makeFormData({
     siteUrl: 'https://www.amazon.com/AquaPro-Insulated-Bottle/dp/B0TEST1234',
     currentTitle: 'AquaPro 40 oz Stainless Steel Insulated Water Bottle with Straw Lid',
