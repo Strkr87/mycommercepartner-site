@@ -617,7 +617,7 @@ ${bulletHtml}
     }
     function optExtractProductDetails({text, specs, title, url}){
       const named = [];
-      const detailLabels = 'brand|product id|asin|model|mpn|sku|item id|item number|ebay item id|ebay item number|manufacturer part number|material|capacity|coverage|size|dimensions?|color|colour|included|included accessories|condition|compatibility|compatible brand|compatible model|pack count|quantity|weight|storage|network|carrier|shipping|returns?';
+      const detailLabels = 'brand|product id|asin|model|mpn|sku|item id|item number|ebay item id|ebay item number|manufacturer part number|manufacturer|type|features?|material|capacity|coverage|size|dimensions?|item height|item width|item length|item thickness|height|width|length|thickness|shape|style|finish|color|colour|included|included accessories|condition|compatibility|compatible brand|compatible model|pack count|quantity|number of items|item weight|weight|storage|network|carrier|shipping|returns?';
       const ignoredLabels = 'title|price|buying options|seller|item location|availability|available quantity|listing ends?|listing type|category|feedback|notes|photo|photos?|image';
       const allLabels = `${detailLabels}|${ignoredLabels}|item specifics`;
       const source = String(text || '').replace(/\bItem specifics:\s*/ig, ' ').replace(/[|;]/g, '\n');
@@ -630,11 +630,16 @@ ${bulletHtml}
         if (/\b(?:USD|FIXED_PRICE|Feedback|Seller|Shipping|Item Location|Buying Options|Title:)\b/i.test(cleanValue)) return;
         named.push(`${normalized}: ${cleanValue}`);
       }
-      const brand = optExtractBrand(title || '');
+      const explicitBrand = (source.match(/\bBrand:\s*([^\n|;]+?)(?=\s+[A-Za-z][A-Za-z0-9 /#&().+-]{1,42}\s*:|$)/i) || [])[1] || '';
+      const brand = explicitBrand || optExtractBrand(title || '');
       if (brand) add('Brand', brand);
       const clue = optExtractUrlClue(url || '');
       if (clue.id) add('Product ID', clue.id);
       for (const match of source.matchAll(rx)) add(match[1], match[2]);
+      for (const line of source.split('\n')) {
+        const match = line.match(/^\s*([A-Za-z][A-Za-z0-9 /#&().+-]{1,42})\s*:\s*([^\n]{1,160})\s*$/);
+        if (match) add(match[1], match[2]);
+      }
       const customerNamedCount = named.filter(optIsCustomerDetail).length;
       const fallback = customerNamedCount >= 3 ? [] : (specs || []).map(spec => {
         if (/stainless steel|BPA-free|UV resistant|rust resistant|waterproof|leakproof|heavy duty|breathable|reinforced|rechargeable|cordless|black|white|green|tan|brown|gray|grey/i.test(spec)) return `Material / Feature: ${optTitleCase(spec)}`;

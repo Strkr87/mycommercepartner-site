@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const { extractEbayItemId, extractEbayTitleFromUrlSlug, resolveEbayItemUrl, parseEbayItemHtml, lookupEbayBrowseApi, searchEbayBrowseApi, buildFindingDetailBundle } = require('../api/_lib/ebay-item-lookup');
+const { extractEbayItemId, extractEbayTitleFromUrlSlug, resolveEbayItemUrl, parseEbayItemHtml, parseEbayItemSpecificsHtml, lookupEbayBrowseApi, searchEbayBrowseApi, buildFindingDetailBundle } = require('../api/_lib/ebay-item-lookup');
 
 test('extractEbayItemId finds numeric item ID from eBay item URL without title slug', () => {
   assert.equal(extractEbayItemId('https://www.ebay.com/itm/336568091037'), '336568091037');
@@ -64,6 +64,39 @@ test('parseEbayItemHtml reads OpenGraph and JSON-LD product fields', () => {
   assert.equal(parsed.condition, 'New');
   assert.equal(parsed.category, 'Garden Shade');
   assert.equal(parsed.image, 'https://i.ebayimg.com/images/json.jpg');
+});
+
+test('parseEbayItemHtml extracts eBay item specifics from listing markup', () => {
+  const html = `<!doctype html><html><head>
+    <meta property="og:title" content="White Acoustic Wall Panels 12 x 12 | eBay">
+  </head><body>
+    <section aria-label="Item specifics">
+      <dl class="ux-labels-values">
+        <dt class="ux-labels-values__labels"><span>Brand</span></dt>
+        <dd class="ux-labels-values__values"><span>SoundPro</span></dd>
+      </dl>
+      <dl class="ux-labels-values">
+        <dt class="ux-labels-values__labels"><span>Type</span></dt>
+        <dd class="ux-labels-values__values"><span>Acoustic Panel</span></dd>
+      </dl>
+      <dl class="ux-labels-values">
+        <dt class="ux-labels-values__labels"><span>Item Thickness</span></dt>
+        <dd class="ux-labels-values__values"><span>0.4 in</span></dd>
+      </dl>
+    </section>
+  </body></html>`;
+
+  assert.deepEqual(parseEbayItemSpecificsHtml(html), [
+    'Brand: SoundPro',
+    'Type: Acoustic Panel',
+    'Item Thickness: 0.4 in'
+  ]);
+  const parsed = parseEbayItemHtml(html, '336568091037');
+  assert.deepEqual(parsed.itemSpecifics, [
+    'Brand: SoundPro',
+    'Type: Acoustic Panel',
+    'Item Thickness: 0.4 in'
+  ]);
 });
 
 test('lookupEbayBrowseApi fetches token then legacy item details', async () => {

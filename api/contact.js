@@ -278,8 +278,50 @@ async function lookupEbayItemDetails(req, res) {
     return;
   }
 
+  async function fetchItemPageDetails() {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 9000);
+    try {
+      const response = await fetch(`https://www.ebay.com/itm/${encodeURIComponent(itemId)}`, {
+        signal: controller.signal,
+        redirect: 'follow',
+        headers: {
+          'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+          'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'accept-language': 'en-US,en;q=0.9',
+          'cache-control': 'no-cache'
+        }
+      });
+      const html = await response.text();
+      const parsed = parseEbayItemHtml(html, itemId);
+      return response.ok && parsed.ok ? parsed : null;
+    } catch (_) {
+      return null;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
   const apiResult = await lookupEbayBrowseApi(itemId);
   if (apiResult.ok && apiResult.title) {
+    const pageResult = await fetchItemPageDetails();
+    if (pageResult?.itemSpecifics?.length) {
+      const mergedSpecifics = [
+        ...(Array.isArray(apiResult.itemSpecifics) ? apiResult.itemSpecifics : []),
+        ...pageResult.itemSpecifics
+      ].filter((item, index, list) => {
+        const key = String(item || '').toLowerCase().replace(/\s+/g, ' ').trim();
+        return key && list.findIndex(other => String(other || '').toLowerCase().replace(/\s+/g, ' ').trim() === key) === index;
+      });
+      res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
+      res.status(200).json({
+        ...apiResult,
+        source: `${apiResult.source}+ebay-item-page`,
+        itemSpecifics: mergedSpecifics.slice(0, 30),
+        detailCount: Math.max(apiResult.detailCount || 0, (apiResult.detailCount || 0) + pageResult.itemSpecifics.length)
+      });
+      return;
+    }
     res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
     res.status(200).json(apiResult);
     return;
@@ -294,30 +336,11 @@ async function lookupEbayItemDetails(req, res) {
     }
   }
 
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 9000);
-  try {
-    const response = await fetch(`https://www.ebay.com/itm/${encodeURIComponent(itemId)}`, {
-      signal: controller.signal,
-      redirect: 'follow',
-      headers: {
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'accept-language': 'en-US,en;q=0.9',
-        'cache-control': 'no-cache'
-      }
-    });
-    const html = await response.text();
-    const parsed = parseEbayItemHtml(html, itemId);
-    if (response.ok && parsed.ok) {
-      res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
-      res.status(200).json(parsed);
-      return;
-    }
-  } catch (_) {
-    // Return the same simple fallback below.
-  } finally {
-    clearTimeout(timer);
+  const pageResult = await fetchItemPageDetails();
+  if (pageResult?.ok) {
+    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
+    res.status(200).json(pageResult);
+    return;
   }
   const slugTitle = extractEbayTitleFromUrlSlug(resolvedUrl || inputUrl || '');
   if (slugTitle) {

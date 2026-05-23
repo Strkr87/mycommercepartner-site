@@ -71,6 +71,102 @@ function cleanField(value, max = 240) {
     .trim();
 }
 
+function cleanSpecificLabel(value) {
+  return cleanField(value, 70)
+    .replace(/\s*:\s*$/, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function addSpecificLine(out, seen, label, value) {
+  const name = cleanSpecificLabel(label);
+  const detail = cleanField(value, 180);
+  if (!name || !detail) return;
+  if (/^(?:about this product|item specifics|condition|price|seller|shipping|returns?|delivery|payments?|item location|category|title|image|photo|availability|quantity available)$/i.test(name)) return;
+  if (/^(?:does not apply|n\/a|na|none)$/i.test(detail)) return;
+  if (/\b(?:sign in|see details|read more|contact seller|visit store)\b/i.test(detail)) return;
+  const key = `${name.toLowerCase()}:${detail.toLowerCase()}`;
+  if (seen.has(key)) return;
+  seen.add(key);
+  out.push(`${name}: ${detail}`);
+}
+
+function parseJsonObjectSpecifics(value, out, seen) {
+  if (!value || typeof value !== 'object') return;
+  const candidates = [];
+  if (Array.isArray(value.localizedAspects)) candidates.push(value.localizedAspects);
+  if (Array.isArray(value.itemSpecifics)) candidates.push(value.itemSpecifics);
+  if (Array.isArray(value.aspects)) candidates.push(value.aspects);
+  if (Array.isArray(value.nameValueList)) candidates.push(value.nameValueList);
+  if (Array.isArray(value.NameValueList)) candidates.push(value.NameValueList);
+  if (value.ItemSpecifics) {
+    if (Array.isArray(value.ItemSpecifics.NameValueList)) candidates.push(value.ItemSpecifics.NameValueList);
+    else if (Array.isArray(value.ItemSpecifics)) candidates.push(value.ItemSpecifics);
+  }
+  for (const list of candidates) {
+    for (const entry of list) {
+      if (!entry || typeof entry !== 'object') continue;
+      const label = entry.name || entry.Name || entry.localizedName || entry.aspectName;
+      const rawValues = entry.value || entry.values || entry.Value || entry.localizedValues || entry.aspectValues || [];
+      const values = Array.isArray(rawValues) ? rawValues : [rawValues];
+      const text = values.map(item => {
+        if (item && typeof item === 'object') return item.value || item.Value || item.localizedValue || item.text || '';
+        return item;
+      }).filter(Boolean).join(', ');
+      addSpecificLine(out, seen, label, text);
+    }
+  }
+}
+
+function parseEbayItemSpecificsHtml(html) {
+  const body = String(html || '');
+  const out = [];
+  const seen = new Set();
+
+  const jsonLd = parseJsonLd(body);
+  parseJsonObjectSpecifics(jsonLd, out, seen);
+
+  const stateScriptBlocks = [...body.matchAll(/<script\b(?![^>]+type=["']application\/ld\+json["'])[^>]*>([\s\S]*?)<\/script>/gi)]
+    .map(match => decodeHtml(match[1]))
+    .filter(script => /localizedAspects|itemSpecifics|ItemSpecifics|NameValueList/i.test(script))
+    .slice(0, 8);
+  for (const script of stateScriptBlocks) {
+    for (const match of script.matchAll(/"name"\s*:\s*"([^"]{1,80})"[\s\S]{0,800}?"value"\s*:\s*(\[[\s\S]{0,400}?\]|"[^"]{1,180}")/gi)) {
+      let value = match[2];
+      try {
+        const parsed = JSON.parse(value);
+        value = Array.isArray(parsed) ? parsed.join(', ') : parsed;
+      } catch (_) {
+        value = value.replace(/^"|"$/g, '');
+      }
+      addSpecificLine(out, seen, match[1], value);
+    }
+    for (const match of script.matchAll(/"Name"\s*:\s*"([^"]{1,80})"[\s\S]{0,800}?"Value"\s*:\s*(\[[\s\S]{0,400}?\]|"[^"]{1,180}")/g)) {
+      let value = match[2];
+      try {
+        const parsed = JSON.parse(value);
+        value = Array.isArray(parsed) ? parsed.join(', ') : parsed;
+      } catch (_) {
+        value = value.replace(/^"|"$/g, '');
+      }
+      addSpecificLine(out, seen, match[1], value);
+    }
+  }
+
+  for (const match of body.matchAll(/<dl\b[^>]*class=["'][^"']*ux-labels-values[^"']*["'][^>]*>([\s\S]*?)<\/dl>/gi)) {
+    const block = match[1];
+    const label = (block.match(/<(?:dt|div|span)\b[^>]*class=["'][^"']*(?:ux-labels-values__labels|ux-labels-values__label)[^"']*["'][^>]*>([\s\S]*?)<\/(?:dt|div|span)>/i) || [])[1];
+    const value = (block.match(/<(?:dd|div|span)\b[^>]*class=["'][^"']*(?:ux-labels-values__values|ux-labels-values__value)[^"']*["'][^>]*>([\s\S]*?)<\/(?:dd|div|span)>/i) || [])[1];
+    addSpecificLine(out, seen, label, value);
+  }
+
+  for (const match of body.matchAll(/<td\b[^>]*class=["'][^"']*attrLabels[^"']*["'][^>]*>([\s\S]*?)<\/td>\s*<td\b[^>]*>([\s\S]*?)<\/td>/gi)) {
+    addSpecificLine(out, seen, match[1], match[2]);
+  }
+
+  return out.slice(0, 30);
+}
+
 function metaContent(html, names) {
   for (const name of names) {
     const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -131,6 +227,7 @@ function parseEbayItemHtml(html, itemId = '') {
   );
   const image = cleanField(imageValue || metaContent(body, ['og:image', 'twitter:image']), 500);
   const description = cleanField(jsonLd.description || metaContent(body, ['og:description', 'description', 'twitter:description']), 500);
+  const itemSpecifics = parseEbayItemSpecificsHtml(body);
   const blocked = /Access Denied|Pardon Our Interruption|Checking your browser/i.test(body);
   return {
     ok: Boolean(title && !/Access Denied|Pardon Our Interruption|Error Page/i.test(title)),
@@ -141,9 +238,10 @@ function parseEbayItemHtml(html, itemId = '') {
     category,
     productType: category || 'eBay listing',
     image,
+    itemSpecifics,
     description,
     source: 'ebay-item-page',
-    detailCount: [title, price, condition, category, image, description].filter(Boolean).length,
+    detailCount: [title, price, condition, category, image, description].filter(Boolean).length + itemSpecifics.length,
     blocked
   };
 }
@@ -711,6 +809,7 @@ module.exports = {
   extractEbayTitleFromUrlSlug,
   resolveEbayItemUrl,
   parseEbayItemHtml,
+  parseEbayItemSpecificsHtml,
   lookupEbayBrowseApi,
   lookupEbayShoppingApi,
   searchEbayBrowseApi,

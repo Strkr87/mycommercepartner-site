@@ -389,6 +389,30 @@ test('homepage optimizer returns product details for the visible results panel',
   ]);
 });
 
+test('homepage optimizer carries eBay item specifics into product details', () => {
+  const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
+  const result = buildHomeOptimizer(makeFormData({
+    siteUrl: 'https://www.ebay.com/itm/336568091037',
+    currentTitle: 'White Acoustic Wall Panels 12 x 12 Sound Absorbing Tiles',
+    productType: 'Musical Instruments & Gear|Pro Audio Equipment|Acoustical Treatments',
+    currentCopy: 'Product ID: 336568091037\nBrand: SoundPro\nType: Acoustic Panel\nItem Thickness: 0.4 in\nFeatures: Sound Absorbing\nShape: Square',
+    targetKeyword: '',
+    goal: '',
+    revenue: ''
+  }));
+
+  assert.deepEqual(Array.from(result.productDetails), [
+    'Brand: SoundPro',
+    'Product ID: 336568091037',
+    'Type: Acoustic Panel',
+    'Item Thickness: 0.4 in',
+    'Features: Sound Absorbing',
+    'Shape: Square'
+  ]);
+  assert.match(result.ebayHtml, /<li>Type: Acoustic Panel<\/li>/);
+  assert.match(result.ebayHtml, /<li>Item Thickness: 0\.4 in<\/li>/);
+});
+
 test('homepage product details remove marketplace noise from eBay lookup text', () => {
   const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
   const result = buildHomeOptimizer(makeFormData({
