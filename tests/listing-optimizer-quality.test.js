@@ -412,7 +412,7 @@ test('homepage product details remove marketplace noise from eBay lookup text', 
   assert.doesNotMatch(result.productDetails.join(' '), /Price|Seller|Buying Options|Item Location|Shipping|Feedback|Title:/i);
 });
 
-test('homepage eBay product description shows five customer-facing bullets from visible title facts', () => {
+test('homepage eBay product description shows five direct customer-facing bullets from visible title facts', () => {
   const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
   const result = buildHomeOptimizer(makeFormData({
     siteUrl: 'https://www.ebay.com/itm/397348619110',
@@ -429,6 +429,9 @@ test('homepage eBay product description shows five customer-facing bullets from 
   assert.equal(bulletLines.length, 5);
   assert.match(bulletLines.join(' '), /10x5|beadlock|front wheel|4\+1|4x156/i);
   assert.doesNotMatch(bulletLines.join(' '), /Product ID|Condition:|SKU|MPN|Seller|Price|Notes:/i);
+  assert.doesNotMatch(bulletLines.join(' '), /helps shoppers|helps confirm|before purchase|before checkout|before ordering|verify compatibility|clear wheel-construction detail|match the wheel to the intended position|compare fitment/i);
+  assert.match(bulletLines[0], /10x5 sizing provides a defined wheel dimension for compatible setups\./i);
+  assert.match(bulletLines[1], /Single beadlock design supports secure tire seating for off-road use\./i);
 });
 
 test('homepage presents the free listing optimizer as the front door and frames paid help as implementation', () => {

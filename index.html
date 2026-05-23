@@ -168,7 +168,7 @@
             </div>
             <h4 class="aplus-subhead">Why Coffee Fans Choose This Setup</h4>
             <div class="aplus-card-grid">
-              <div class="aplus-card"><div class="aplus-photo detail" aria-hidden="true"></div><h5>Consistent Brew Control</h5><p>Clear feature copy explains how the item helps shoppers get repeatable results without guessing.</p></div>
+              <div class="aplus-card"><div class="aplus-photo detail" aria-hidden="true"></div><h5>Consistent Brew Control</h5><p>Clear feature copy connects the item features to repeatable results without guessing.</p></div>
               <div class="aplus-card"><div class="aplus-photo clean" aria-hidden="true"></div><h5>Counter-Friendly Design</h5><p>Benefit language helps buyers picture where it fits and why it is easy to keep in reach.</p></div>
               <div class="aplus-card"><div class="aplus-photo bundle" aria-hidden="true"></div><h5>Included Accessories</h5><p>Included pieces are grouped visually so shoppers understand what arrives in the box.</p></div>
               <div class="aplus-card"><div class="aplus-photo use" aria-hidden="true"></div><h5>Simple Daily Use</h5><p>Use-case copy focuses on the customer outcome instead of repeating internal product notes.</p></div>
@@ -336,18 +336,18 @@
       const cleanDetails = (productDetails || []).filter(optIsCustomerDetail).map(optHtmlText).filter(Boolean).slice(0, 8);
       const bulletHtml = cleanBullets.length
         ? cleanBullets.map(item => `    <li>${item}</li>`).join('\n')
-        : '    <li>Key product details are organized so buyers can confirm fit and use quickly.</li>';
+        : '    <li>Key product details are organized for quick fit and use review.</li>';
       const detailsHtml = cleanDetails.length
         ? `\n  <h3 style="font-size:18px;margin:18px 0 8px;">Product Details</h3>\n  <ul style="margin:0 0 16px 20px;padding:0;">\n${cleanDetails.map(item => `    <li>${item}</li>`).join('\n')}\n  </ul>`
         : '';
       return `<div style="font-family:Arial,Helvetica,sans-serif;color:#222;line-height:1.55;font-size:16px;">
   <h2 style="font-size:22px;margin:0 0 12px;">${cleanTitle}</h2>
-  <p style="margin:0 0 16px;">Review the highlights below to confirm this item is the right fit for your needs.</p>
+  <p style="margin:0 0 16px;">Review the highlights below for the item features, fit details, and included product information.</p>
   <h3 style="font-size:18px;margin:0 0 8px;">Highlights</h3>
   <ul style="margin:0 0 16px 20px;padding:0;">
 ${bulletHtml}
   </ul>${detailsHtml}
-  <p style="margin:0;">Please review the photos and listing details before purchase.</p>
+  <p style="margin:0;">Photos and listing details provide the final visual and fit information.</p>
 </div>`;
     }
     function optHost(value){ try { return new URL(value).hostname.replace(/^www\./,'').toLowerCase(); } catch (_) { return ''; } }
@@ -632,7 +632,7 @@ ${bulletHtml}
       if (sizeSpec) {
         if (/(?:^|\d|\s)(?:gb|tb)\b/i.test(sizeSpec)) push(`${optTitleCase(sizeSpec)} storage gives plenty of room for apps, photos, video, and everyday use`);
         else if (/\b(?:pack|pcs|piece|pieces|count)\b/i.test(sizeSpec)) push(`${optTitleCase(sizeSpec)} pack count provides the quantity needed for installation, replacement, or shared use`);
-        else push(`${optTitleCase(sizeSpec)} sizing helps confirm the right fit before purchase`);
+        else push(`${optTitleCase(sizeSpec)} sizing provides a defined dimension for compatible setups`);
       }
       if (materialSpec) push(/black/i.test(materialSpec) ? 'Black finish gives the installed hardware a clean, low-profile look' : `${optTitleCase(materialSpec)} construction supports everyday use`);
       if (materialPhrase && !materialSpec) push(`${optTitleCase(materialPhrase)} highlights a visible product feature or finish`);
@@ -673,20 +673,20 @@ ${bulletHtml}
       if (size) {
         if (/(?:^|\d|\s)(?:gb|tb)\b/i.test(size)) push(`${optTitleCase(size)} storage gives plenty of room for apps, photos, video, and everyday use`);
         else if (/\b(?:pack|pcs|piece|pieces|count)\b/i.test(size)) push(`${optTitleCase(size)} pack count provides the quantity needed for installation, replacement, or shared use`);
-        else push(`${optTitleCase(size)} sizing helps confirm the right fit before purchase`);
+        else push(`${optTitleCase(size)} sizing provides a defined dimension for compatible setups`);
       }
-      if (material) push(/black/i.test(material) ? 'Black finish gives the installed hardware a clean, low-profile look' : `${optTitleCase(material)} finish gives the ${optTitleCase(product)} a clean, ready-to-use look`);
-      if (compatibility) push(/^unlocked$/i.test(compatibility) ? 'Unlocked carrier support works with compatible networks' : `Fits ${compatibility} for easier fit confirmation`);
-      if (included) push(`Includes ${included} so the main components are ready for installation or use`);
       const wheelSize = (titleSource.match(/\b\d+(?:\.\d+)?\s?[xÃ—]\s?\d+(?:\.\d+)?\b/i) || [''])[0];
       const boltPattern = (titleSource.match(/\b\d\s?[xÃ—]\s?\d{3}(?:\.\d+)?\b/i) || [''])[0];
       const offset = (titleSource.match(/\b\d\s?\+\s?\d\b/i) || [''])[0];
-      if (wheelSize && !size) push(`${wheelSize.replace(/\s+/g, '')} sizing helps confirm the right wheel dimensions before purchase`);
-      if (/\bbeadlock\b/i.test(titleSource)) push(/single beadlock/i.test(titleSource) ? 'Single beadlock design gives shoppers a clear wheel-construction detail before checkout' : 'Beadlock design gives shoppers a clear wheel-construction detail before checkout');
-      if (/\bfront wheel\b/i.test(titleSource)) push('Front wheel placement helps shoppers match the wheel to the intended position');
-      else if (/\brear wheel\b/i.test(titleSource)) push('Rear wheel placement helps shoppers match the wheel to the intended position');
-      if (offset) push(`${offset.replace(/\s+/g, '')} offset helps shoppers compare fitment against their setup`);
-      if (boltPattern) push(`${boltPattern.replace(/\s+/g, '')} bolt pattern helps shoppers verify compatibility before ordering`);
+      if (wheelSize && !size) push(`${wheelSize.replace(/\s+/g, '')} sizing provides a defined wheel dimension for compatible setups`);
+      if (/\bbeadlock\b/i.test(titleSource)) push(/single beadlock/i.test(titleSource) ? 'Single beadlock design supports secure tire seating for off-road use' : 'Beadlock design supports secure tire seating for off-road use');
+      if (/\bfront wheel\b/i.test(titleSource)) push('Front wheel placement matches front-position ATV wheel applications');
+      else if (/\brear wheel\b/i.test(titleSource)) push('Rear wheel placement matches rear-position ATV wheel applications');
+      if (offset) push(`${offset.replace(/\s+/g, '')} offset defines the wheel stance for compatible ATV setups`);
+      if (boltPattern) push(`${boltPattern.replace(/\s+/g, '')} bolt pattern supports matching hubs with the same lug layout`);
+      if (material) push(/black/i.test(material) ? 'Black finish gives the installed hardware a clean, low-profile look' : `${optTitleCase(material)} finish gives the ${optTitleCase(product)} a clean, ready-to-use look`);
+      if (compatibility) push(/^unlocked$/i.test(compatibility) ? 'Unlocked carrier support works with compatible networks' : `Fits ${compatibility} for compatible applications`);
+      if (included) push(`Includes ${included} so the main components are ready for installation or use`);
       fallbackBullets.forEach(push);
       return bullets.slice(0, 5);
     }

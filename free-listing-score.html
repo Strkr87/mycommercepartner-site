@@ -571,7 +571,7 @@
         if (candidates.some(item => item.key === key)) return;
         candidates.push({label, body: text.endsWith('.') ? text : `${text}.`, key});
       }
-      if (sizeSpec) push('Clear Fit', `${titleCase(sizeSpec)} helps you check fit, coverage, or capacity before ordering.`);
+      if (sizeSpec) push('Clear Fit', `${titleCase(sizeSpec)} provides defined fit, coverage, or capacity details.`);
       if (materialSpec || materialPhrase) push('Built for the Job', `${titleCase(materialSpec || materialPhrase)} gives you a clear build detail so you know what will arrive.`);
       if (usePhrase) {
         const useBase = usePhrase.split(/\.\s*/).find(part => /block|protect|cover|privacy|dust|wind|debris|echo|sound|noise/i.test(part)) || usePhrase;

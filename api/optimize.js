@@ -143,7 +143,7 @@ function factBullets(data) {
     } else if (/\b(?:pack|pcs|piece|pieces|count)\b/i.test(exact.storageSize)) {
       lines.push(`${exact.storageSize} pack count provides the quantity needed for installation, replacement, or shared use`);
     } else {
-      lines.push(`${exact.storageSize} sizing helps confirm the right fit before purchase`);
+      lines.push(`${exact.storageSize} sizing provides a defined dimension for compatible setups`);
     }
   }
   if (exact.materialFeature) {
@@ -154,7 +154,7 @@ function factBullets(data) {
   if (exact.compatibility) {
     lines.push(/^unlocked$/i.test(exact.compatibility)
       ? "Unlocked carrier support works with compatible networks"
-      : `Fits ${exact.compatibility} for easier fit confirmation`);
+      : `Fits ${exact.compatibility} for compatible applications`);
   }
   if (exact.included) {
     lines.push(`Includes ${exact.included} so the main components are ready for installation or use`);
@@ -185,24 +185,24 @@ function sourcedCustomerBullets(data, existing = []) {
     candidates.push(cleaned);
   };
 
-  if (exact.model && !/^\d{9,15}$/.test(exact.model)) add(`${exact.model} model details help buyers confirm they are choosing the right ${product}`);
-  if (exact.storageSize) add(`${exact.storageSize} details make it easier to confirm size, capacity, or quantity before checkout`);
-  if (exact.materialFeature) add(`${exact.materialFeature} details give shoppers a clear sense of the material, finish, or visible product feature`);
-  if (exact.compatibility) add(`Compatibility with ${exact.compatibility} helps buyers confirm fit before purchase`);
-  if (exact.included) add(`Included ${exact.included} lets shoppers see what comes with the order at a glance`);
+  if (exact.model && !/^\d{9,15}$/.test(exact.model)) add(`${exact.model} model identifies the right ${product} version`);
+  if (exact.storageSize) add(`${exact.storageSize} details define size, capacity, or quantity for compatible setups`);
+  if (exact.materialFeature) add(`${exact.materialFeature} details show the material, finish, or visible product feature`);
+  if (exact.compatibility) add(`Compatibility with ${exact.compatibility} supports matching the item to compatible applications`);
+  if (exact.included) add(`Included ${exact.included} shows what comes with the order at a glance`);
   if (exact.shippingReturns) add(`${exact.shippingReturns} information helps set clear delivery and return expectations`);
 
   if (/\b(?:easy|simple|quick|tool-free|ready to use|install|installation|setup)\b/i.test(source)) {
-    add(`${titleCase(product)} setup details help shoppers understand how it fits into everyday use`);
+    add(`${titleCase(product)} setup details support everyday installation or use`);
   }
   if (/\b(?:durable|heavy duty|stainless|steel|aluminum|carbon|composite|reinforced|mesh)\b/i.test(source)) {
-    add(`Durable construction details help shoppers compare build quality before purchase`);
+    add(`Durable construction details highlight build quality for regular use`);
   }
   if (/\b(?:compact|lightweight|portable|low-profile|small|travel)\b/i.test(source)) {
-    add(`Compact or lightweight design details help shoppers picture where the ${product} will fit`);
+    add(`Compact or lightweight design fits spaces where the ${product} needs a smaller footprint`);
   }
   if (/\b(?:clean|protect|protection|cover|shade|filter|support|secure|replacement)\b/i.test(source)) {
-    add(`${titleCase(product)} features are presented around the practical benefit shoppers are trying to solve`);
+    add(`${titleCase(product)} features focus on the practical protection, support, or replacement need`);
   }
 
   return candidates
@@ -493,7 +493,7 @@ function buildEbayDescriptionHtml(title, bulletItems, specifics, exact, data) {
     .filter((line, index, arr) => arr.findIndex((item) => item.toLowerCase() === line.toLowerCase()) === index)
     .slice(0, 9);
 
-  const highlightHtml = (bulletItems.length ? bulletItems : [`${compactProductType(data)} details are organized so buyers can confirm fit and use quickly.`])
+  const highlightHtml = (bulletItems.length ? bulletItems : [`${compactProductType(data)} details are organized for quick fit and use review.`])
     .map((line) => `    <li>${htmlEscape(line)}</li>`)
     .join("\n");
   const detailHtml = detailLines.length
@@ -502,12 +502,12 @@ function buildEbayDescriptionHtml(title, bulletItems, specifics, exact, data) {
 
   return `<div style="font-family:Arial,Helvetica,sans-serif;color:#222;line-height:1.55;font-size:16px;">
   <h2 style="font-size:22px;margin:0 0 12px;">${htmlEscape(title)}</h2>
-  <p style="margin:0 0 16px;">Review the highlights below to confirm this item is the right fit for your needs.</p>
+  <p style="margin:0 0 16px;">Review the highlights below for the item features, fit details, and included product information.</p>
   <h3 style="font-size:18px;margin:0 0 8px;">Highlights</h3>
   <ul style="margin:0 0 16px 20px;padding:0;">
 ${highlightHtml}
   </ul>${detailHtml}
-  <p style="margin:0;">Please review the photos and listing details before purchase.</p>
+  <p style="margin:0;">Photos and listing details provide the final visual and fit information.</p>
 </div>`;
 }
 
@@ -577,7 +577,7 @@ function buildResult(data) {
     exact.shippingReturns && `Shipping / returns: ${exact.shippingReturns}`,
     exact.condition && `Condition: ${exact.condition}`
   ].filter(Boolean).map((x) => `- ${x}`).join("\n");
-  const description = `${title}. Clear product facts are shown up front so buyers can confirm fit, contents, and checkout expectations quickly.\n\nExact facts:\n${exactFactLines || "- Add model, size, compatibility, included items, shipping, and condition details for a stronger description."}${battery ? `\n- Battery health: ${battery}` : ""}\n\nCondition note:\n${notes}.\n\nIncluded:\n${included}.\n\nHighlights:\n${bulletItems.map((x) => `- ${x}`).join("\n")}\n\nItem specifications:\n${specificationLines}\n\nShipping and support:\n${exact.shippingReturns || data.shipping || "Calculated at checkout"}.\n\nPlease review photos carefully and message with any fit, compatibility, or condition questions before purchase.`;
+  const description = `${title}. Clear product facts are shown up front with fit details, included items, and delivery or return information.\n\nExact facts:\n${exactFactLines || "- Add model, size, compatibility, included items, shipping, and condition details for a stronger description."}${battery ? `\n- Battery health: ${battery}` : ""}\n\nCondition note:\n${notes}.\n\nIncluded:\n${included}.\n\nHighlights:\n${bulletItems.map((x) => `- ${x}`).join("\n")}\n\nItem specifications:\n${specificationLines}\n\nShipping and support:\n${exact.shippingReturns || data.shipping || "Calculated at checkout"}.\n\nPhotos show the visual condition, fit details, and included item context.`;
   const descriptionHtml = buildEbayDescriptionHtml(title, bulletItems, specifics, exact, data);
 
   const actions = [
