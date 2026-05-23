@@ -6,8 +6,9 @@ const { lookupEbayShoppingApi } = require('../api/_lib/ebay-item-lookup');
 test('eBay Shopping API fallback returns usable listing data by item id', async () => {
   const calls = [];
   const result = await lookupEbayShoppingApi('336568843381', { clientId: 'test-app-id' }, {
-    fetch: async (url) => {
-      calls.push(String(url));
+    accessToken: 'test-access-token',
+    fetch: async (url, options = {}) => {
+      calls.push({ url: String(url), headers: options.headers || {} });
       return {
         ok: true,
         status: 200,
@@ -43,6 +44,7 @@ test('eBay Shopping API fallback returns usable listing data by item id', async 
   assert.equal(result.price, 'USD 39.99');
   assert.equal(result.category, 'Garden & Patio Shade');
   assert.deepEqual(result.itemSpecifics, ['Brand: ShadeCo', 'Material: Mesh']);
-  assert.match(calls[0], /open\.api\.ebay\.com\/shopping/);
-  assert.match(calls[0], /ItemID=336568843381/);
+  assert.match(calls[0].url, /open\.api\.ebay\.com\/shopping/);
+  assert.match(calls[0].url, /ItemID=336568843381/);
+  assert.equal(calls[0].headers['X-EBAY-API-IAF-TOKEN'], 'test-access-token');
 });

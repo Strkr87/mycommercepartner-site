@@ -189,6 +189,49 @@ test('lookupEbayBrowseApi can recover failed legacy lookup from item summary sea
   assert.match(result.description, /Vacuum Cleaners/);
 });
 
+test('lookupEbayBrowseApi passes OAuth token to Shopping API fallback', async () => {
+  const shoppingCalls = [];
+  const mockFetch = async (url, options = {}) => {
+    const rawUrl = String(url);
+    if (rawUrl.includes('/identity/v1/oauth2/token')) {
+      return { ok: true, status: 200, json: async () => ({ access_token: 'test-token' }) };
+    }
+    if (rawUrl.includes('/buy/browse/v1/')) {
+      return rawUrl.includes('item_summary/search')
+        ? { ok: true, status: 200, json: async () => ({ itemSummaries: [] }) }
+        : { ok: false, status: 404, json: async () => ({ errors: [{ message: 'The item cannot be accessed.' }] }) };
+    }
+    if (rawUrl.includes('open.api.ebay.com/shopping')) {
+      shoppingCalls.push({ url: rawUrl, headers: options.headers || {} });
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          Ack: 'Success',
+          Item: {
+            ItemID: '336568843381',
+            Title: 'Outdoor Sun Shade Mesh Tarp 10 x 12 ft',
+            PrimaryCategoryName: 'Garden & Patio Shade',
+            ConditionDisplayName: 'New',
+            ConvertedCurrentPrice: { Value: '39.99', CurrencyID: 'USD' }
+          }
+        })
+      };
+    }
+    return { ok: false, status: 404, json: async () => ({}) };
+  };
+  const result = await lookupEbayBrowseApi('336568843381', {
+    fetch: mockFetch,
+    env: { EBAY_CLIENT_ID: 'client-id', EBAY_CLIENT_SECRET: 'client-secret', EBAY_MARKETPLACE_ID: 'EBAY_US' }
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.source, 'ebay-shopping-api');
+  assert.equal(result.title, 'Outdoor Sun Shade Mesh Tarp 10 x 12 ft');
+  assert.equal(shoppingCalls.length, 1);
+  assert.equal(shoppingCalls[0].headers['X-EBAY-API-IAF-TOKEN'], 'test-token');
+});
+
 test('searchEbayBrowseApi searches a real model query and returns usable marketplace facts', async () => {
   const calls = [];
   const mockFetch = async (url, options = {}) => {

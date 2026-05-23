@@ -532,6 +532,7 @@ async function lookupEbayShoppingApi(itemId, credentials, options = {}) {
   if (!credentials?.clientId) return { ok: false, source: 'ebay-shopping-api', reason: 'missing-credentials' };
   const fetchImpl = options.fetch || global.fetch;
   if (typeof fetchImpl !== 'function') return { ok: false, source: 'ebay-shopping-api', reason: 'fetch-unavailable' };
+  const accessToken = String(options.accessToken || '').trim();
 
   try {
     const params = new URLSearchParams({
@@ -545,7 +546,10 @@ async function lookupEbayShoppingApi(itemId, credentials, options = {}) {
     });
     const response = await fetchWithTimeout(fetchImpl, `https://open.api.ebay.com/shopping?${params.toString()}`, {
       method: 'GET',
-      headers: { Accept: 'application/json' }
+      headers: {
+        Accept: 'application/json',
+        ...(accessToken ? { 'X-EBAY-API-IAF-TOKEN': accessToken } : {})
+      }
     }, options.timeoutMs || 8000);
     const data = await response.json().catch(() => ({}));
     const item = data.Item || data.item;
@@ -629,7 +633,7 @@ async function lookupEbayBrowseApi(itemId, options = {}) {
       }
     }
 
-    const shoppingResult = await lookupEbayShoppingApi(itemId, credentials, options);
+    const shoppingResult = await lookupEbayShoppingApi(itemId, credentials, { ...options, accessToken: tokenData.access_token });
     if (shoppingResult.ok && shoppingResult.title) return shoppingResult;
 
     const findingResult = await lookupEbayFindingApi(itemId, credentials, options);
