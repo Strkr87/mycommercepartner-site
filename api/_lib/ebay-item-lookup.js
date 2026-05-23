@@ -183,8 +183,8 @@ function getEbayCredentials(env = process.env) {
 function formatAmount(value) {
   if (!value) return '';
   if (typeof value === 'string') return cleanField(value, 80);
-  const amount = value.value || value.convertedFromValue || '';
-  const currency = value.currency || value.convertedFromCurrency || '';
+  const amount = value.value || value.Value || value.convertedFromValue || '';
+  const currency = value.currency || value.CurrencyID || value['@currencyId'] || value.convertedFromCurrency || '';
   return cleanField([currency, amount].filter(Boolean).join(' '), 80);
 }
 
@@ -349,6 +349,70 @@ function buildBrowseDetailBundle(item, itemId) {
   };
 }
 
+function buildShoppingDetailBundle(item = {}, itemId = '') {
+  const specifics = [];
+  const rawSpecifics = item.ItemSpecifics?.NameValueList || item.ItemSpecifics || [];
+  for (const entry of Array.isArray(rawSpecifics) ? rawSpecifics : []) {
+    const name = cleanField(entry.Name || entry.name, 60);
+    const values = Array.isArray(entry.Value) ? entry.Value : (Array.isArray(entry.value) ? entry.value : [entry.Value || entry.value]);
+    const value = cleanField(values.filter(Boolean).join(', '), 120);
+    if (name && value) specifics.push(`${name}: ${value}`);
+  }
+
+  const title = cleanField(item.Title || item.title, 240);
+  const category = cleanField(item.PrimaryCategoryName || item.PrimaryCategoryID || '', 180);
+  const condition = cleanField(item.ConditionDisplayName || item.ConditionDescription || item.ConditionID || '', 120);
+  const price = cleanField(formatAmount(item.ConvertedCurrentPrice || item.CurrentPrice || item.MinimumToBid), 80);
+  const seller = cleanField([
+    item.Seller?.UserID && `Seller: ${item.Seller.UserID}`,
+    item.Seller?.PositiveFeedbackPercent && `${item.Seller.PositiveFeedbackPercent}% positive`,
+    item.Seller?.FeedbackScore && `${item.Seller.FeedbackScore} feedback`
+  ].filter(Boolean).join(', '), 180);
+  const location = cleanField([item.Location, item.PostalCode, item.Country].filter(Boolean).join(', '), 160);
+  const shippingCost = item.ShippingCostSummary?.ShippingServiceCost || item.ShippingDetails?.ShippingServiceOptions?.[0]?.ShippingServiceCost;
+  const shipping = cleanField(formatAmount(shippingCost), 180);
+  const returns = cleanField(item.ReturnPolicy?.ReturnsAccepted || item.ReturnPolicy?.ReturnsWithin || '', 180);
+  const subtitle = cleanField(item.Subtitle || item.Description || '', 500);
+  const image = cleanField(item.PictureURL?.[0] || item.GalleryURL || item.ViewItemURLForNaturalSearch || '', 500);
+  const buyingOptions = cleanField(item.ListingType || item.BuyItNowAvailable && 'Buy It Now' || '', 120);
+
+  const detailLines = [
+    title && `Title: ${title}`,
+    category && `Category: ${category}`,
+    condition && `Condition: ${condition}`,
+    price && `Price: ${price}`,
+    buyingOptions && `Listing type: ${buyingOptions}`,
+    seller,
+    location && `Item location: ${location}`,
+    shipping && `Shipping: ${shipping}`,
+    returns && `Returns: ${returns}`,
+    subtitle && `Listing notes: ${subtitle}`,
+    specifics.length ? `Item specifics: ${specifics.slice(0, 12).join('; ')}` : ''
+  ].filter(Boolean);
+
+  return {
+    ok: Boolean(title && detailLines.length >= 2),
+    source: 'ebay-shopping-api',
+    itemId,
+    title,
+    productType: category || 'eBay listing',
+    category,
+    condition,
+    price,
+    buyingOptions,
+    availability: '',
+    seller: cleanField(seller.replace(/^Seller:\s*/i, ''), 180),
+    itemLocation: location,
+    shipping,
+    returnTerms: returns,
+    subtitle,
+    image,
+    itemSpecifics: specifics.slice(0, 20),
+    description: cleanField(detailLines.join(' | '), 1200),
+    detailCount: detailLines.length + specifics.length
+  };
+}
+
 function itemMatchesLegacyId(item = {}, itemId = '') {
   const legacyId = String(item.legacyItemId || item.itemId || '').trim();
   if (legacyId === itemId) return true;
@@ -464,6 +528,42 @@ async function resolveEbayItemUrl(value, options = {}) {
   }
 }
 
+async function lookupEbayShoppingApi(itemId, credentials, options = {}) {
+  if (!credentials?.clientId) return { ok: false, source: 'ebay-shopping-api', reason: 'missing-credentials' };
+  const fetchImpl = options.fetch || global.fetch;
+  if (typeof fetchImpl !== 'function') return { ok: false, source: 'ebay-shopping-api', reason: 'fetch-unavailable' };
+
+  try {
+    const params = new URLSearchParams({
+      callname: 'GetSingleItem',
+      responseencoding: 'JSON',
+      appid: credentials.clientId,
+      siteid: '0',
+      version: '1199',
+      ItemID: itemId,
+      IncludeSelector: 'Details,Description,ItemSpecifics,ShippingCosts'
+    });
+    const response = await fetchWithTimeout(fetchImpl, `https://open.api.ebay.com/shopping?${params.toString()}`, {
+      method: 'GET',
+      headers: { Accept: 'application/json' }
+    }, options.timeoutMs || 8000);
+    const data = await response.json().catch(() => ({}));
+    const item = data.Item || data.item;
+    if (!response.ok || !item) {
+      return {
+        ok: false,
+        source: 'ebay-shopping-api',
+        reason: data.Errors?.[0]?.ShortMessage || data.Errors?.ShortMessage || 'no-item',
+        status: response.status
+      };
+    }
+    const bundle = buildShoppingDetailBundle(item, itemId);
+    return bundle.ok ? bundle : { ok: false, source: 'ebay-shopping-api', reason: 'no-usable-details' };
+  } catch (error) {
+    return { ok: false, source: 'ebay-shopping-api', reason: error?.name === 'AbortError' ? 'timeout' : 'request-failed' };
+  }
+}
+
 async function lookupEbayBrowseApi(itemId, options = {}) {
   const env = options.env || process.env;
   const credentials = getEbayCredentials(env);
@@ -526,6 +626,9 @@ async function lookupEbayBrowseApi(itemId, options = {}) {
         if (bundle.ok) return { ...bundle, source: 'ebay-api-search', marketplaceId };
       }
     }
+
+    const shoppingResult = await lookupEbayShoppingApi(itemId, credentials, options);
+    if (shoppingResult.ok && shoppingResult.title) return shoppingResult;
 
     const findingResult = await lookupEbayFindingApi(itemId, credentials, options);
     if (findingResult.ok && findingResult.title) return findingResult;
@@ -603,8 +706,10 @@ module.exports = {
   resolveEbayItemUrl,
   parseEbayItemHtml,
   lookupEbayBrowseApi,
+  lookupEbayShoppingApi,
   searchEbayBrowseApi,
   buildBrowseDetailBundle,
+  buildShoppingDetailBundle,
   buildFindingDetailBundle,
   getEbayCredentials
 };
