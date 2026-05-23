@@ -408,6 +408,58 @@
       if (brand) add(`${optTitleCase(brand)} brand name supports exact-match product searches`);
       return out;
     }
+    function optBuildEbayIntroParagraphs(title, productDetails){
+      const details = productDetails || [];
+      const productName = optClean(title).replace(/\s+-\s+\d{9,15}$/,'');
+      const value = labels => optDetailValue(details, labels);
+      const type = value(['Type', 'Product Detail']);
+      const model = value(['Model']);
+      const material = value(['Material', 'Wheel Material', 'Material / Feature']);
+      const construction = value(['Wheel Construction', 'Construction']);
+      const color = value(['Color', 'Finish']);
+      const machine = value(['Machine Type']);
+      const placement = value(['Placement on Vehicle']);
+      const boltPattern = value(['Bolt Pattern']);
+      const offset = value(['Offset']);
+      const diameter = value(['Wheel Diameter']);
+      const width = value(['Wheel Width']);
+      const size = value(['Size', 'Dimensions', 'Capacity', 'Coverage']);
+      const pack = value(['Pack Count', 'Quantity', 'Number of Items']);
+      const compatibility = value(['Compatibility', 'Compatible Brand', 'Compatible Model', 'Network', 'Carrier']);
+      const included = value(['Included', 'Included Accessories']);
+      const facts = [];
+      function addFact(text){
+        const clean = optClean(text);
+        if (!clean) return;
+        if (/\b(?:product id|item id|ebay item id|condition|seller|price|shipping|returns?|notes|sku)\b/i.test(clean)) return;
+        if (facts.some(item => optProductWordKey(item) === optProductWordKey(clean))) return;
+        facts.push(clean);
+      }
+      addFact(type && `${type.toLowerCase()} design`);
+      addFact(model && `${model} model`);
+      addFact(construction && `${construction.toLowerCase()} construction`);
+      addFact(material && `${material.toLowerCase()} material`);
+      addFact(color && `${color.toLowerCase()} finish`);
+      addFact(machine && `for ${machine} applications`);
+      addFact(placement && `${placement.toLowerCase()} placement`);
+      addFact(boltPattern && `${boltPattern} bolt pattern`);
+      addFact(offset && `${offset} offset`);
+      if (diameter || width) addFact(`${[diameter && `${diameter} diameter`, width && `${width} width`].filter(Boolean).join(' and ')}`);
+      addFact(size && `${size} sizing`);
+      addFact(pack && `${pack} quantity`);
+      addFact(compatibility && `${compatibility} compatibility`);
+      const firstFacts = facts.slice(0, 4);
+      const intro = firstFacts.length
+        ? `${productName} is listed with ${optNaturalList(firstFacts)}, giving shoppers the key fit and feature details up front.`
+        : `${productName} is presented with the visible listing details organized for a faster buyer review.`;
+      const secondParts = [];
+      if (included) secondParts.push(`Included ${included} helps clarify what arrives with the order`);
+      if (compatibility) secondParts.push(`${compatibility} compatibility helps buyers confirm fit before checkout`);
+      if (boltPattern || offset || placement) secondParts.push('fitment details are highlighted so buyers can compare the listing against their setup');
+      if (size || diameter || width || pack) secondParts.push('size and quantity details are easy to scan before purchase');
+      if (!secondParts.length) secondParts.push('the highlights and product details below keep the most useful listing information easy to scan');
+      return [intro, `${optNaturalList(secondParts.slice(0, 2))}.`].map(item => item.replace(/\.\./g,'.'));
+    }
     function optBuildEbayDescriptionHtml({title, bullets, productDetails}){
       const cleanTitle = optHtmlText(title);
       const mergedBullets = [];
@@ -454,9 +506,12 @@
       const detailsHtml = cleanDetails.length
         ? `\n  <h3 style="font-size:18px;margin:18px 0 8px;">Product Details</h3>\n  <ul style="margin:0 0 16px 20px;padding:0;">\n${cleanDetails.map(item => `    <li>${item}</li>`).join('\n')}\n  </ul>`
         : '';
+      const introHtml = optBuildEbayIntroParagraphs(title, productDetails)
+        .map(item => `  <p style="margin:0 0 12px;">${optHtmlText(item)}</p>`)
+        .join('\n');
       return `<div style="font-family:Arial,Helvetica,sans-serif;color:#222;line-height:1.55;font-size:16px;">
   <h2 style="font-size:22px;margin:0 0 12px;">${cleanTitle}</h2>
-  <p style="margin:0 0 16px;">Review the highlights below for the item features, fit details, and included product information.</p>
+${introHtml}
   <h3 style="font-size:18px;margin:0 0 8px;">Highlights</h3>
   <ul style="margin:0 0 16px 20px;padding:0;">
 ${bulletHtml}
@@ -647,7 +702,7 @@ ${bulletHtml}
         if (/\b\d+(?:\.\d+)?[\s-]?(?:oz|lb|lbs|gallon|quart|mm|cm|m|ft|feet|in|inch)\b/i.test(spec)) return `Size: ${optTitleCase(spec)}`;
         return `Product Detail: ${optTitleCase(spec)}`;
       });
-      return optDedupe(named.concat(fallback)).slice(0,12);
+      return optDedupe(named.concat(fallback)).slice(0,16);
     }
     function optBuildKeywordIdeas({marketplace, keyword, productType, specs, useCases, phrases, source, productDetails}){
       const product = optTitleCase(optCustomerProductName(productType || keyword || 'item', optDetailValue(productDetails, ['Brand']))).replace(/\bItem$/i, '').trim() || optTitleCase(keyword || productType || 'item');

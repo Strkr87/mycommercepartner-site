@@ -448,8 +448,13 @@ test('homepage optimizer prioritizes eBay item specifics over marketplace metada
   assert.match(details, /Bolt Pattern: 4x156/);
   assert.match(details, /Wheel Diameter: 10/);
   assert.doesNotMatch(details, /Price: USD 275\.00|Category: eBay Motors/i);
+  assert.match(result.ebayHtml, /<h2[^>]*>HiPer ATV TECH 3/);
+  assert.match(result.ebayHtml, /<p[^>]*>HiPer ATV TECH 3[\s\S]*Wheel design[\s\S]*Tech 3 model[\s\S]*Single Beadlock construction[\s\S]*ATV applications[\s\S]*<\/p>/i);
+  assert.match(result.ebayHtml, /<p[^>]*>fitment details are highlighted[\s\S]*size and quantity details are easy to scan/i);
   assert.match(result.ebayHtml, /<li>Machine Type: ATV<\/li>/);
   assert.match(result.ebayHtml, /<li>Bolt Pattern: 4x156<\/li>/);
+  assert.ok(result.ebayHtml.indexOf('<p') < result.ebayHtml.indexOf('<h3 style="font-size:18px;margin:0 0 8px;">Highlights</h3>'));
+  assert.doesNotMatch(result.ebayHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/i)?.[1] || '', /Product ID|Condition|Price|Seller/i);
 });
 
 test('homepage product details remove marketplace noise from eBay lookup text', () => {
