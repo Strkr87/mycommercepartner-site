@@ -468,6 +468,25 @@ test('homepage eBay product description does not repeat equivalent dimension bul
   assert.equal(materialBullets.length, 1, bulletLines.join('\n'));
 });
 
+test('homepage eBay product description builds five bullets from sparse URL-only acoustic listings', () => {
+  const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
+  const result = buildHomeOptimizer(makeFormData({
+    siteUrl: 'https://www.ebay.com/itm/336568091037',
+    currentTitle: '12 Pack White Acoustic Wall Panels 12 x 12 x .4 Sound Absorbing Tiles Non-Toxic',
+    productType: 'Musical Instruments & Gear|Pro Audio Equipment|Acoustical Treatments',
+    currentCopy: 'Product ID: 336568091037\nCategory: Musical Instruments & Gear|Pro Audio Equipment|Acoustical Treatments\nCondition: New\nPrice: USD 43.65\nShipping: Overnight shipping - One-day Shipping - USD 0.00\nReturns: Returns accepted',
+    targetKeyword: '',
+    goal: '',
+    revenue: ''
+  }));
+
+  const highlights = result.ebayHtml.match(/<h3[^>]*>Highlights<\/h3>\s*<ul[^>]*>([\s\S]*?)<\/ul>/i)?.[1] || '';
+  const bulletLines = [...highlights.matchAll(/<li>(.*?)<\/li>/g)].map(match => match[1]);
+  assert.equal(bulletLines.length, 5);
+  assert.doesNotMatch(bulletLines.join(' '), /wheel dimension|Product ID|Condition:|SKU|MPN|Seller|Price|Notes:/i);
+  assert.match(bulletLines.join(' '), /12x12|White|Sound absorbing|12 Pack|Panel format|Tile format|Non-toxic/i);
+});
+
 test('homepage eBay product description shows five direct customer-facing bullets from visible title facts', () => {
   const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
   const result = buildHomeOptimizer(makeFormData({
