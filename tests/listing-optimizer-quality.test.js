@@ -413,6 +413,45 @@ test('homepage optimizer carries eBay item specifics into product details', () =
   assert.match(result.ebayHtml, /<li>Item Thickness: 0\.4 in<\/li>/);
 });
 
+test('homepage optimizer prioritizes eBay item specifics over marketplace metadata', () => {
+  const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
+  const result = buildHomeOptimizer(makeFormData({
+    siteUrl: 'https://www.ebay.com/itm/395645632216',
+    currentTitle: 'HiPer ATV TECH 3 Single Beadlock Front Wheel 10x5, 4+1, 4x156 - 1050-YPFF-SBL-BK',
+    productType: 'eBay Motors|Parts & Accessories|Wheels, Tires & Parts|Wheels',
+    currentCopy: [
+      'Product ID: 395645632216',
+      'Machine Type: ATV',
+      'Placement on Vehicle: Front Wheel',
+      'Manufacturer Part Number: 1050-YPFF-SBL-BK',
+      'OE/OEM Part Number: 1050-YPFF-SBL-BK',
+      'Bolt Pattern: 4x156',
+      'Offset: 4+1',
+      'Type: Wheel',
+      'Wheel Diameter: 10',
+      'Wheel Width: 5',
+      'Model: Tech 3',
+      'Wheel Construction: Single Beadlock',
+      'Category: eBay Motors|Parts & Accessories|Wheels',
+      'Condition: New',
+      'Price: USD 275.00',
+      'Shipping: Free shipping'
+    ].join('\n'),
+    targetKeyword: '',
+    goal: '',
+    revenue: ''
+  }));
+
+  const details = Array.from(result.productDetails).join('\n');
+  assert.match(details, /Machine Type: ATV/);
+  assert.match(details, /Manufacturer Part Number: 1050-YPFF-SBL-BK/);
+  assert.match(details, /Bolt Pattern: 4x156/);
+  assert.match(details, /Wheel Diameter: 10/);
+  assert.doesNotMatch(details, /Price: USD 275\.00|Category: eBay Motors/i);
+  assert.match(result.ebayHtml, /<li>Machine Type: ATV<\/li>/);
+  assert.match(result.ebayHtml, /<li>Bolt Pattern: 4x156<\/li>/);
+});
+
 test('homepage product details remove marketplace noise from eBay lookup text', () => {
   const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
   const result = buildHomeOptimizer(makeFormData({

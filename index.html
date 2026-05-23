@@ -447,7 +447,7 @@
         });
       }
       const cleanBullets = mergedBullets.map(optHtmlText).filter(Boolean).slice(0, 5);
-      const cleanDetails = (productDetails || []).filter(optIsCustomerDetail).map(optHtmlText).filter(Boolean).slice(0, 8);
+      const cleanDetails = (productDetails || []).filter(optIsCustomerDetail).map(optHtmlText).filter(Boolean).slice(0, 12);
       const bulletHtml = cleanBullets.length
         ? cleanBullets.map(item => `    <li>${item}</li>`).join('\n')
         : '    <li>Key product details are organized for quick fit and use review.</li>';
@@ -548,13 +548,13 @@ ${bulletHtml}
           const itemSpecifics = Array.isArray(data.itemSpecifics) ? data.itemSpecifics : [];
           const details = [
             data.itemId && `Product ID: ${data.itemId}`,
+            ...itemSpecifics,
             data.category && `Category: ${data.category}`,
             data.condition && `Condition: ${data.condition}`,
-            data.price && `Price: ${data.price}`,
-            data.image && `Photo: ${data.image}`,
             data.shipping && `Shipping: ${data.shipping}`,
             data.returnTerms && `Returns: ${data.returnTerms}`,
-            ...itemSpecifics,
+            data.price && `Price: ${data.price}`,
+            data.image && `Photo: ${data.image}`,
             data.subtitle && `Notes: ${data.subtitle}`,
             data.description
           ].filter(Boolean).join('\n');
@@ -647,7 +647,7 @@ ${bulletHtml}
         if (/\b\d+(?:\.\d+)?[\s-]?(?:oz|lb|lbs|gallon|quart|mm|cm|m|ft|feet|in|inch)\b/i.test(spec)) return `Size: ${optTitleCase(spec)}`;
         return `Product Detail: ${optTitleCase(spec)}`;
       });
-      return optDedupe(named.concat(fallback)).slice(0,6);
+      return optDedupe(named.concat(fallback)).slice(0,12);
     }
     function optBuildKeywordIdeas({marketplace, keyword, productType, specs, useCases, phrases, source, productDetails}){
       const product = optTitleCase(optCustomerProductName(productType || keyword || 'item', optDetailValue(productDetails, ['Brand']))).replace(/\bItem$/i, '').trim() || optTitleCase(keyword || productType || 'item');
@@ -983,14 +983,15 @@ ${bulletHtml}
       const sourceTitle = currentTitle || urlClue.title;
       const enteredProductType = optClean(data.get('productType'));
       const enteredKeyword = optClean(data.get('targetKeyword'));
-      const details = optClean(data.get('currentCopy'));
+      const rawDetails = String(data.get('currentCopy') || '');
+      const details = optClean(rawDetails);
       const hasFullDetails = Boolean(currentTitle || details || enteredProductType || enteredKeyword);
       const hasCustomerFacingSeed = Boolean(sourceTitle || details || enteredProductType || enteredKeyword);
       const productType = optInferProduct({title: `${sourceTitle} ${details}`, productType: enteredProductType, keyword: enteredKeyword, host});
       const keyword = enteredKeyword || productType;
       const source = `${sourceTitle} ${productType} ${keyword} ${details}`;
       const specs = optExtractSpecs(source);
-      const productDetails = hasCustomerFacingSeed ? optExtractProductDetails({text: details, specs, title: sourceTitle, url}) : [];
+      const productDetails = hasCustomerFacingSeed ? optExtractProductDetails({text: rawDetails || details, specs, title: sourceTitle, url}) : [];
       const phrases = optDedupe(optPhrases(details).concat(optPhrases(sourceTitle))).filter(item => item.length > 3);
       const brand = optExtractBrand(sourceTitle);
       let useCases = optDedupe(['work','gym','travel','patio','garden','office','home','camping','pets','fence','jobsite'].filter(item => source.toLowerCase().includes(item))).slice(0,4);
