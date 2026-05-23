@@ -738,7 +738,16 @@ ${bulletHtml}
       fallbackBullets.forEach(push);
       return bullets.slice(0, 5);
     }
-    function optBuildTitle({marketplace, brand, productType, specs, useCases, keyword, sourceTitle}){
+    function optAppendEbayProductId(title, productId, max){
+      const id = optClean(productId).replace(/^Product ID:\s*/i, '').trim();
+      if (!id) return optCap(title, max);
+      const suffix = ` - ${id}`;
+      const cleanTitle = optClean(title).replace(new RegExp(`\\s+-\\s+${id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i'), '');
+      if (`${cleanTitle}${suffix}`.length <= max) return `${cleanTitle}${suffix}`;
+      const base = cleanTitle.slice(0, max - suffix.length).replace(/\s+\S*$/,'').replace(/[,-]\s*$/,'').trim();
+      return `${base}${suffix}`.trim();
+    }
+    function optBuildTitle({marketplace, brand, productType, specs, useCases, keyword, sourceTitle, productId}){
       const cleanBrand = optTitleCase(brand).replace(/\b(?:Amazon|Ebay|eBay)\b/g, '').trim();
       const titleSeed = optCleanTitleSeed(sourceTitle, cleanBrand);
       const product = optTitleCase(productType).replace(/^(?:Amazon|eBay) Listing$/i, 'Product');
@@ -756,7 +765,8 @@ ${bulletHtml}
         const next = title ? `${title} ${part}` : part;
         if (next.length <= max) title = next;
       }
-      return optCap(title || optTitleCase(parts.filter(Boolean).join(' ')), max);
+      const capped = optCap(title || optTitleCase(parts.filter(Boolean).join(' ')), max);
+      return marketplace === 'eBay' ? optAppendEbayProductId(capped, productId, max) : capped;
     }
     function optHasAny(source, terms){
       const text = optClean(source).toLowerCase();
@@ -861,7 +871,8 @@ ${bulletHtml}
         useCases = useCases.filter(item => !/^(?:home|office|garden|patio|pets|gym|camping)$/.test(item));
       }
       const sparseTitle = marketplace === 'eBay' ? 'Add Product Title for Stronger eBay Preview' : marketplace === 'Amazon' ? 'Add Product Title for Stronger Amazon Preview' : 'Add Product Title for Stronger Preview';
-      const optimizedTitle = hasCustomerFacingSeed ? optBuildTitle({marketplace, brand, productType, specs, useCases, keyword, sourceTitle}) : sparseTitle;
+      const productId = optDetailValue(productDetails, ['Product ID']);
+      const optimizedTitle = hasCustomerFacingSeed ? optBuildTitle({marketplace, brand, productType, specs, useCases, keyword, sourceTitle, productId}) : sparseTitle;
       const fallbackBullets = hasCustomerFacingSeed ? optBuildBenefitBullets({productType, specs, phrases, useCases}) : [];
       const bullets = hasCustomerFacingSeed ? optBuildExactBullets({productType, productDetails, fallbackBullets, sourceTitle}) : [];
       const ebayHtml = marketplace === 'eBay' && hasCustomerFacingSeed ? optBuildEbayDescriptionHtml({title: optimizedTitle, bullets, productDetails}) : '';

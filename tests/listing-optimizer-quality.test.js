@@ -412,6 +412,23 @@ test('homepage product details remove marketplace noise from eBay lookup text', 
   assert.doesNotMatch(result.productDetails.join(' '), /Price|Seller|Buying Options|Item Location|Shipping|Feedback|Title:/i);
 });
 
+test('homepage eBay product description title keeps product ID at the end', () => {
+  const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
+  const result = buildHomeOptimizer(makeFormData({
+    siteUrl: 'https://www.ebay.com/itm/395248277355',
+    currentTitle: 'WindscreenSupplyCo Heavy Duty Mesh Tarp Sun Shade Cover 60-70% Blockage Black',
+    productType: 'Garden & Patio|Shade Sails & Tarps',
+    currentCopy: 'Material: Heavy Duty Mesh\nColor: Black\nCoverage: 60-70% Blockage',
+    targetKeyword: '',
+    goal: '',
+    revenue: ''
+  }));
+
+  assert.ok(result.optimizedTitle.length <= 80, result.optimizedTitle);
+  assert.match(result.optimizedTitle, / - 395248277355$/);
+  assert.match(result.ebayHtml, /<h2[^>]*>[^<]+ - 395248277355<\/h2>/);
+});
+
 test('homepage eBay product description shows five direct customer-facing bullets from visible title facts', () => {
   const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
   const result = buildHomeOptimizer(makeFormData({
