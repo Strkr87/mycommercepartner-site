@@ -13,6 +13,16 @@
       "permanent": true
     },
     {
+      "source": "/free-marketplace-review",
+      "destination": "/#optimizer",
+      "permanent": true
+    },
+    {
+      "source": "/free-marketplace-review.html",
+      "destination": "/#optimizer",
+      "permanent": true
+    },
+    {
       "source": "/website-reviews",
       "destination": "/#services",
       "permanent": true
