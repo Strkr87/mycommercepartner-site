@@ -211,6 +211,7 @@ test('lookupEbayBrowseApi enriches sparse Motors listings with Shopping API item
   assert.match(result.itemSpecifics.join('\n'), /Machine Type: ATV/);
   assert.match(result.itemSpecifics.join('\n'), /Manufacturer Part Number: 1050-YPFF-SBL-BK/);
   assert.match(result.itemSpecifics.join('\n'), /Bolt Pattern: 4x156/);
+  assert.match(result.itemSpecifics.join('\n'), /Wheel Material: Carbon Composite/);
   assert.equal(calls.length, 3);
 });
 

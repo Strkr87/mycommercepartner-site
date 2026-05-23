@@ -410,7 +410,7 @@
     }
     function optBuildEbayIntroParagraphs(title, productDetails){
       const details = productDetails || [];
-      const productName = optClean(title).replace(/\s+-\s+\d{9,15}$/,'');
+      const productName = optClean(title).replace(/\s+-\s+(?:\d{9,15}|[A-Z0-9][A-Z0-9-]{3,})$/i,'');
       const value = labels => optDetailValue(details, labels);
       const type = value(['Type', 'Product Detail']);
       const model = value(['Model']);
@@ -427,6 +427,23 @@
       const pack = value(['Pack Count', 'Quantity', 'Number of Items']);
       const compatibility = value(['Compatibility', 'Compatible Brand', 'Compatible Model', 'Network', 'Carrier']);
       const included = value(['Included', 'Included Accessories']);
+      const features = value(['Features']);
+      if (/\bwheel\b/i.test(type || productName) && (boltPattern || offset || diameter || width || machine)) {
+        const fitBits = [
+          diameter && width ? `${diameter}x${width} sizing` : size,
+          boltPattern && `${boltPattern} bolt pattern`,
+          offset && `${offset} offset`,
+          placement && placement.toLowerCase()
+        ].filter(Boolean);
+        const buildBits = [
+          material && `${material.toLowerCase()} construction`,
+          construction && `${construction.toLowerCase()} setup`,
+          color && `${color.toLowerCase()} finish`
+        ].filter(Boolean);
+        const intro = `${productName} is built for ${machine ? `${machine} ` : ''}setups that need ${optNaturalList(fitBits.slice(0, 4)) || 'clear wheel fitment details'}.`;
+        const support = `${buildBits.length ? `The ${optNaturalList(buildBits.slice(0, 3))} help you confirm the right look, fit, and tire setup before you buy` : 'The fitment details help you confirm the right match before you buy'}${features ? `, with ${features.toLowerCase()} for easier service and setup` : ''}.`;
+        return [intro, support].map(item => item.replace(/\.\./g,'.'));
+      }
       const facts = [];
       function addFact(text){
         const clean = optClean(text);
@@ -730,7 +747,7 @@ ${bulletHtml}
         if (/\b\d+(?:\.\d+)?[\s-]?(?:oz|lb|lbs|gallon|quart|mm|cm|m|ft|feet|in|inch)\b/i.test(spec)) return `Size: ${optTitleCase(spec)}`;
         return `Product Detail: ${optTitleCase(spec)}`;
       });
-      return optDedupe(named.concat(fallback)).slice(0,16);
+      return optDedupe(named.concat(fallback)).slice(0,20);
     }
     function optBuildKeywordIdeas({marketplace, keyword, productType, specs, useCases, phrases, source, productDetails}){
       const product = optTitleCase(optCustomerProductName(productType || keyword || 'item', optDetailValue(productDetails, ['Brand']))).replace(/\bItem$/i, '').trim() || optTitleCase(keyword || productType || 'item');

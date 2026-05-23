@@ -370,6 +370,12 @@ function inferEbayMotorsSpecificsFromTitle(title = '', category = '') {
   if (wheelSize[2]) add('Wheel Width', wheelSize[2]);
   if (/tech\s*3/i.test(source)) add('Model', 'Tech 3');
   if (/single beadlock/i.test(source)) add('Wheel Construction', 'Single Beadlock');
+  if (/\bhiper\b/i.test(source) && /tech\s*3/i.test(source)) {
+    add('Wheel Material', 'Carbon Composite');
+    add('Features', 'Modular 3-piece serviceable design');
+  }
+  if (/\b(?:-BK|black)\b/i.test(source)) add('Color', 'Black');
+  if (/1050-YPFF-SBL-BK/i.test(source)) add('Included', 'Wheel with black bead ring');
   return specifics;
 }
 
