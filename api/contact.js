@@ -1,4 +1,4 @@
-// api/contact.js — Contact form handler + website review checkout starter
+// api/contact.js — Contact form handler + marketplace checkout starter
 const { STRIPE_SECRET_KEY, stripeRequest } = require('../lib/platform');
 const { extractEbayItemId, extractEbayTitleFromUrlSlug, resolveEbayItemUrl, parseEbayItemHtml, lookupEbayBrowseApi } = require('./_lib/ebay-item-lookup');
 const nodemailer = require('nodemailer');
@@ -26,40 +26,6 @@ function getSmtpTransporter() {
   }
   return smtpTransporter;
 }
-
-const WEBSITE_REVIEW_PACKAGES = {
-  basic: {
-    label: 'Basic Upgrade',
-    amount: 75000,
-    description: 'One focused website page or buyer-path cleanup with done-for-you implementation.'
-  },
-  growth: {
-    label: 'Growth Upgrade',
-    amount: 150000,
-    description: 'Homepage restructure, trust placement, and inquiry-flow cleanup with implementation and mobile polish.'
-  },
-  premium: {
-    label: 'Premium Upgrade',
-    amount: 225000,
-    description: 'More polished buyer path, stronger proof throughout, and refined done-for-you implementation.'
-  }
-};
-
-const MISSED_LEAD_PACKAGES = {
-  setup: {
-    label: 'Missed Lead Recovery Setup',
-    amount: 99700,
-    mode: 'payment',
-    description: 'One-time setup for missed-call response planning, form follow-up messages, booking/review flow cleanup, and launch support.'
-  },
-  managed: {
-    label: 'Managed Follow-Up',
-    amount: 49700,
-    mode: 'subscription',
-    interval: 'month',
-    description: 'Monthly support to keep follow-up messages, review requests, reporting, and small customer-response path fixes improving.'
-  }
-};
 
 const MARKETPLACE_AUDIT_PACKAGES = {
   intro: {
@@ -108,105 +74,6 @@ async function sendSmtpEmail(payload, label) {
     console.error(`[contact] SMTP ${label} failed:`, err.message);
     throw new Error(`SMTP ${label} failed: ${err.message}`);
   }
-}
-
-async function startWebsiteReviewCheckout(req, res) {
-  if (!STRIPE_SECRET_KEY) {
-    res.status(503).json({ error: 'Payments are not configured' });
-    return;
-  }
-
-  const { package: packageKey = '', origin = '' } = req.body || {};
-  const key = String(packageKey || '').toLowerCase();
-  const offer = WEBSITE_REVIEW_PACKAGES[key];
-  const sitePage = cleanPageUrl(origin);
-
-  if (!offer) {
-    res.status(400).json({ error: 'Unknown website review package' });
-    return;
-  }
-  if (!sitePage) {
-    res.status(400).json({ error: 'Missing site origin' });
-    return;
-  }
-
-  const { response, data } = await stripeRequest('/v1/checkout/sessions', {
-    mode: 'payment',
-    success_url: `${sitePage}?checkout=success&package=${encodeURIComponent(key)}&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${sitePage}?checkout=cancelled&package=${encodeURIComponent(key)}`,
-    customer_creation: 'always',
-    'phone_number_collection[enabled]': 'true',
-    'line_items[0][price_data][currency]': 'usd',
-    'line_items[0][price_data][product_data][name]': `MyCommercePartner ${offer.label}`,
-    'line_items[0][price_data][product_data][description]': offer.description,
-    'line_items[0][price_data][unit_amount]': String(offer.amount),
-    'line_items[0][quantity]': '1',
-    'metadata[kind]': 'website_review',
-    'metadata[package]': key,
-    'metadata[package_label]': offer.label
-  });
-
-  if (!response.ok || !data?.url) {
-    res.status(response.status || 400).json({ error: data?.error?.message || 'Unable to start checkout' });
-    return;
-  }
-
-  res.status(200).json({ url: data.url });
-}
-
-
-async function startMissedLeadCheckout(req, res) {
-  if (!STRIPE_SECRET_KEY) {
-    res.status(503).json({ error: 'Payments are not configured' });
-    return;
-  }
-
-  const { package: packageKey = '', origin = '' } = req.body || {};
-  const key = String(packageKey || '').toLowerCase();
-  const offer = MISSED_LEAD_PACKAGES[key];
-  const sitePage = cleanPageUrl(origin);
-
-  if (!offer) {
-    res.status(400).json({ error: 'Unknown missed lead package' });
-    return;
-  }
-  if (!sitePage) {
-    res.status(400).json({ error: 'Missing site origin' });
-    return;
-  }
-
-  const payload = {
-    mode: offer.mode,
-    success_url: `${sitePage}?checkout=success&offer=${encodeURIComponent(key)}&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${sitePage}?checkout=cancelled&offer=${encodeURIComponent(key)}`,
-    'phone_number_collection[enabled]': 'true',
-    'line_items[0][price_data][currency]': 'usd',
-    'line_items[0][price_data][product_data][name]': `MyCommercePartner ${offer.label}`,
-    'line_items[0][price_data][product_data][description]': offer.description,
-    'line_items[0][price_data][unit_amount]': String(offer.amount),
-    'line_items[0][quantity]': '1',
-    'metadata[kind]': 'missed_lead_recovery',
-    'metadata[package]': key,
-    'metadata[package_label]': offer.label
-  };
-
-  if (offer.mode === 'payment') {
-    payload.customer_creation = 'always';
-  }
-  if (offer.mode === 'subscription') {
-    payload['line_items[0][price_data][recurring][interval]'] = offer.interval || 'month';
-    payload['subscription_data[metadata][kind]'] = 'missed_lead_recovery';
-    payload['subscription_data[metadata][package]'] = key;
-  }
-
-  const { response, data } = await stripeRequest('/v1/checkout/sessions', payload);
-
-  if (!response.ok || !data?.url) {
-    res.status(response.status || 400).json({ error: data?.error?.message || 'Unable to start checkout' });
-    return;
-  }
-
-  res.status(200).json({ url: data.url });
 }
 
 async function startMarketplaceAuditCheckout(req, res) {
@@ -374,16 +241,6 @@ async function lookupEbayItemDetails(req, res) {
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
-    return;
-  }
-
-  if (req.body?.action === 'website-review-checkout') {
-    await startWebsiteReviewCheckout(req, res);
-    return;
-  }
-
-  if (req.body?.action === 'missed-lead-checkout') {
-    await startMissedLeadCheckout(req, res);
     return;
   }
 

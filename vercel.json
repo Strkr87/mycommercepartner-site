@@ -11,6 +11,26 @@
       "source": "/free-listing-score.html",
       "destination": "/#optimizer",
       "permanent": true
+    },
+    {
+      "source": "/website-reviews",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
+      "source": "/website-reviews.html",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
+      "source": "/missed-lead-recovery",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
+      "source": "/missed-lead-recovery.html",
+      "destination": "/#services",
+      "permanent": true
     }
   ],
   "headers": [

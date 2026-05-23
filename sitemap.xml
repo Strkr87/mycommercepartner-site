@@ -120,16 +120,4 @@
     <changefreq>monthly</changefreq>
     <priority>0.65</priority>
   </url>
-  <url>
-    <loc>https://www.mycommercepartner.com/website-reviews</loc>
-    <lastmod>2026-05-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.45</priority>
-  </url>
-  <url>
-    <loc>https://www.mycommercepartner.com/missed-lead-recovery</loc>
-    <lastmod>2026-05-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
-  </url>
 </urlset>
