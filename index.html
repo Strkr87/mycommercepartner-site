@@ -303,6 +303,23 @@
         .slice(0, 8)
         .join(' ');
     }
+    function optBulletConcepts(value){
+      const text = optClean(value).toLowerCase();
+      const concepts = [];
+      if (/\b\d+(?:\.\d+)?\s*(?:x|Ã—)\s*\d+(?:\.\d+)?\b|\b\d+(?:\.\d+)?\s?(?:ft|feet|in|inch|cm|mm|m)\b/.test(text)) concepts.push('dimension');
+      if (/\b\d+\s?(?:-|to)\s?\d+\s?%|coverage|blockage/.test(text)) concepts.push('coverage');
+      if (/\b\d+(?:\.\d+)?\s?(?:pack|pcs|piece|pieces|count)\b|quantity/.test(text)) concepts.push('quantity');
+      if (/\bblack|white|green|tan|brown|gray|grey|color|finish\b/.test(text)) concepts.push('color');
+      if (/\bmaterial|construction|mesh|steel|fabric\b/.test(text)) concepts.push('material');
+      if (/\bincluded|comes with|accessories|components\b/.test(text)) concepts.push('included');
+      if (/\bcompatib|fits|fitment|bolt pattern|lug|hub|offset\b/.test(text)) concepts.push('fitment');
+      if (/\b(?:front wheel|rear wheel|placement|position)\b/.test(text)) concepts.push('position');
+      if (/\bbeadlock|tire seating\b/.test(text)) concepts.push('beadlock');
+      if (/\bsound|acoustic|echo|noise|room treatment\b/.test(text)) concepts.push('sound-use');
+      if (/\bshade|privacy|sun shade|outdoor|coverage use\b/.test(text)) concepts.push('outdoor-use');
+      if (/\bpanel format|room placement|foam panel|shade cloth format|cover style|tarp wording|format\b/.test(text)) concepts.push('format');
+      return concepts;
+    }
     function optRemoveDuplicateTitleWords(value){
       const keep = /^(and|or|for|with|of|to|in|the|a|an)$/i;
       const seen = new Set();
@@ -353,6 +370,8 @@
         if (/\b(?:product id|item id|ebay item id|condition|notes|title|sku|mpn|seller|price)\b/i.test(text)) return;
         const key = optBulletDedupeKey(text);
         if (out.some(item => optBulletDedupeKey(item) === key)) return;
+        const concepts = optBulletConcepts(text);
+        if (concepts.length && out.some(item => optBulletConcepts(item).some(concept => concepts.includes(concept)))) return;
         out.push(text.endsWith('.') ? text : `${text}.`);
       }
       const material = value(['Material', 'Material / Feature']);
@@ -376,8 +395,10 @@
       ].filter(Boolean);
       titleFacts.forEach(fact => add(`${fact.replace(/\s+/g, '')} is shown in the title for exact item matching`));
       if (/heavy duty mesh/i.test(sourceTitle)) add('Heavy duty mesh construction is called out in the product title');
+      if (/shade cloth|windscreen/i.test(sourceTitle)) add('Shade cloth format identifies the product style for outdoor coverage');
       if (/sun shade|shade cover|shade cloth/i.test(sourceTitle)) add('Sun shade cover wording identifies the outdoor coverage use');
       if (/tarp/i.test(sourceTitle)) add('Tarp wording identifies the cover style for shoppers comparing options');
+      if (/wall panel|foam panel|panel/i.test(sourceTitle)) add('Panel format is listed for wall or room placement');
       if (/beadlock/i.test(sourceTitle)) add('Beadlock design is called out for wheel construction matching');
       if (/front wheel/i.test(sourceTitle)) add('Front wheel placement is listed for position matching');
       else if (/rear wheel/i.test(sourceTitle)) add('Rear wheel placement is listed for position matching');
@@ -394,6 +415,8 @@
         if (/\b(?:product id|item id|ebay item id|condition|notes|title|sku|mpn|seller|price)\b/i.test(text)) return;
         const key = optBulletDedupeKey(text);
         if (mergedBullets.some(existing => optBulletDedupeKey(existing) === key)) return;
+        const concepts = optBulletConcepts(text);
+        if (concepts.length && mergedBullets.some(existing => optBulletConcepts(existing).some(concept => concepts.includes(concept)))) return;
         mergedBullets.push(text.endsWith('.') ? text : `${text}.`);
       }
       (bullets || []).forEach(addBullet);
@@ -755,11 +778,11 @@ ${bulletHtml}
         else if (/\b(?:pack|pcs|piece|pieces|count)\b/i.test(sizeSpec)) push(`${optTitleCase(sizeSpec)} pack count provides the quantity needed for installation, replacement, or shared use`);
         else push(`${optTitleCase(sizeSpec)} sizing provides a defined dimension for compatible setups`);
       }
-      if (materialSpec) push(/black/i.test(materialSpec) ? 'Black finish gives the installed hardware a clean, low-profile look' : `${optTitleCase(materialSpec)} construction supports everyday use`);
+      if (materialSpec) push(/\b(?:black|white|green|tan|brown|gray|grey)\b/i.test(materialSpec) ? `${optTitleCase(materialSpec)} color identifies the visible finish` : `${optTitleCase(materialSpec)} construction supports everyday use`);
       if (materialPhrase && !materialSpec) push(`${optTitleCase(materialPhrase)} highlights a visible product feature or finish`);
       if (usePhrase) {
         const useBase = stripRepeatedSpecs(usePhrase.split(/\.\s*/).find(part => /block|protect|cover|privacy|dust|wind|debris|echo|sound|noise/i.test(part)) || usePhrase);
-        push(/sound|acoustic|echo|noise/i.test(useBase) ? `${useBase} helps soften room echo for clearer calls, media, or recordings` : `${useBase} supports the intended use without extra guesswork`);
+        push(/sound|acoustic|echo|noise/i.test(useBase) ? 'Sound absorbing design helps soften room echo for clearer calls, media, or recordings' : `${useBase} supports the intended use without extra guesswork`);
       }
       if (useText) push(`Works well for ${useText}, making it easier to match the item to the right space or routine`);
       if (setupPhrase) push(`${/grommet/i.test(setupPhrase) ? 'Grommet details support' : /mount|hang/i.test(setupPhrase) ? 'Mounting details support' : 'Setup details support'} easier placement, hanging, or installation`);

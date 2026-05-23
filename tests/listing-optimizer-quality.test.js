@@ -464,6 +464,8 @@ test('homepage eBay product description does not repeat equivalent dimension bul
   assert.equal(bulletLines.length, 5);
   const dimensionBullets = bulletLines.filter(line => /12\s*x\s*12|12x12/i.test(line));
   assert.equal(dimensionBullets.length, 1, bulletLines.join('\n'));
+  const materialBullets = bulletLines.filter(line => /white|material|construction|foam/i.test(line));
+  assert.equal(materialBullets.length, 1, bulletLines.join('\n'));
 });
 
 test('homepage eBay product description shows five direct customer-facing bullets from visible title facts', () => {
