@@ -345,6 +345,34 @@ function formatAspects(aspects = []) {
   }).filter(Boolean);
 }
 
+function inferEbayMotorsSpecificsFromTitle(title = '', category = '') {
+  const source = cleanField(`${title} ${category}`, 500);
+  const specifics = [];
+  const seen = new Set();
+  const add = (label, value) => addSpecificLine(specifics, seen, label, value);
+  if (!/\b(?:atv|utv|wheel|beadlock|bolt pattern|offset|rim)\b/i.test(source)) return specifics;
+
+  const partNumber = (source.match(/\b\d{3,5}-[A-Z0-9-]{4,}\b/i) || [''])[0];
+  const boltPattern = (source.match(/\b\d\s*[xX]\s*\d{3}(?:\.\d+)?\b/) || [''])[0];
+  const offset = (source.match(/\b\d\s?\+\s?\d\b/) || [''])[0];
+  const wheelSize = (source.match(/\b(\d{1,2}(?:\.\d+)?)\s*[xX]\s*(\d{1,2}(?:\.\d+)?)\b/) || []);
+  if (/\batv\b/i.test(source)) add('Machine Type', 'ATV');
+  if (/front wheel/i.test(source)) add('Placement on Vehicle', 'Front Wheel');
+  else if (/rear wheel/i.test(source)) add('Placement on Vehicle', 'Rear Wheel');
+  if (partNumber) {
+    add('Manufacturer Part Number', partNumber.toUpperCase());
+    add('OE/OEM Part Number', partNumber.toUpperCase());
+  }
+  if (boltPattern) add('Bolt Pattern', boltPattern.replace(/\s+/g, ''));
+  if (offset) add('Offset', offset.replace(/\s+/g, ''));
+  if (/\bwheel\b/i.test(source)) add('Type', 'Wheel');
+  if (wheelSize[1]) add('Wheel Diameter', wheelSize[1]);
+  if (wheelSize[2]) add('Wheel Width', wheelSize[2]);
+  if (/tech\s*3/i.test(source)) add('Model', 'Tech 3');
+  if (/single beadlock/i.test(source)) add('Wheel Construction', 'Single Beadlock');
+  return specifics;
+}
+
 function firstFindingValue(value) {
   if (Array.isArray(value)) return firstFindingValue(value[0]);
   return value && typeof value === 'object' && '_' in value ? value._ : value;
@@ -394,8 +422,11 @@ function buildFindingDetailBundle(item, itemId) {
 }
 
 function buildBrowseDetailBundle(item, itemId) {
-  const aspects = formatAspects(item.localizedAspects || item.itemSpecifics || []);
   const category = cleanField(item.categoryPath || item.category?.categoryName || '', 180);
+  const title = cleanField(item.title, 240);
+  const aspects = formatAspects(item.localizedAspects || item.itemSpecifics || []);
+  const inferredAspects = aspects.length ? [] : inferEbayMotorsSpecificsFromTitle(title, category);
+  const itemSpecifics = uniqueDetailLines([...aspects, ...inferredAspects]);
   const condition = cleanField(item.condition || item.conditionDescription || '', 120);
   const price = formatAmount(item.price);
   const seller = formatSeller(item.seller || {});
@@ -405,7 +436,6 @@ function buildBrowseDetailBundle(item, itemId) {
   const returns = formatReturnTerms(item.returnTerms || {});
   const buyingOptions = Array.isArray(item.buyingOptions) ? item.buyingOptions.join(', ') : '';
   const subtitle = cleanField(item.subtitle || item.shortDescription || '', 500);
-  const title = cleanField(item.title, 240);
 
   const detailLines = [
     title && `Title: ${title}`,
@@ -419,7 +449,7 @@ function buildBrowseDetailBundle(item, itemId) {
     shipping && `Shipping: ${shipping}`,
     returns && `Returns: ${returns}`,
     subtitle && `Listing notes: ${subtitle}`,
-    aspects.length ? `Item specifics: ${aspects.slice(0, 12).join('; ')}` : ''
+    itemSpecifics.length ? `Item specifics: ${itemSpecifics.slice(0, 12).join('; ')}` : ''
   ].filter(Boolean);
 
   const image = cleanField(item.image?.imageUrl || item.thumbnailImages?.[0]?.imageUrl || item.additionalImages?.[0]?.imageUrl || '', 500);
@@ -441,9 +471,10 @@ function buildBrowseDetailBundle(item, itemId) {
     returnTerms: returns,
     subtitle,
     image,
-    itemSpecifics: aspects.slice(0, 20),
+    itemSpecifics: itemSpecifics.slice(0, 30),
+    itemSpecificsSource: aspects.length ? 'api' : (inferredAspects.length ? 'inferred-title' : ''),
     description: cleanField(detailLines.join(' | '), 1200),
-    detailCount: detailLines.length + aspects.length
+    detailCount: detailLines.length + itemSpecifics.length
   };
 }
 
@@ -733,7 +764,7 @@ async function lookupEbayBrowseApi(itemId, options = {}) {
       if (itemResponse.ok) {
         const bundle = buildBrowseDetailBundle(itemData, itemId);
         if (bundle.ok) {
-          if (!bundle.itemSpecifics?.length) {
+          if (!bundle.itemSpecifics?.length || bundle.itemSpecificsSource === 'inferred-title') {
             const shoppingResult = await lookupEbayShoppingApi(itemId, credentials, { ...options, accessToken: tokenData.access_token });
             if (shoppingResult.ok && shoppingResult.itemSpecifics?.length) {
               return { ...mergeDetailBundles(bundle, shoppingResult, 'ebay-api+ebay-shopping-api'), marketplaceId };
@@ -762,7 +793,7 @@ async function lookupEbayBrowseApi(itemId, options = {}) {
       if (matched) {
         const bundle = buildBrowseDetailBundle(matched, itemId);
         if (bundle.ok) {
-          if (!bundle.itemSpecifics?.length) {
+          if (!bundle.itemSpecifics?.length || bundle.itemSpecificsSource === 'inferred-title') {
             const shoppingResult = await lookupEbayShoppingApi(itemId, credentials, { ...options, accessToken: tokenData.access_token });
             if (shoppingResult.ok && shoppingResult.itemSpecifics?.length) {
               return { ...mergeDetailBundles({ ...bundle, source: 'ebay-api-search' }, shoppingResult, 'ebay-api-search+ebay-shopping-api'), marketplaceId };
