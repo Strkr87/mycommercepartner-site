@@ -464,11 +464,11 @@ test('homepage optimizer prioritizes eBay item specifics over marketplace metada
   const highlights = result.ebayHtml.match(/<h3[^>]*>Highlights<\/h3>\s*<ul[^>]*>([\s\S]*?)<\/ul>/i)?.[1] || '';
   const bulletLines = [...highlights.matchAll(/<li>(.*?)<\/li>/g)].map(match => match[1]);
   assert.equal(bulletLines.length, 5);
-  assert.match(bulletLines.join(' '), /10x5 size and 4x156 bolt pattern make it easy to confirm fit before you buy/i);
-  assert.match(bulletLines.join(' '), /4\+1 offset gives compatible ATV setups the intended stance/i);
-  assert.match(bulletLines.join(' '), /Single beadlock setup is made for confident tire seating on rough rides/i);
+  assert.match(bulletLines.join(' '), /10x5 size and 4x156 bolt pattern help you confirm the wheel matches your ATV setup/i);
+  assert.match(bulletLines.join(' '), /4\+1 offset helps position the wheel for the intended stance/i);
+  assert.match(bulletLines.join(' '), /Single beadlock design helps keep the tire bead seated during rough trail use/i);
   assert.match(bulletLines.join(' '), /Carbon composite construction keeps the wheel strong without adding unnecessary weight/i);
-  assert.match(bulletLines.join(' '), /Modular serviceable design makes future maintenance and part replacement simpler|black bead ring gives the wheel face/i);
+  assert.match(bulletLines.join(' '), /Modular 3-piece design makes future service and part replacement easier|black bead ring gives the wheel face/i);
   assert.doesNotMatch(bulletLines.join(' '), /defines wheel stance|lines up with hubs|helps provide|listed for|identifies the intended/i);
   assert.ok(result.ebayHtml.indexOf('<p') < result.ebayHtml.indexOf('<h3 style="font-size:18px;margin:0 0 8px;">Highlights</h3>'));
   assert.doesNotMatch(result.ebayHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/i)?.[1] || '', /Product ID|Condition|Price|Seller|listed with|shoppers/i);
@@ -609,8 +609,8 @@ test('homepage eBay product description shows five direct customer-facing bullet
   assert.match(bulletLines.join(' '), /10x5|beadlock|front wheel|4\+1|4x156/i);
   assert.doesNotMatch(bulletLines.join(' '), /Product ID|Condition:|SKU|MPN|Seller|Price|Notes:/i);
   assert.doesNotMatch(bulletLines.join(' '), /helps shoppers|helps confirm|before purchase|before checkout|before ordering|verify compatibility|clear wheel-construction detail|match the wheel to the intended position|compare fitment/i);
-  assert.match(bulletLines[0], /10x5 size and 4x156 bolt pattern make it easy to confirm fit before you buy\./i);
-  assert.match(bulletLines.join(' '), /Single beadlock setup is made for confident tire seating on rough rides\./i);
+  assert.match(bulletLines[0], /10x5 size and 4x156 bolt pattern help you confirm the wheel matches your ATV setup\./i);
+  assert.match(bulletLines.join(' '), /Single beadlock design helps keep the tire bead seated during rough trail use\./i);
 });
 
 test('homepage keywords and recommended fixes are product-specific instead of marketplace metadata', () => {
