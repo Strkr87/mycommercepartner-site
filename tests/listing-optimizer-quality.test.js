@@ -469,7 +469,7 @@ test('homepage optimizer prioritizes eBay item specifics over marketplace metada
   assert.match(bulletLines.join(' '), /Single beadlock design helps keep the tire bead seated during rough trail use/i);
   assert.match(bulletLines.join(' '), /Carbon composite construction keeps the wheel strong without adding unnecessary weight/i);
   assert.match(bulletLines.join(' '), /Modular 3-piece design makes future service and part replacement easier|black bead ring gives the wheel face/i);
-  assert.doesNotMatch(bulletLines.join(' '), /defines wheel stance|lines up with hubs|helps provide|listed for|identifies the intended/i);
+  assert.doesNotMatch(bulletLines.join(' '), /defines wheel stance|lines up with hubs|helps provide|listed for|identifies the intended|durable feel|everyday use|does the job|routine|at a glance/i);
   assert.ok(result.ebayHtml.indexOf('<p') < result.ebayHtml.indexOf('<h3 style="font-size:18px;margin:0 0 8px;">Highlights</h3>'));
   assert.doesNotMatch(result.ebayHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/i)?.[1] || '', /Product ID|Condition|Price|Seller|listed with|shoppers/i);
 });
@@ -530,6 +530,10 @@ test('homepage eBay product description always renders five highlight bullets', 
   const bulletLines = [...highlights.matchAll(/<li>(.*?)<\/li>/g)].map(match => match[1]);
   assert.equal(bulletLines.length, 5);
   assert.doesNotMatch(bulletLines.join(' '), /Product ID|Condition:|SKU|MPN|Seller|Price|Notes:/i);
+  assert.match(bulletLines.join(' '), /Heavy Duty Mesh lets air pass through while adding shade and privacy/i);
+  assert.match(bulletLines.join(' '), /60-70% Blockage coverage helps add shade and privacy where you need it/i);
+  assert.match(bulletLines.join(' '), /Black finish gives fences, patios, or garden areas a low-profile look/i);
+  assert.doesNotMatch(bulletLines.join(' '), /durable feel|everyday use|does the job|practical feature|right fit|generic|main pieces/i);
 });
 
 test('homepage eBay product description does not repeat equivalent dimension bullets', () => {
@@ -570,6 +574,8 @@ test('homepage eBay product description builds five bullets from sparse URL-only
   assert.equal(bulletLines.length, 5);
   assert.doesNotMatch(bulletLines.join(' '), /wheel dimension|Product ID|Condition:|SKU|MPN|Seller|Price|Notes:/i);
   assert.match(bulletLines.join(' '), /12x12|White|Sound absorbing|12 Pack|Panel format|Tile format|Non-toxic/i);
+  assert.match(bulletLines.join(' '), /panels make it easier to plan wall coverage|Tile format makes it simple to place panels|reduce echo during calls/i);
+  assert.doesNotMatch(bulletLines.join(' '), /does the job|practical feature|routine|everyday use|durable feel|Key product details/i);
 });
 
 test('homepage eBay product description backfills a fifth non-duplicate bullet after strict dedupe', () => {
@@ -587,7 +593,7 @@ test('homepage eBay product description backfills a fifth non-duplicate bullet a
   const highlights = result.ebayHtml.match(/<h3[^>]*>Highlights<\/h3>\s*<ul[^>]*>([\s\S]*?)<\/ul>/i)?.[1] || '';
   const bulletLines = [...highlights.matchAll(/<li>(.*?)<\/li>/g)].map(match => match[1]);
   assert.equal(bulletLines.length, 5);
-  assert.match(bulletLines.join(' '), /Tile format|Panel format|Key product details/i);
+  assert.match(bulletLines.join(' '), /Tile format|Panel format|Specs are grouped below/i);
   assert.doesNotMatch(bulletLines.join(' '), /Product ID|Condition:|SKU|MPN|Seller|Price|Notes:/i);
 });
 
@@ -608,7 +614,7 @@ test('homepage eBay product description shows five direct customer-facing bullet
   assert.equal(bulletLines.length, 5);
   assert.match(bulletLines.join(' '), /10x5|beadlock|front wheel|4\+1|4x156/i);
   assert.doesNotMatch(bulletLines.join(' '), /Product ID|Condition:|SKU|MPN|Seller|Price|Notes:/i);
-  assert.doesNotMatch(bulletLines.join(' '), /helps shoppers|helps confirm|before purchase|before checkout|before ordering|verify compatibility|clear wheel-construction detail|match the wheel to the intended position|compare fitment/i);
+  assert.doesNotMatch(bulletLines.join(' '), /helps shoppers|helps confirm|before purchase|before checkout|before ordering|verify compatibility|clear wheel-construction detail|match the wheel to the intended position|compare fitment|durable feel|everyday use|does the job|routine|at a glance/i);
   assert.match(bulletLines[0], /10x5 size and 4x156 bolt pattern help you confirm the wheel matches your ATV setup\./i);
   assert.match(bulletLines.join(' '), /Single beadlock design helps keep the tire bead seated during rough trail use\./i);
 });

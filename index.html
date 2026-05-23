@@ -319,7 +319,7 @@
       if (/\b(?:front wheel|rear wheel|placement|position)\b/.test(text)) concepts.push('position');
       if (/\bbeadlock|tire seating\b/.test(text)) concepts.push('beadlock');
       if (/\bsound|acoustic|echo|noise|room treatment\b/.test(text)) concepts.push('sound-use');
-      if (/\bshade|privacy|sun shade|outdoor|coverage use\b/.test(text)) concepts.push('outdoor-use');
+      if (/\bsun shade|outdoor coverage use\b/.test(text)) concepts.push('outdoor-use');
       if (/\bpanel format|room placement|foam panel|shade cloth format|cover style|tarp wording|format\b/.test(text)) concepts.push('format');
       return concepts;
     }
@@ -384,11 +384,11 @@
       const compatibility = value(['Compatibility', 'Compatible Brand', 'Compatible Model', 'Network', 'Carrier']);
       const included = value(['Included', 'Included Accessories']);
       const brand = value(['Brand']);
-      if (material) add(`${optTitleCase(material)} construction gives the item a durable feel for regular use`);
+      if (material) add(optMaterialBenefit(material, sourceTitle));
       if (coverage) add(`${optTitleCase(coverage)} coverage helps add shade and privacy where you need it`);
-      if (size) add(/acoustic|sound|panel/i.test(sourceTitle) ? `${optTitleCase(size)} size makes it easy to plan coverage across walls, corners, or recording spaces` : `${optTitleCase(size)} sizing helps you confirm the right fit before you order`);
-      if (color) add(/acoustic|sound|panel/i.test(sourceTitle) ? `${optTitleCase(color)} finish blends cleanly into studios, offices, bedrooms, or media rooms` : `${optTitleCase(color)} finish gives the item a clean, finished look`);
-      if (compatibility) add(`Fits ${optTitleCase(compatibility)} applications so you can check compatibility at a glance`);
+      if (size) add(optSizeBenefit(size, sourceTitle));
+      if (color) add(optColorBenefit(color, sourceTitle));
+      if (compatibility) add(`Fits ${optTitleCase(compatibility)} applications so you can avoid ordering the wrong version`);
       if (included) add(`Includes ${included} so you know exactly what arrives in the package`);
       const titleFacts = [
         (sourceTitle.match(/\b\d+\s?(?:-|to)\s?\d+\s?%[^\s,]*/i) || [''])[0],
@@ -402,11 +402,11 @@
       if (/sun shade|shade cover|shade cloth/i.test(sourceTitle)) add('Sun shade cover helps reduce glare and direct exposure outdoors');
       if (/tarp/i.test(sourceTitle)) add('Tarp-style cover works well for patios, fences, gardens, or storage areas');
       if (/wall panel|foam panel|panel/i.test(sourceTitle)) add('Panel format makes it simple to arrange coverage across a wall or room');
-      if (/tiles?/i.test(sourceTitle)) add('Tile format makes it simple to arrange coverage where reflections are most noticeable');
+      if (/tiles?/i.test(sourceTitle)) add('Tile format makes it simple to place panels where reflections are most noticeable');
       if (/non[-\s]?toxic/i.test(sourceTitle)) add('Non-toxic material is a better choice for bedrooms, studios, and shared rooms');
       if (/beadlock/i.test(sourceTitle)) add('Beadlock design helps keep the tire bead seated during rough trail use');
-      if (/front wheel/i.test(sourceTitle)) add('Front wheel placement helps you choose the correct position for your setup');
-      else if (/rear wheel/i.test(sourceTitle)) add('Rear wheel placement helps you choose the correct position for your setup');
+      if (/front wheel/i.test(sourceTitle)) add('Front wheel placement helps you order the correct wheel position for your ATV');
+      else if (/rear wheel/i.test(sourceTitle)) add('Rear wheel placement helps you order the correct wheel position for your ATV');
       if (/acoustic|sound absorbing|soundproof/i.test(sourceTitle)) add('Sound absorbing design helps reduce echo during calls, media playback, or recording');
       return out;
     }
@@ -530,12 +530,12 @@
       if (mergedBullets.length < 5) {
         const pack = (sourceTitle.match(/\b\d+\s?(?:pack|pcs|piece|pieces|count)\b/i) || [''])[0];
         const supplemental = [
-          pack && `${optTitleCase(pack)} quantity gives you enough pieces for replacement, projects, or shared use`,
-          /tiles?/i.test(sourceTitle) && 'Tile format supports modular placement across the intended space',
+          pack && `${optTitleCase(pack)} quantity gives you enough pieces to cover more area or keep extras on hand`,
+          /tiles?/i.test(sourceTitle) && 'Tile format makes it simple to place panels where reflections are most noticeable',
           /wall panel|foam panel|panels?/i.test(sourceTitle) && 'Panel format makes it simple to arrange coverage across a wall or room',
           /non[-\s]?toxic/i.test(sourceTitle) && 'Non-toxic material is a better choice for bedrooms, studios, and shared rooms',
-          /acoustic|sound absorbing|soundproof/i.test(sourceTitle) && 'Sound-control design helps reduce echo for calls, media, and recording',
-          'Key product details are easy to scan so you can choose with more confidence'
+          /acoustic|sound absorbing|soundproof/i.test(sourceTitle) && 'Sound absorbing design helps reduce echo during calls, media playback, or recording',
+          'Specs are grouped below so you can compare the exact details before ordering'
         ].filter(Boolean);
         supplemental.forEach(item => {
           if (mergedBullets.length < 5) addSupplementalBullet(item);
@@ -907,18 +907,18 @@ ${bulletHtml}
       }
       if (sizeSpec) {
         if (/(?:^|\d|\s)(?:gb|tb)\b/i.test(sizeSpec)) push(`${optTitleCase(sizeSpec)} storage gives plenty of room for apps, photos, video, and everyday use`);
-        else if (/\b(?:pack|pcs|piece|pieces|count)\b/i.test(sizeSpec)) push(`${optTitleCase(sizeSpec)} quantity gives you enough pieces for installation, replacement, or shared use`);
-        else push(/acoustic|sound|panel/i.test(product) ? `${optTitleCase(sizeSpec)} size makes it easy to plan coverage across walls, corners, or recording spaces` : `${optTitleCase(sizeSpec)} sizing helps you confirm the right fit before you order`);
+        else if (/\b(?:pack|pcs|piece|pieces|count)\b/i.test(sizeSpec)) push(`${optTitleCase(sizeSpec)} quantity gives you enough pieces to cover more area or keep extras on hand`);
+        else push(optSizeBenefit(sizeSpec, product));
       }
-      if (materialSpec) push(/\b(?:black|white|green|tan|brown|gray|grey)\b/i.test(materialSpec) ? (/acoustic|sound|panel/i.test(product) ? `${optTitleCase(materialSpec)} finish blends cleanly into studios, offices, bedrooms, or media rooms` : `${optTitleCase(materialSpec)} finish gives the item a clean, finished look`) : `${optTitleCase(materialSpec)} construction gives the item a durable feel for regular use`);
-      if (materialPhrase && !materialSpec) push(`${optTitleCase(materialPhrase)} gives you a practical feature you can see and use`);
+      if (materialSpec) push(/\b(?:black|white|green|tan|brown|gray|grey)\b/i.test(materialSpec) ? optColorBenefit(materialSpec, product) : optMaterialBenefit(materialSpec, product));
+      if (materialPhrase && !materialSpec) push(optMaterialBenefit(materialPhrase, product));
       if (usePhrase) {
         const useBase = stripRepeatedSpecs(usePhrase.split(/\.\s*/).find(part => /block|protect|cover|privacy|dust|wind|debris|echo|sound|noise/i.test(part)) || usePhrase);
-        push(/sound|acoustic|echo|noise/i.test(useBase) ? 'Sound absorbing design helps reduce echo during calls, media playback, or recording' : `${useBase} helps the item do the job buyers are looking for`);
+        push(/sound|acoustic|echo|noise/i.test(useBase) ? 'Sound absorbing design helps reduce echo during calls, media playback, or recording' : /shade|privacy|sun|cover|wind|debris/i.test(useBase) ? `${optTitleCase(useBase)} helps protect outdoor spaces from sun, wind, or visibility` : `${optTitleCase(useBase)} gives buyers a concrete feature to compare`);
       }
-      if (useText) push(`Designed for ${useText}, so it fits naturally into the space or routine you have in mind`);
+      if (useText) push(/acoustic|sound/i.test(product) ? `Designed for ${useText}, with panel coverage that helps tune the room` : `Designed for ${useText}, with details that match the intended use`);
       if (setupPhrase) push(`${/grommet/i.test(setupPhrase) ? 'Grommets make' : /mount|hang/i.test(setupPhrase) ? 'Mounting features make' : 'Setup features make'} placement, hanging, or installation easier`);
-      if (packSpec) push(`${optTitleCase(packSpec)} quantity gives you enough pieces for replacement, projects, or shared use`);
+      if (packSpec) push(`${optTitleCase(packSpec)} quantity gives you enough pieces to cover more area or keep extras on hand`);
       return bullets.slice(0,5).map(({body}) => body);
     }
     function optDetailValue(details, labels){
@@ -929,10 +929,44 @@ ${bulletHtml}
       }
       return '';
     }
+    function optBulletContext(source){
+      const text = optClean(source).toLowerCase();
+      return {
+        acoustic: /\b(?:acoustic|sound|echo|recording|studio|wall panel|foam panel)\b/.test(text),
+        shade: /\b(?:shade|privacy|windscreen|screen|tarp|patio|fence|garden|mesh)\b/.test(text),
+        wheel: /\b(?:wheel|rim|beadlock|atv|utv|bolt pattern|offset)\b/.test(text)
+      };
+    }
+    function optSizeBenefit(value, source){
+      const size = optTitleCase(value);
+      const ctx = optBulletContext(source);
+      if (ctx.acoustic) return `${size} panels make it easier to plan wall coverage before installation`;
+      if (ctx.shade) return `${size} sizing helps you check fence, patio, or garden coverage before ordering`;
+      if (ctx.wheel) return `${size} sizing helps you compare the wheel against your ATV setup`;
+      return `${size} sizing gives you the exact measurement to compare before ordering`;
+    }
+    function optMaterialBenefit(value, source){
+      const material = optTitleCase(value);
+      const ctx = optBulletContext(source);
+      if (/carbon composite/i.test(value)) return 'Carbon composite construction keeps the wheel strong without adding unnecessary weight';
+      if (ctx.acoustic && /foam|acoustic/i.test(value)) return `${material} helps absorb reflected sound so rooms feel less echo-heavy`;
+      if (ctx.shade && /mesh/i.test(value)) return `${material} lets air pass through while adding shade and privacy`;
+      if (/heavy duty/i.test(value)) return `${material} construction is built for stronger coverage and repeated setup`;
+      return `${material} construction gives you a clear material choice before ordering`;
+    }
+    function optColorBenefit(value, source){
+      const color = optTitleCase(value);
+      const ctx = optBulletContext(source);
+      if (ctx.acoustic) return `${color} finish blends cleanly into studios, offices, bedrooms, or media rooms`;
+      if (ctx.shade) return `${color} finish gives fences, patios, or garden areas a low-profile look`;
+      if (ctx.wheel) return `${color} finish gives the wheel a clean, trail-ready look`;
+      return `${color} finish makes the visible color easy to match with your setup`;
+    }
     function optBuildExactBullets({productType, productDetails, fallbackBullets, sourceTitle}){
       const brand = optDetailValue(productDetails, ['Brand']);
       const product = optCustomerProductName(productType, brand);
-      const size = optDetailValue(productDetails, ['Storage', 'Size', 'Capacity', 'Dimensions', 'Pack Count', 'Quantity', 'Weight', 'Coverage']);
+      const size = optDetailValue(productDetails, ['Storage', 'Size', 'Capacity', 'Dimensions', 'Pack Count', 'Quantity', 'Weight']);
+      const coverage = optDetailValue(productDetails, ['Coverage']);
       const material = optDetailValue(productDetails, ['Wheel Material', 'Material', 'Color']);
       const compatibility = optDetailValue(productDetails, ['Compatibility', 'Compatible Brand', 'Compatible Model', 'Network', 'Carrier']);
       const included = optDetailValue(productDetails, ['Included', 'Included Accessories']);
@@ -954,10 +988,11 @@ ${bulletHtml}
         if (bullets.some(item => item.toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').slice(0, 10).join(' ') === key)) return;
         bullets.push(text.endsWith('.') ? text : `${text}.`);
       }
+      if (coverage) push(`${optTitleCase(coverage)} coverage helps add shade and privacy where you need it`);
       if (size) {
         if (/(?:^|\d|\s)(?:gb|tb)\b/i.test(size)) push(`${optTitleCase(size)} storage gives plenty of room for apps, photos, video, and everyday use`);
-        else if (/\b(?:pack|pcs|piece|pieces|count)\b/i.test(size)) push(`${optTitleCase(size)} quantity gives you enough pieces for installation, replacement, or shared use`);
-        else push(/acoustic|sound|panel/i.test(productType || titleSource) ? `${optTitleCase(size)} size makes it easy to plan coverage across walls, corners, or recording spaces` : `${optTitleCase(size)} sizing helps you confirm the right fit before you order`);
+        else if (/\b(?:pack|pcs|piece|pieces|count)\b/i.test(size)) push(`${optTitleCase(size)} quantity gives you enough pieces to cover more area or keep extras on hand`);
+        else push(optSizeBenefit(size, `${productType} ${titleSource}`));
       }
       const wheelContext = /\b(?:wheel|rim|beadlock|atv|utv|lug|bolt pattern|offset)\b/i.test(titleSource);
       const wheelSize = (titleSource.match(/\b\d+(?:\.\d+)?\s?[xÃ—]\s?\d+(?:\.\d+)?\b/i) || [''])[0];
@@ -966,17 +1001,17 @@ ${bulletHtml}
       const cleanWheelSize = wheelDiameter && wheelWidth ? `${wheelDiameter}x${wheelWidth}` : wheelSize.replace(/\s+/g, '');
       if (cleanWheelSize && (detailBoltPattern || boltPattern)) push(`${cleanWheelSize} size and ${(detailBoltPattern || boltPattern).replace(/\s+/g, '')} bolt pattern help you confirm the wheel matches your ATV setup`);
       else if (cleanWheelSize && !size) push(`${cleanWheelSize} sizing helps you confirm the wheel matches your ATV setup`);
-      else if (detailBoltPattern || boltPattern) push(`${(detailBoltPattern || boltPattern).replace(/\s+/g, '')} bolt pattern helps you check hub compatibility at a glance`);
+      else if (detailBoltPattern || boltPattern) push(`${(detailBoltPattern || boltPattern).replace(/\s+/g, '')} bolt pattern helps you avoid ordering a wheel that will not mount correctly`);
       if (detailOffset || offset) push(`${(detailOffset || offset).replace(/\s+/g, '')} offset helps position the wheel for the intended stance`);
       if (/\bbeadlock\b/i.test(construction || titleSource)) push(/single beadlock/i.test(construction || titleSource) ? 'Single beadlock design helps keep the tire bead seated during rough trail use' : 'Beadlock design helps keep the tire bead seated during rough trail use');
       if (/carbon composite/i.test(material)) push('Carbon composite construction keeps the wheel strong without adding unnecessary weight');
-      else if (material) push(/black/i.test(material) ? 'Black finish gives the wheel a clean, trail-ready look' : `${optTitleCase(material)} construction is built for regular riding demands`);
+      else if (material) push(/black/i.test(material) ? optColorBenefit(material, titleSource) : optMaterialBenefit(material, titleSource));
       if (/serviceable|modular|3-piece/i.test(features)) push('Modular 3-piece design makes future service and part replacement easier');
-      if (color && /black/i.test(color)) push('Black finish gives the wheel a clean, trail-ready look');
+      if (color && /black/i.test(color)) push(optColorBenefit(color, titleSource));
       if (/black bead ring/i.test(included)) push('Included black bead ring gives the wheel face a finished, coordinated look');
-      if (placement || /\bfront wheel\b/i.test(titleSource)) push(`${optTitleCase(placement || 'Front Wheel')} placement helps you choose the correct position for your setup`);
-      else if (/\brear wheel\b/i.test(titleSource)) push('Rear wheel placement helps you choose the correct position for your setup');
-      if (compatibility) push(/^unlocked$/i.test(compatibility) ? 'Unlocked carrier support works with compatible networks' : `Fits ${compatibility} applications so you can check compatibility at a glance`);
+      if (placement || /\bfront wheel\b/i.test(titleSource)) push(`${optTitleCase(placement || 'Front Wheel')} placement helps you order the correct wheel position for your ATV`);
+      else if (/\brear wheel\b/i.test(titleSource)) push('Rear wheel placement helps you order the correct wheel position for your ATV');
+      if (compatibility) push(/^unlocked$/i.test(compatibility) ? 'Unlocked carrier support works with compatible networks' : `Fits ${compatibility} applications so you can avoid ordering the wrong version`);
       if (included) push(`Includes ${included} so you know exactly what arrives in the package`);
       fallbackBullets.forEach(push);
       return bullets.slice(0, 5);
