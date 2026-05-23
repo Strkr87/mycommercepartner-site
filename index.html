@@ -291,6 +291,18 @@
     function optProductWordKey(value){
       return optClean(value).toLowerCase().replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim();
     }
+    function optBulletDedupeKey(value){
+      return optClean(value).toLowerCase()
+        .replace(/\b(\d+(?:\.\d+)?)\s*(?:x|Ã—)\s*(\d+(?:\.\d+)?)\b/ig, '$1x$2')
+        .replace(/\b(\d+)\s?(?:-|to)\s?(\d+)\s?%/ig, '$1-$2%')
+        .replace(/\b(?:sizing|size|dimension|dimensions|provides|defined|compatible|setups?|item|matching|shown|listed|title|exact|for|the|a|an|and|with|is|are|in|to)\b/ig, ' ')
+        .replace(/[^a-z0-9%+x-]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .split(' ')
+        .slice(0, 8)
+        .join(' ');
+    }
     function optRemoveDuplicateTitleWords(value){
       const keep = /^(and|or|for|with|of|to|in|the|a|an)$/i;
       const seen = new Set();
@@ -339,8 +351,8 @@
         const text = optClean(body);
         if (!text) return;
         if (/\b(?:product id|item id|ebay item id|condition|notes|title|sku|mpn|seller|price)\b/i.test(text)) return;
-        const key = text.toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').slice(0, 8).join(' ');
-        if (out.some(item => item.toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').slice(0, 8).join(' ') === key)) return;
+        const key = optBulletDedupeKey(text);
+        if (out.some(item => optBulletDedupeKey(item) === key)) return;
         out.push(text.endsWith('.') ? text : `${text}.`);
       }
       const material = value(['Material', 'Material / Feature']);
@@ -380,8 +392,8 @@
         const text = optClean(item).replace(/^\s*(?:brand|product id|item id|ebay item id|condition|notes|title|sku|mpn|seller|price)\s*:\s*/i, '');
         if (!text) return;
         if (/\b(?:product id|item id|ebay item id|condition|notes|title|sku|mpn|seller|price)\b/i.test(text)) return;
-        const key = text.toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').slice(0, 8).join(' ');
-        if (mergedBullets.some(existing => existing.toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').slice(0, 8).join(' ') === key)) return;
+        const key = optBulletDedupeKey(text);
+        if (mergedBullets.some(existing => optBulletDedupeKey(existing) === key)) return;
         mergedBullets.push(text.endsWith('.') ? text : `${text}.`);
       }
       (bullets || []).forEach(addBullet);
@@ -723,6 +735,13 @@ ${bulletHtml}
       const usePhrase = useful.find(item => /block|protect|cover|privacy|dust|wind|debris|use|for |echo|sound|noise/i.test(item));
       const setupPhrase = useful.find(item => /install|tie|with|grommet|kit|mount|hang/i.test(item));
       const bullets = [];
+      function stripRepeatedSpecs(value){
+        let text = optClean(value);
+        [sizeSpec, packSpec].filter(Boolean).forEach(spec => {
+          text = text.replace(new RegExp(spec.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'ig'), ' ');
+        });
+        return optClean(text);
+      }
       function push(body){
         const text = optClean(body).replace(/\s+/g,' ').replace(/\.\./g,'.').trim();
         if (!text) return;
@@ -739,7 +758,7 @@ ${bulletHtml}
       if (materialSpec) push(/black/i.test(materialSpec) ? 'Black finish gives the installed hardware a clean, low-profile look' : `${optTitleCase(materialSpec)} construction supports everyday use`);
       if (materialPhrase && !materialSpec) push(`${optTitleCase(materialPhrase)} highlights a visible product feature or finish`);
       if (usePhrase) {
-        const useBase = usePhrase.split(/\.\s*/).find(part => /block|protect|cover|privacy|dust|wind|debris|echo|sound|noise/i.test(part)) || usePhrase;
+        const useBase = stripRepeatedSpecs(usePhrase.split(/\.\s*/).find(part => /block|protect|cover|privacy|dust|wind|debris|echo|sound|noise/i.test(part)) || usePhrase);
         push(/sound|acoustic|echo|noise/i.test(useBase) ? `${useBase} helps soften room echo for clearer calls, media, or recordings` : `${useBase} supports the intended use without extra guesswork`);
       }
       if (useText) push(`Works well for ${useText}, making it easier to match the item to the right space or routine`);

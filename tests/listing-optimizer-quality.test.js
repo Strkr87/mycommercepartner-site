@@ -447,6 +447,25 @@ test('homepage eBay product description always renders five highlight bullets', 
   assert.doesNotMatch(bulletLines.join(' '), /Product ID|Condition:|SKU|MPN|Seller|Price|Notes:/i);
 });
 
+test('homepage eBay product description does not repeat equivalent dimension bullets', () => {
+  const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
+  const result = buildHomeOptimizer(makeFormData({
+    siteUrl: 'https://www.ebay.com/itm/336568091037',
+    currentTitle: 'Acoustic Wall Panel 12 X 12 12 Pack Sound Absorbing Foam Panels',
+    productType: 'Musical Instruments & Gear|Pro Audio Equipment|Acoustical Treatments',
+    currentCopy: 'Product ID: 336568091037 Category: Musical Instruments & Gear > Pro Audio Equipment > Acoustical Treatments Condition: New Refund: money_back Item specifics: Size: 12 x 12; Pack Count: 12 Pack; Color: White',
+    targetKeyword: '',
+    goal: '',
+    revenue: ''
+  }));
+
+  const highlights = result.ebayHtml.match(/<h3[^>]*>Highlights<\/h3>\s*<ul[^>]*>([\s\S]*?)<\/ul>/i)?.[1] || '';
+  const bulletLines = [...highlights.matchAll(/<li>(.*?)<\/li>/g)].map(match => match[1]);
+  assert.equal(bulletLines.length, 5);
+  const dimensionBullets = bulletLines.filter(line => /12\s*x\s*12|12x12/i.test(line));
+  assert.equal(dimensionBullets.length, 1, bulletLines.join('\n'));
+});
+
 test('homepage eBay product description shows five direct customer-facing bullets from visible title facts', () => {
   const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
   const result = buildHomeOptimizer(makeFormData({
