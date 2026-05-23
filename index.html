@@ -411,6 +411,7 @@
     function optBuildEbayDescriptionHtml({title, bullets, productDetails}){
       const cleanTitle = optHtmlText(title);
       const mergedBullets = [];
+      const sourceTitle = optClean(title).replace(/\s+-\s+\d{9,15}$/,'');
       function addBullet(item){
         const text = optClean(item).replace(/^\s*(?:brand|product id|item id|ebay item id|condition|notes|title|sku|mpn|seller|price)\s*:\s*/i, '');
         if (!text) return;
@@ -421,8 +422,30 @@
         if (concepts.length && mergedBullets.some(existing => optBulletConcepts(existing).some(concept => concepts.includes(concept)))) return;
         mergedBullets.push(text.endsWith('.') ? text : `${text}.`);
       }
+      function addSupplementalBullet(item){
+        const text = optClean(item);
+        if (!text) return;
+        if (/\b(?:product id|item id|ebay item id|condition|notes|title|sku|mpn|seller|price)\b/i.test(text)) return;
+        const key = optBulletDedupeKey(text);
+        if (mergedBullets.some(existing => optBulletDedupeKey(existing) === key)) return;
+        mergedBullets.push(text.endsWith('.') ? text : `${text}.`);
+      }
       (bullets || []).forEach(addBullet);
       optEbayBulletFallbacks(title, productDetails).forEach(addBullet);
+      if (mergedBullets.length < 5) {
+        const pack = (sourceTitle.match(/\b\d+\s?(?:pack|pcs|piece|pieces|count)\b/i) || [''])[0];
+        const supplemental = [
+          pack && `${optTitleCase(pack)} quantity is useful for replacements, projects, or shared use`,
+          /tiles?/i.test(sourceTitle) && 'Tile format supports modular placement across the intended space',
+          /wall panel|foam panel|panels?/i.test(sourceTitle) && 'Panel format is easy to review for wall or room placement',
+          /non[-\s]?toxic/i.test(sourceTitle) && 'Non-toxic wording is called out for buyer confidence in room-use applications',
+          /acoustic|sound absorbing|soundproof/i.test(sourceTitle) && 'Sound-control wording identifies the intended room treatment use',
+          'Visible product details are grouped so shoppers can review the item quickly'
+        ].filter(Boolean);
+        supplemental.forEach(item => {
+          if (mergedBullets.length < 5) addSupplementalBullet(item);
+        });
+      }
       const cleanBullets = mergedBullets.map(optHtmlText).filter(Boolean).slice(0, 5);
       const cleanDetails = (productDetails || []).filter(optIsCustomerDetail).map(optHtmlText).filter(Boolean).slice(0, 8);
       const bulletHtml = cleanBullets.length

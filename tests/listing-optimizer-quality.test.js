@@ -487,6 +487,25 @@ test('homepage eBay product description builds five bullets from sparse URL-only
   assert.match(bulletLines.join(' '), /12x12|White|Sound absorbing|12 Pack|Panel format|Tile format|Non-toxic/i);
 });
 
+test('homepage eBay product description backfills a fifth non-duplicate bullet after strict dedupe', () => {
+  const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
+  const result = buildHomeOptimizer(makeFormData({
+    siteUrl: 'https://www.ebay.com/itm/336568091037',
+    currentTitle: 'White Acoustic Wall Panels 12 x 12 Sound Absorbing Tiles',
+    productType: 'Musical Instruments & Gear|Pro Audio Equipment|Acoustical Treatments',
+    currentCopy: 'Product ID: 336568091037\nCondition: New\nColor: White\nSetup details support easier placement, hanging, or installation.',
+    targetKeyword: '',
+    goal: '',
+    revenue: ''
+  }));
+
+  const highlights = result.ebayHtml.match(/<h3[^>]*>Highlights<\/h3>\s*<ul[^>]*>([\s\S]*?)<\/ul>/i)?.[1] || '';
+  const bulletLines = [...highlights.matchAll(/<li>(.*?)<\/li>/g)].map(match => match[1]);
+  assert.equal(bulletLines.length, 5);
+  assert.match(bulletLines.join(' '), /Tile format|Panel format|Visible product details/i);
+  assert.doesNotMatch(bulletLines.join(' '), /Product ID|Condition:|SKU|MPN|Seller|Price|Notes:/i);
+});
+
 test('homepage eBay product description shows five direct customer-facing bullets from visible title facts', () => {
   const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
   const result = buildHomeOptimizer(makeFormData({
