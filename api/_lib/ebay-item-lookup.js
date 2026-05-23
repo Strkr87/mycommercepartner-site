@@ -550,10 +550,12 @@ async function lookupEbayShoppingApi(itemId, credentials, options = {}) {
     const data = await response.json().catch(() => ({}));
     const item = data.Item || data.item;
     if (!response.ok || !item) {
+      const reason = data.Errors?.[0]?.ShortMessage || data.Errors?.ShortMessage || data.Ack || 'no-item';
+      console.warn('[ebay-shopping-api] lookup failed', { itemId, status: response.status, reason });
       return {
         ok: false,
         source: 'ebay-shopping-api',
-        reason: data.Errors?.[0]?.ShortMessage || data.Errors?.ShortMessage || 'no-item',
+        reason,
         status: response.status
       };
     }
