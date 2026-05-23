@@ -440,7 +440,7 @@
       addFact(construction && `${construction.toLowerCase()} construction`);
       addFact(material && `${material.toLowerCase()} material`);
       addFact(color && `${color.toLowerCase()} finish`);
-      addFact(machine && `for ${machine} applications`);
+      addFact(machine && `made for ${machine} use`);
       addFact(placement && `${placement.toLowerCase()} placement`);
       addFact(boltPattern && `${boltPattern} bolt pattern`);
       addFact(offset && `${offset} offset`);
@@ -450,15 +450,39 @@
       addFact(compatibility && `${compatibility} compatibility`);
       const firstFacts = facts.slice(0, 4);
       const intro = firstFacts.length
-        ? `${productName} is listed with ${optNaturalList(firstFacts)}, giving shoppers the key fit and feature details up front.`
-        : `${productName} is presented with the visible listing details organized for a faster buyer review.`;
+        ? `${productName} combines ${optNaturalList(firstFacts)} so you can quickly compare it with the setup you need.`
+        : `${productName} gives you the main listing details in a simple format so you can review the item with confidence.`;
       const secondParts = [];
-      if (included) secondParts.push(`Included ${included} helps clarify what arrives with the order`);
-      if (compatibility) secondParts.push(`${compatibility} compatibility helps buyers confirm fit before checkout`);
-      if (boltPattern || offset || placement) secondParts.push('fitment details are highlighted so buyers can compare the listing against their setup');
-      if (size || diameter || width || pack) secondParts.push('size and quantity details are easy to scan before purchase');
-      if (!secondParts.length) secondParts.push('the highlights and product details below keep the most useful listing information easy to scan');
+      if (included) secondParts.push(`The package includes ${included}`);
+      if (compatibility) secondParts.push(`${compatibility} compatibility helps you confirm fit before checkout`);
+      if (boltPattern || offset || placement) secondParts.push('fitment details help you match the item to your vehicle or project');
+      if (size || diameter || width || pack) secondParts.push('size and quantity details are easy to check before purchase');
+      if (!secondParts.length) secondParts.push('the highlights and product details below keep the most useful item information easy to scan');
       return [intro, `${optNaturalList(secondParts.slice(0, 2))}.`].map(item => item.replace(/\.\./g,'.'));
+    }
+    function optBuildWhatsInBoxItems(title, productDetails){
+      const details = productDetails || [];
+      const value = labels => optDetailValue(details, labels);
+      const included = value(['Included', 'Included Accessories', 'Items Included', 'Package Includes', 'What’s Included', "What's Included"]);
+      const quantity = value(['Quantity', 'Pack Count', 'Number of Items']);
+      const type = value(['Type']);
+      const placement = value(['Placement on Vehicle']);
+      const productName = optClean(title).replace(/\s+-\s+\S+$/,'');
+      const items = [];
+      function add(item){
+        const clean = optClean(item).replace(/^(?:included|includes|with)\s+/i, '');
+        if (!clean || /\b(?:product id|item id|condition|seller|price|shipping|returns?)\b/i.test(clean)) return;
+        if (items.some(existing => optProductWordKey(existing) === optProductWordKey(clean))) return;
+        items.push(clean);
+      }
+      if (included) included.split(/\s*(?:,|;|\band\b|\+)\s*/i).forEach(add);
+      if (!items.length && (quantity || type || placement)) {
+        const qty = /^\d+$/.test(quantity) ? quantity : '';
+        const itemName = placement && type && placement.toLowerCase().includes(type.toLowerCase()) ? placement : [placement, type || 'item'].filter(Boolean).join(' ');
+        add(`${qty ? `${qty} ` : ''}${itemName}`);
+      }
+      if (!items.length) add(productName);
+      return items.slice(0, 6);
     }
     function optBuildEbayDescriptionHtml({title, bullets, productDetails}){
       const cleanTitle = optHtmlText(title);
@@ -506,6 +530,10 @@
       const detailsHtml = cleanDetails.length
         ? `\n  <h3 style="font-size:18px;margin:18px 0 8px;">Product Details</h3>\n  <ul style="margin:0 0 16px 20px;padding:0;">\n${cleanDetails.map(item => `    <li>${item}</li>`).join('\n')}\n  </ul>`
         : '';
+      const boxItems = optBuildWhatsInBoxItems(title, productDetails).map(optHtmlText).filter(Boolean);
+      const boxHtml = boxItems.length
+        ? `\n  <h3 style="font-size:18px;margin:18px 0 8px;">What's in the box</h3>\n  <ul style="margin:0 0 16px 20px;padding:0;">\n${boxItems.map(item => `    <li>${item}</li>`).join('\n')}\n  </ul>`
+        : '';
       const introHtml = optBuildEbayIntroParagraphs(title, productDetails)
         .map(item => `  <p style="margin:0 0 12px;">${optHtmlText(item)}</p>`)
         .join('\n');
@@ -515,7 +543,7 @@ ${introHtml}
   <h3 style="font-size:18px;margin:0 0 8px;">Highlights</h3>
   <ul style="margin:0 0 16px 20px;padding:0;">
 ${bulletHtml}
-  </ul>${detailsHtml}
+  </ul>${detailsHtml}${boxHtml}
   <p style="margin:0;">Photos and listing details provide the final visual and fit information.</p>
 </div>`;
     }
@@ -920,8 +948,8 @@ ${bulletHtml}
       fallbackBullets.forEach(push);
       return bullets.slice(0, 5);
     }
-    function optAppendEbayProductId(title, productId, max){
-      const id = optClean(productId).replace(/^Product ID:\s*/i, '').trim();
+    function optAppendEbayTitleIdentifier(title, identifier, max){
+      const id = optClean(identifier).replace(/^(?:Product ID|Manufacturer Part Number|MPN|OE\/OEM Part Number|Model):\s*/i, '').trim();
       if (!id) return optCap(title, max);
       const suffix = ` - ${id}`;
       const cleanTitle = optClean(title).replace(new RegExp(`\\s+-\\s+${id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i'), '');
@@ -948,7 +976,7 @@ ${bulletHtml}
         if (next.length <= max) title = next;
       }
       const capped = optCap(title || optTitleCase(parts.filter(Boolean).join(' ')), max);
-      return marketplace === 'eBay' ? optAppendEbayProductId(capped, productId, max) : capped;
+      return marketplace === 'eBay' ? optAppendEbayTitleIdentifier(capped, productId, max) : capped;
     }
     function optHasAny(source, terms){
       const text = optClean(source).toLowerCase();
@@ -1054,8 +1082,8 @@ ${bulletHtml}
         useCases = useCases.filter(item => !/^(?:home|office|garden|patio|pets|gym|camping)$/.test(item));
       }
       const sparseTitle = marketplace === 'eBay' ? 'Add Product Title for Stronger eBay Preview' : marketplace === 'Amazon' ? 'Add Product Title for Stronger Amazon Preview' : 'Add Product Title for Stronger Preview';
-      const productId = optDetailValue(productDetails, ['Product ID']);
-      const optimizedTitle = hasCustomerFacingSeed ? optBuildTitle({marketplace, brand, productType, specs, useCases, keyword, sourceTitle, productId}) : sparseTitle;
+      const titleIdentifier = optDetailValue(productDetails, ['Manufacturer Part Number', 'MPN', 'OE/OEM Part Number', 'Model']) || optDetailValue(productDetails, ['Product ID']);
+      const optimizedTitle = hasCustomerFacingSeed ? optBuildTitle({marketplace, brand, productType, specs, useCases, keyword, sourceTitle, productId: titleIdentifier}) : sparseTitle;
       const fallbackBullets = hasCustomerFacingSeed ? optBuildBenefitBullets({productType, specs, phrases, useCases}) : [];
       const bullets = hasCustomerFacingSeed ? optBuildExactBullets({productType, productDetails, fallbackBullets, sourceTitle}) : [];
       const ebayHtml = marketplace === 'eBay' && hasCustomerFacingSeed ? optBuildEbayDescriptionHtml({title: optimizedTitle, bullets, productDetails}) : '';

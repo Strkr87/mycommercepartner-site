@@ -448,13 +448,16 @@ test('homepage optimizer prioritizes eBay item specifics over marketplace metada
   assert.match(details, /Bolt Pattern: 4x156/);
   assert.match(details, /Wheel Diameter: 10/);
   assert.doesNotMatch(details, /Price: USD 275\.00|Category: eBay Motors/i);
-  assert.match(result.ebayHtml, /<h2[^>]*>HiPer ATV TECH 3/);
-  assert.match(result.ebayHtml, /<p[^>]*>HiPer ATV TECH 3[\s\S]*Wheel design[\s\S]*Tech 3 model[\s\S]*Single Beadlock construction[\s\S]*ATV applications[\s\S]*<\/p>/i);
-  assert.match(result.ebayHtml, /<p[^>]*>fitment details are highlighted[\s\S]*size and quantity details are easy to scan/i);
+  assert.match(result.optimizedTitle, / - 1050-YPFF-SBL-BK$/);
+  assert.doesNotMatch(result.optimizedTitle, /395645632216$/);
+  assert.match(result.ebayHtml, /<h2[^>]*>HiPer ATV TECH 3[\s\S]*1050-YPFF-SBL-BK<\/h2>/);
+  assert.match(result.ebayHtml, /<p[^>]*>HiPer ATV TECH 3[\s\S]*combines wheel design[\s\S]*Tech 3 model[\s\S]*Single Beadlock construction[\s\S]*made for ATV use[\s\S]*<\/p>/i);
+  assert.match(result.ebayHtml, /<p[^>]*>fitment details help you match the item to your vehicle or project[\s\S]*size and quantity details are easy to check/i);
   assert.match(result.ebayHtml, /<li>Machine Type: ATV<\/li>/);
   assert.match(result.ebayHtml, /<li>Bolt Pattern: 4x156<\/li>/);
+  assert.match(result.ebayHtml, /<h3[^>]*>What's in the box<\/h3>\s*<ul[^>]*>\s*<li>Front Wheel<\/li>/i);
   assert.ok(result.ebayHtml.indexOf('<p') < result.ebayHtml.indexOf('<h3 style="font-size:18px;margin:0 0 8px;">Highlights</h3>'));
-  assert.doesNotMatch(result.ebayHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/i)?.[1] || '', /Product ID|Condition|Price|Seller/i);
+  assert.doesNotMatch(result.ebayHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/i)?.[1] || '', /Product ID|Condition|Price|Seller|listed with|shoppers/i);
 });
 
 test('homepage product details remove marketplace noise from eBay lookup text', () => {
