@@ -1,6 +1,18 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/free-listing-score",
+      "destination": "/#optimizer",
+      "permanent": true
+    },
+    {
+      "source": "/free-listing-score.html",
+      "destination": "/#optimizer",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
