@@ -330,9 +330,63 @@
     function optIsCustomerDetail(item){
       return !/^\s*(?:product id|item id|ebay item id|sku|mpn|seller|price)\s*:/i.test(item || '');
     }
+    function optEbayBulletFallbacks(title, productDetails){
+      const details = productDetails || [];
+      const sourceTitle = optClean(title).replace(/\s+-\s+\d{9,15}$/,'');
+      const value = labels => optDetailValue(details, labels);
+      const out = [];
+      function add(body){
+        const text = optClean(body);
+        if (!text) return;
+        if (/\b(?:product id|item id|ebay item id|condition|notes|title|sku|mpn|seller|price)\b/i.test(text)) return;
+        const key = text.toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').slice(0, 8).join(' ');
+        if (out.some(item => item.toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').slice(0, 8).join(' ') === key)) return;
+        out.push(text.endsWith('.') ? text : `${text}.`);
+      }
+      const material = value(['Material', 'Material / Feature']);
+      const color = value(['Color']);
+      const coverage = value(['Coverage']);
+      const size = value(['Storage', 'Size', 'Capacity', 'Dimensions', 'Pack Count', 'Quantity', 'Weight']);
+      const compatibility = value(['Compatibility', 'Compatible Brand', 'Compatible Model', 'Network', 'Carrier']);
+      const included = value(['Included', 'Included Accessories']);
+      const brand = value(['Brand']);
+      if (material) add(`${optTitleCase(material)} material is the listed construction detail`);
+      if (coverage) add(`${optTitleCase(coverage)} coverage is shown as the listed performance level`);
+      if (size) add(`${optTitleCase(size)} sizing is listed for item matching`);
+      if (color) add(`${optTitleCase(color)} color identifies the visible finish`);
+      if (compatibility) add(`${optTitleCase(compatibility)} compatibility is listed for fit matching`);
+      if (included) add(`Included ${included} identifies what comes with the order`);
+      const titleFacts = [
+        (sourceTitle.match(/\b\d+\s?(?:-|to)\s?\d+\s?%[^\s,]*/i) || [''])[0],
+        (sourceTitle.match(/\b\d+(?:\.\d+)?\s?[xÃ—]\s?\d+(?:\.\d+)?\b/i) || [''])[0],
+        (sourceTitle.match(/\b\d\s?\+\s?\d\b/i) || [''])[0],
+        (sourceTitle.match(/\b\d\s?[xÃ—]\s?\d{3}(?:\.\d+)?\b/i) || [''])[0]
+      ].filter(Boolean);
+      titleFacts.forEach(fact => add(`${fact.replace(/\s+/g, '')} is shown in the title for exact item matching`));
+      if (/heavy duty mesh/i.test(sourceTitle)) add('Heavy duty mesh construction is called out in the product title');
+      if (/sun shade|shade cover|shade cloth/i.test(sourceTitle)) add('Sun shade cover wording identifies the outdoor coverage use');
+      if (/tarp/i.test(sourceTitle)) add('Tarp wording identifies the cover style for shoppers comparing options');
+      if (/beadlock/i.test(sourceTitle)) add('Beadlock design is called out for wheel construction matching');
+      if (/front wheel/i.test(sourceTitle)) add('Front wheel placement is listed for position matching');
+      else if (/rear wheel/i.test(sourceTitle)) add('Rear wheel placement is listed for position matching');
+      if (/acoustic|sound absorbing|soundproof/i.test(sourceTitle)) add('Sound-control wording identifies the intended room treatment use');
+      if (brand) add(`${optTitleCase(brand)} brand name supports exact-match product searches`);
+      return out;
+    }
     function optBuildEbayDescriptionHtml({title, bullets, productDetails}){
       const cleanTitle = optHtmlText(title);
-      const cleanBullets = (bullets || []).map(optHtmlText).filter(Boolean).slice(0, 6);
+      const mergedBullets = [];
+      function addBullet(item){
+        const text = optClean(item).replace(/^\s*(?:brand|product id|item id|ebay item id|condition|notes|title|sku|mpn|seller|price)\s*:\s*/i, '');
+        if (!text) return;
+        if (/\b(?:product id|item id|ebay item id|condition|notes|title|sku|mpn|seller|price)\b/i.test(text)) return;
+        const key = text.toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').slice(0, 8).join(' ');
+        if (mergedBullets.some(existing => existing.toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').slice(0, 8).join(' ') === key)) return;
+        mergedBullets.push(text.endsWith('.') ? text : `${text}.`);
+      }
+      (bullets || []).forEach(addBullet);
+      optEbayBulletFallbacks(title, productDetails).forEach(addBullet);
+      const cleanBullets = mergedBullets.map(optHtmlText).filter(Boolean).slice(0, 5);
       const cleanDetails = (productDetails || []).filter(optIsCustomerDetail).map(optHtmlText).filter(Boolean).slice(0, 8);
       const bulletHtml = cleanBullets.length
         ? cleanBullets.map(item => `    <li>${item}</li>`).join('\n')
@@ -628,7 +682,7 @@ ${bulletHtml}
     function optBenefitFact(value){
       return firstWords(value, 22)
         .replace(/^[^a-z0-9]+/i, '')
-        .replace(/\b(?:product id|item id|ebay item id|condition|notes|title):\s*[^|;\n.]+/ig, ' ')
+        .replace(/\b(?:brand|product id|item id|ebay item id|condition|notes|title):\s*[^|;\n.]+/ig, ' ')
         .replace(/\b\d{9,15}\b/g, ' ')
         .replace(/\b(?:add|improve|include|position|recommended|fix|missing|listing should|you should|buyer confidence gap|clear product detail to compare|make the buying decision easier|trust cues)\b/ig, ' ')
         .replace(/\s+/g, ' ')
@@ -732,7 +786,7 @@ ${bulletHtml}
       else if (/\brear wheel\b/i.test(titleSource)) push('Rear wheel placement matches rear-position ATV wheel applications');
       if (offset) push(`${offset.replace(/\s+/g, '')} offset defines the wheel stance for compatible ATV setups`);
       if (boltPattern) push(`${boltPattern.replace(/\s+/g, '')} bolt pattern supports matching hubs with the same lug layout`);
-      if (material) push(/black/i.test(material) ? 'Black finish gives the installed hardware a clean, low-profile look' : `${optTitleCase(material)} finish gives the ${optTitleCase(product)} a clean, ready-to-use look`);
+      if (material) push(/black/i.test(material) ? 'Black finish gives the installed hardware a clean, low-profile look' : `${optTitleCase(material)} material is the listed construction detail`);
       if (compatibility) push(/^unlocked$/i.test(compatibility) ? 'Unlocked carrier support works with compatible networks' : `Fits ${compatibility} for compatible applications`);
       if (included) push(`Includes ${included} so the main components are ready for installation or use`);
       fallbackBullets.forEach(push);

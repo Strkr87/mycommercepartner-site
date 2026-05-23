@@ -429,6 +429,24 @@ test('homepage eBay product description title keeps product ID at the end', () =
   assert.match(result.ebayHtml, /<h2[^>]*>[^<]+ - 395248277355<\/h2>/);
 });
 
+test('homepage eBay product description always renders five highlight bullets', () => {
+  const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
+  const result = buildHomeOptimizer(makeFormData({
+    siteUrl: 'https://www.ebay.com/itm/395248277355',
+    currentTitle: 'WindscreenSupplyCo Heavy Duty Mesh Tarp Sun Shade Cover 60-70% Blockage Black',
+    productType: 'Garden & Patio|Shade Sails & Tarps',
+    currentCopy: 'Brand: WindscreenSupplyCo\nCondition: New\nMaterial: Heavy Duty Mesh\nColor: Black\nCoverage: 60-70% Blockage',
+    targetKeyword: '',
+    goal: '',
+    revenue: ''
+  }));
+
+  const highlights = result.ebayHtml.match(/<h3[^>]*>Highlights<\/h3>\s*<ul[^>]*>([\s\S]*?)<\/ul>/i)?.[1] || '';
+  const bulletLines = [...highlights.matchAll(/<li>(.*?)<\/li>/g)].map(match => match[1]);
+  assert.equal(bulletLines.length, 5);
+  assert.doesNotMatch(bulletLines.join(' '), /Product ID|Condition:|SKU|MPN|Seller|Price|Notes:/i);
+});
+
 test('homepage eBay product description shows five direct customer-facing bullets from visible title facts', () => {
   const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
   const result = buildHomeOptimizer(makeFormData({
