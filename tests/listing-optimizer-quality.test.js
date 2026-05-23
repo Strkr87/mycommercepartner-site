@@ -434,6 +434,33 @@ test('homepage eBay product description shows five direct customer-facing bullet
   assert.match(bulletLines[1], /Single beadlock design supports secure tire seating for off-road use\./i);
 });
 
+test('homepage keywords and recommended fixes are product-specific instead of marketplace metadata', () => {
+  const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
+  const result = buildHomeOptimizer(makeFormData({
+    siteUrl: 'https://www.ebay.com/itm/336568091037',
+    currentTitle: 'Acoustic Wall Panel 12 x 12 12 Pack Sound Absorbing Foam Panels',
+    productType: 'Musical Instruments & Gear|Pro Audio Equipment|Acoustical Treatments',
+    currentCopy: 'Product ID: 336568091037 Category: Musical Instruments & Gear > Pro Audio Equipment > Acoustical Treatments Condition: New Refund: money_back Item specifics: Size: 12 x 12; Pack Count: 12 Pack; Color: Black',
+    targetKeyword: '',
+    goal: '',
+    revenue: ''
+  }));
+
+  const keywords = result.keywordIdeas.join(' | ');
+  assert.match(keywords, /acoustic wall panel/i);
+  assert.match(keywords, /12 x 12|12x12/i);
+  assert.match(keywords, /12 pack/i);
+  assert.doesNotMatch(keywords, /product id|336568091037|category|musical|pro audio|condition|refund|money_back/i);
+  assert.ok(result.keywordIdeas.length <= 8, result.keywordIdeas.join(', '));
+
+  const fixes = result.fixes.join(' ');
+  assert.match(fixes, /12 x 12|12x12/i);
+  assert.match(fixes, /12 Pack/i);
+  assert.match(fixes, /Acoustic Wall Panel/i);
+  assert.match(fixes, /photos|condition|shipping|returns/i);
+  assert.doesNotMatch(fixes, /product type, main keyword|verified specs|short buyer-facing bullets|readiness estimate/i);
+});
+
 test('homepage presents the free listing optimizer as the front door and frames paid help as implementation', () => {
   const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
   assert.match(html, /<title>Free Amazon &amp; eBay Listing Optimizer|<title>Free Amazon & eBay Listing Optimizer/);

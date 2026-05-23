@@ -530,6 +530,54 @@ ${bulletHtml}
       });
       return optDedupe(named.concat(fallback)).slice(0,6);
     }
+    function optBuildKeywordIdeas({marketplace, keyword, productType, specs, useCases, phrases, source, productDetails}){
+      const product = optTitleCase(optCustomerProductName(productType || keyword || 'item', optDetailValue(productDetails, ['Brand']))).replace(/\bItem$/i, '').trim() || optTitleCase(keyword || productType || 'item');
+      const productLower = product.toLowerCase();
+      const pluralProduct = /s$/i.test(product) ? product : product.replace(/\b(panel|wheel|bottle|cover|screen|cable|case|bag|tool|ring)$/i, '$1s');
+      const size = optDetailValue(productDetails, ['Size', 'Dimensions', 'Capacity', 'Coverage']) || (specs || []).find(spec => /\d+\s?[x×]\s?\d+|\d+\s?(?:oz|lb|ft|in|cm|mm|m)\b|\d+\s?(?:-|to)\s?\d+\s?%/i.test(spec)) || '';
+      const pack = optDetailValue(productDetails, ['Pack Count', 'Quantity']) || (specs || []).find(spec => /\b\d+(?:\.\d+)?[\s-]?(?:pack|pcs|piece|pieces)\b/i.test(spec)) || '';
+      const material = optDetailValue(productDetails, ['Material', 'Material / Feature']) || (specs || []).find(spec => /stainless steel|uv resistant|rust resistant|waterproof|leakproof|heavy duty|rechargeable|cordless/i.test(spec)) || '';
+      const color = optDetailValue(productDetails, ['Color']) || '';
+      const raw = [
+        keyword,
+        product,
+        pluralProduct !== product ? pluralProduct : '',
+        size ? `${product} ${size}` : '',
+        size ? `${size} ${productLower}` : '',
+        pack ? `${pack} ${pluralProduct.toLowerCase()}` : '',
+        pack ? `${product} ${pack}` : '',
+        material ? `${product} ${material}` : '',
+        color && !/^black|white|gray|grey|tan|brown|green|blue$/i.test(color) ? `${color} ${productLower}` : '',
+        /acoustic|sound/i.test(source) ? 'sound absorbing panels' : '',
+        /acoustic|sound/i.test(source) ? 'acoustic treatment panels' : '',
+        ...useCases.slice(0, 2).map(use => `${product} for ${use}`),
+        ...phrases.slice(0, 4)
+      ];
+      return optDedupe(raw.map(item => optClean(item).toLowerCase().replace(/\b(\w+(?:\s+\w+){0,2})\s+\1\b/g, '$1')))
+        .filter(item => item.length > 2)
+        .filter(item => !/\b(?:product id|item id|ebay item id|sku|mpn|category|condition|refund|money_back|price|seller|shipping|returns?|buying options|feedback|available quantity)\b/i.test(item))
+        .filter(item => !/\b\d{9,15}\b/.test(item))
+        .filter(item => !/\b(?:musical instruments?|pro audio equipment|acoustical treatments?)\b/i.test(item))
+        .filter(item => !/^marketplace listing$/.test(item) && !/\b(?:amazon|ebay) listing for (?:amazon|ebay)$/.test(item))
+        .slice(0, 8);
+    }
+    function optBuildRecommendedFixes({marketplace, currentTitle, optimizedTitle, productType, specs, details, productDetails, bullets}){
+      const product = optTitleCase(optCustomerProductName(productType, optDetailValue(productDetails, ['Brand']))).replace(/\bItem$/i, '').trim() || 'Product';
+      const size = optDetailValue(productDetails, ['Size', 'Dimensions', 'Capacity', 'Coverage']) || (specs || []).find(spec => /\d+\s?[x×]\s?\d+|\d+\s?(?:oz|lb|ft|in|cm|mm|m)\b|\d+\s?(?:-|to)\s?\d+\s?%/i.test(spec)) || '';
+      const pack = optDetailValue(productDetails, ['Pack Count', 'Quantity']) || (specs || []).find(spec => /\b\d+(?:\.\d+)?[\s-]?(?:pack|pcs|piece|pieces)\b/i.test(spec)) || '';
+      const material = optDetailValue(productDetails, ['Material', 'Material / Feature', 'Color']) || '';
+      const marketRule = marketplace === 'eBay' ? 'Keep the final eBay title under 80 characters while using the strongest search terms first.' : 'Keep the title readable while using brand, product type, specs, and use case in one clean phrase.';
+      const fixes = [];
+      fixes.push(currentTitle
+        ? `Use a tighter title built around ${optTitleCase(product)}${size ? `, ${optTitleCase(size)}` : ''}${pack ? `, ${optTitleCase(pack)}` : ''}.`
+        : `Add the live product title so the rewrite can anchor on ${optTitleCase(product)} instead of only the URL.`);
+      if (size || pack || material) fixes.push(`Move the strongest facts into the first bullets: ${optNaturalList([size && optTitleCase(size), pack && optTitleCase(pack), material && optTitleCase(material)].filter(Boolean))}.`);
+      else fixes.push('Add concrete facts such as size, material, color, compatibility, quantity, and included items.');
+      fixes.push((bullets || []).length ? 'Turn each bullet into feature + buyer benefit wording, not a list of raw specs.' : 'Add 3–5 feature + buyer benefit bullets so the listing has usable shopper copy.');
+      fixes.push(marketRule);
+      fixes.push('Add or confirm photos, condition, shipping, and returns so the buyer-trust section feels complete.');
+      return fixes.slice(0, 5);
+    }
     function optInferProduct({title, productType, keyword, host}){
       const explicit = optClean(productType || keyword);
       const explicitLooksLikeCategory = /\||>|\b(?:ebay|amazon)\b.*\b(?:parts|accessories|motors|category|listing)\b/i.test(explicit);
@@ -552,7 +600,7 @@ ${bulletHtml}
     }
     function optExtractBrand(title){
       const first = optClean(title).split(/\s+/)[0] || '';
-      if (/^[A-Z][A-Za-z0-9'-]{2,}$/.test(first) && !/^(New|The|Premium|Amazon|eBay)$/i.test(first)) return first;
+      if (/^[A-Z][A-Za-z0-9'-]{2,}$/.test(first) && !/^(New|The|Premium|Amazon|eBay|Acoustic|Heavy|Heavy-duty|Sound|Shade)$/i.test(first)) return first;
       return '';
     }
     function optCleanTitleSeed(title, brand){
@@ -817,26 +865,13 @@ ${bulletHtml}
       const fallbackBullets = hasCustomerFacingSeed ? optBuildBenefitBullets({productType, specs, phrases, useCases}) : [];
       const bullets = hasCustomerFacingSeed ? optBuildExactBullets({productType, productDetails, fallbackBullets, sourceTitle}) : [];
       const ebayHtml = marketplace === 'eBay' && hasCustomerFacingSeed ? optBuildEbayDescriptionHtml({title: optimizedTitle, bullets, productDetails}) : '';
-      const rawKeywordIdeas = hasCustomerFacingSeed ? [
-        keyword,
-        productType,
-        specs[0] && !keyword.toLowerCase().includes(specs[0].toLowerCase()) ? `${keyword} ${specs[0]}` : '',
-        specs[1] && !productType.toLowerCase().includes(specs[1].toLowerCase()) ? `${productType} ${specs[1]}` : '',
-        useCases[0] ? `${keyword} for ${useCases[0]}` : '',
-        ...useCases.map(use => `${keyword} ${use}`),
-        ...phrases.slice(0,4).map(item => item.split(/\s+/).slice(0,5).join(' '))
-      ] : [];
       const fallbackKeywords = hasCustomerFacingSeed ? [] : [marketplace.toLowerCase(), 'product title', 'product details'];
-      const keywordIdeas = optDedupe(rawKeywordIdeas.concat(fallbackKeywords).map(item => optClean(item).toLowerCase().replace(/\b(\w+(?:\s+\w+){0,2})\s+\1\b/g, '$1'))).filter(item => item.length > 2 && !/^marketplace listing$/.test(item) && !/\b(?:amazon|ebay) listing for (?:amazon|ebay)$/.test(item)).slice(0,10);
+      const keywordIdeas = hasCustomerFacingSeed
+        ? optBuildKeywordIdeas({marketplace, keyword, productType, specs, useCases, phrases, source, productDetails})
+        : fallbackKeywords;
       const readiness = optBuildReadinessScore({marketplace, url, sourceTitle, details, productDetails, specs, bullets, enteredProductType, enteredKeyword, hasCustomerFacingSeed});
       const score = readiness.score;
-      const fixes = hasCustomerFacingSeed ? [
-        currentTitle ? 'Put the product type, main keyword, and strongest verified spec near the front of the title.' : 'The link provided product words; add the live title to make the rewrite more accurate.',
-        specs.length ? 'Use verified specs in the title and bullets without repeating the same phrase.' : 'Provide concrete specs such as dimensions, material, color, compatibility, pack count, or included items.',
-        details.length >= 80 ? 'Convert the strongest description details into short buyer-facing bullets.' : 'Provide a short product description for more specific customer-facing bullets.',
-        marketplace === 'eBay' ? 'Keep the eBay title at 80 characters or less.' : 'Keep the title readable by grouping brand, product type, specs, and use case cleanly.',
-        marketplace === 'eBay' ? 'Add or verify photos, condition, shipping, and returns because they affect buyer trust and this readiness estimate.' : 'Add or verify photos, condition, shipping, and returns because they affect buyer trust.'
-      ] : [
+      const fixes = hasCustomerFacingSeed ? optBuildRecommendedFixes({marketplace, currentTitle, optimizedTitle, productType, specs, details, productDetails, bullets}) : [
         'Add the current title and key product details to generate customer-facing listing copy.',
         'Include verified specs such as dimensions, material, color, compatibility, pack count, or included items.',
         'Paste visible description or feature text if the marketplace page cannot be read automatically.'
