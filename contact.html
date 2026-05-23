@@ -18,6 +18,12 @@ header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18
 
 .brand{display:inline-flex;align-items:center}.brand-logo{height:34px;width:auto;display:block;max-width:240px}.footer-logo{height:32px;width:auto;display:block;margin-bottom:12px}.dashboard-logo{width:40px;height:40px;object-fit:contain;display:block}.audit-checkout{margin-top:24px;border-top:1px solid var(--line);padding-top:22px}.audit-checkout h2{font:1.55rem/1.08 'Source Sans 3',Arial,sans-serif;font-weight:500;letter-spacing:-.045em}.audit-checkout p{margin-top:8px;color:var(--muted);font-size:.94rem;line-height:1.55}.audit-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.audit-option{border:1px solid var(--line);border-radius:18px;padding:16px;background:#fff;text-align:left}.audit-option strong{display:block;color:var(--ink)}.audit-option span{display:block;color:var(--muted);font-size:.88rem;line-height:1.45;margin-top:4px}.audit-option .price{font-size:1.5rem;font-weight:850;color:var(--blue);margin-top:8px}.checkout-status{margin-top:14px;color:var(--muted);font-size:.92rem}.checkout-status.ok{color:#0b7a46}.checkout-status.err{color:#b42318}@media(max-width:640px){.brand-logo{height:28px;max-width:190px}.audit-options{grid-template-columns:1fr}}</style>
   <link rel="stylesheet" href="assets/mcp-dark-site.css">
+  <style>
+    .page-frame>header{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:24px!important;min-height:82px!important;padding:0 28px!important;background:rgba(4,17,29,.92)!important;border-bottom:1px solid var(--mcp-line)!important;backdrop-filter:blur(16px)!important}
+    .page-frame>header .brand{flex:0 0 auto!important}.page-frame>header nav#siteNav{display:flex!important;align-items:center!important;justify-content:center!important;gap:20px!important;width:auto!important;min-height:auto!important;margin:0!important;background:transparent!important;color:var(--mcp-text)!important}.page-frame>header .navlink{color:rgba(246,251,255,.78)!important;font-size:13px!important;font-weight:850!important}.page-frame>header .navlink:hover{color:var(--mcp-green-2)!important}.page-frame>header .header-actions{display:flex!important;justify-content:flex-end!important;flex:0 0 auto!important}.page-frame>header .btn.small{background:rgba(255,255,255,.06)!important;color:var(--mcp-text)!important;border-color:var(--mcp-line-2)!important}
+    .hero-copy{padding:86px 64px 64px!important}.hero-side{background:radial-gradient(circle at 82% 8%,rgba(52,199,116,.2),transparent 32%),linear-gradient(180deg,rgba(16,43,64,.72),rgba(7,22,35,.9))!important;border-left:1px solid var(--mcp-line)!important}.form-card{background:linear-gradient(180deg,rgba(16,43,64,.94),rgba(8,25,39,.96))!important;border:1px solid var(--mcp-line)!important;color:var(--mcp-text)!important}.audit-checkout{border-top-color:var(--mcp-line)!important}.audit-option{background:rgba(255,255,255,.045)!important;border-color:var(--mcp-line)!important;color:var(--mcp-text)!important}.audit-option span,.audit-checkout p{color:var(--mcp-muted)!important}.audit-option .price{color:var(--mcp-green-2)!important}
+    @media(max-width:980px){.page-frame>header{display:grid!important;grid-template-columns:1fr auto!important;padding:18px!important}.page-frame>header .header-actions{display:none!important}.page-frame>header nav#siteNav{display:none!important;position:absolute!important;left:18px!important;right:18px!important;top:78px!important;width:auto!important;padding:14px!important;border:1px solid var(--mcp-line-2)!important;border-radius:18px!important;background:#071827!important;box-shadow:0 24px 60px rgba(0,0,0,.36)!important;flex-direction:column!important;align-items:stretch!important;gap:4px!important}.page-frame>header nav#siteNav.open{display:flex!important}.hero-side{border-left:0!important;border-top:1px solid var(--mcp-line)!important}}
+  </style>
   <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
 </head>
 <body>
@@ -27,14 +33,12 @@ header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18
   <a class="brand" href="index.html" aria-label="MyCommercePartner home"><img class="brand-logo" src="assets/mycommercepartner-logo-wordmark.png" alt="MyCommercePartner"></a>
   <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="siteNav" aria-label="Open menu"><span></span></button>
   <nav id="siteNav" aria-label="Primary navigation">
-    <a class="navlink" href="index.html#services">Services</a>
-    <a class="navlink" href="index.html#results">Results</a>
-    <a class="navlink" href="index.html#pricing">Pricing</a>
-    <a class="navlink" href="ai-tools-for-small-business.html">Workflow Help</a>
-    <a class="navlink" href="about.html">About</a>
-    <a class="navlink" href="faq.html">FAQ</a>
+    <a class="navlink" href="index.html#how-it-works">How it works</a>
+    <a class="navlink" href="index.html#services">Paid help</a>
+    <a class="navlink" href="contact.html">Contact</a>
+    <a class="navlink" href="/free-listing-score">Free Optimizer</a>
   </nav>
-  <div class="header-actions"><a class="btn small dark" href="free-marketplace-review.html">Request free marketplace review →</a></div>
+  <div class="header-actions"><a class="btn small dark" href="/free-listing-score">Use the Free Optimizer →</a></div>
 </header>
 
 <main>
@@ -86,7 +90,13 @@ const params = new URLSearchParams(window.location.search);
 const interest = params.get('interest');
 const checkout = params.get('checkout');
 const audit = params.get('audit');
-if (interest) document.getElementById('package').value = interest;
+if (interest) {
+  const packageSelect = document.getElementById('package');
+  if (packageSelect && !Array.from(packageSelect.options).some(option => option.value === interest)) {
+    packageSelect.add(new Option(interest, interest), 1);
+  }
+  if (packageSelect) packageSelect.value = interest;
+}
 if (checkout && audit && checkoutStatus) {
   checkoutStatus.className = checkout === 'success' ? 'checkout-status ok' : 'checkout-status err';
   checkoutStatus.textContent = checkout === 'success'
