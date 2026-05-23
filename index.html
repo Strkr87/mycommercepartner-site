@@ -617,7 +617,7 @@ ${bulletHtml}
     }
     function optExtractProductDetails({text, specs, title, url}){
       const named = [];
-      const detailLabels = 'brand|product id|asin|model|mpn|sku|item id|item number|ebay item id|ebay item number|manufacturer part number|manufacturer|type|features?|material|capacity|coverage|size|dimensions?|item height|item width|item length|item thickness|height|width|length|thickness|shape|style|finish|color|colour|included|included accessories|condition|compatibility|compatible brand|compatible model|pack count|quantity|number of items|item weight|weight|storage|network|carrier|shipping|returns?';
+      const detailLabels = 'brand|product id|asin|model|mpn|sku|upc|oe\\/oem part number|item id|item number|ebay item id|ebay item number|manufacturer part number|manufacturer|manufacturer warranty|country of origin|machine type|type|features?|material|wheel material|wheel construction|bolt pattern|placement on vehicle|offset|wheel diameter|wheel width|capacity|coverage|size|dimensions?|item height|item width|item length|item thickness|height|width|length|thickness|shape|style|finish|color|colour|included|included accessories|condition|compatibility|compatible brand|compatible model|pack count|quantity|number of items|item weight|weight|storage|network|carrier|shipping|returns?';
       const ignoredLabels = 'title|price|buying options|seller|item location|availability|available quantity|listing ends?|listing type|category|feedback|notes|photo|photos?|image';
       const allLabels = `${detailLabels}|${ignoredLabels}|item specifics`;
       const source = String(text || '').replace(/\bItem specifics:\s*/ig, ' ').replace(/[|;]/g, '\n');

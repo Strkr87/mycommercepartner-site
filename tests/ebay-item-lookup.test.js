@@ -154,6 +154,66 @@ test('lookupEbayBrowseApi fetches token then legacy item details', async () => {
   assert.match(result.description, /Shade Sails/);
 });
 
+test('lookupEbayBrowseApi enriches sparse Motors listings with Shopping API item specifics', async () => {
+  const calls = [];
+  const mockFetch = async (url, options = {}) => {
+    calls.push({ url: String(url), options });
+    if (String(url).includes('/identity/v1/oauth2/token')) {
+      return { ok: true, status: 200, json: async () => ({ access_token: 'test-token' }) };
+    }
+    if (String(url).includes('/buy/browse/v1/item/get_item_by_legacy_id')) {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          legacyItemId: '395645632216',
+          title: 'HiPer ATV TECH 3 Single Beadlock Front Wheel 10x5, 4+1, 4x156 - 1050-YPFF-SBL-BK',
+          categoryPath: 'eBay Motors|Wheels, Tires & Parts|Wheels',
+          condition: 'New',
+          price: { value: '275.00', currency: 'USD' },
+          buyingOptions: ['FIXED_PRICE'],
+          localizedAspects: []
+        })
+      };
+    }
+    assert.match(String(url), /open\.api\.ebay\.com\/shopping/);
+    assert.match(String(url), /IncludeSelector=Details%2CDescription%2CItemSpecifics%2CShippingCosts/);
+    return {
+      ok: true,
+      status: 200,
+      json: async () => ({
+        Item: {
+          ItemID: '395645632216',
+          Title: 'HiPer ATV TECH 3 Single Beadlock Front Wheel 10x5',
+          PrimaryCategoryName: 'Wheels',
+          ConditionDisplayName: 'New',
+          ItemSpecifics: {
+            NameValueList: [
+              { Name: 'Machine Type', Value: ['ATV'] },
+              { Name: 'Manufacturer Part Number', Value: ['1050-YPFF-SBL-BK'] },
+              { Name: 'Bolt Pattern', Value: ['4x156'] },
+              { Name: 'Wheel Material', Value: ['Carbon Composite'] },
+              { Name: 'Offset', Value: ['4+1'] }
+            ]
+          }
+        }
+      })
+    };
+  };
+
+  const result = await lookupEbayBrowseApi('395645632216', {
+    fetch: mockFetch,
+    env: { EBAY_CLIENT_ID: 'client-id', EBAY_CLIENT_SECRET: 'client-secret', EBAY_MARKETPLACE_ID: 'EBAY_US' }
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.source, 'ebay-api+ebay-shopping-api');
+  assert.match(result.itemSpecifics.join('\n'), /Machine Type: ATV/);
+  assert.match(result.itemSpecifics.join('\n'), /Manufacturer Part Number: 1050-YPFF-SBL-BK/);
+  assert.match(result.itemSpecifics.join('\n'), /Bolt Pattern: 4x156/);
+  assert.equal(calls.length, 3);
+});
+
 test('lookupEbayBrowseApi skips official lookup when credentials are missing', async () => {
   let called = false;
   const result = await lookupEbayBrowseApi('336568091037', {

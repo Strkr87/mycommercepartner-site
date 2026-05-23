@@ -511,6 +511,32 @@ function buildShoppingDetailBundle(item = {}, itemId = '') {
   };
 }
 
+function uniqueDetailLines(lines = []) {
+  return lines.filter((item, index, list) => {
+    const key = String(item || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    return key && list.findIndex(other => String(other || '').toLowerCase().replace(/\s+/g, ' ').trim() === key) === index;
+  });
+}
+
+function mergeDetailBundles(primary, secondary, source = '') {
+  if (!secondary?.ok) return primary;
+  const itemSpecifics = uniqueDetailLines([
+    ...(Array.isArray(primary.itemSpecifics) ? primary.itemSpecifics : []),
+    ...(Array.isArray(secondary.itemSpecifics) ? secondary.itemSpecifics : [])
+  ]).slice(0, 30);
+  const descriptionParts = uniqueDetailLines([
+    primary.description,
+    secondary.description
+  ].filter(Boolean));
+  return {
+    ...primary,
+    source: source || `${primary.source}+${secondary.source}`,
+    itemSpecifics,
+    description: cleanField(descriptionParts.join(' | '), 1600),
+    detailCount: Math.max(primary.detailCount || 0, (primary.detailCount || 0) + itemSpecifics.length)
+  };
+}
+
 function itemMatchesLegacyId(item = {}, itemId = '') {
   const legacyId = String(item.legacyItemId || item.itemId || '').trim();
   if (legacyId === itemId) return true;
@@ -706,7 +732,15 @@ async function lookupEbayBrowseApi(itemId, options = {}) {
       );
       if (itemResponse.ok) {
         const bundle = buildBrowseDetailBundle(itemData, itemId);
-        if (bundle.ok) return { ...bundle, marketplaceId };
+        if (bundle.ok) {
+          if (!bundle.itemSpecifics?.length) {
+            const shoppingResult = await lookupEbayShoppingApi(itemId, credentials, { ...options, accessToken: tokenData.access_token });
+            if (shoppingResult.ok && shoppingResult.itemSpecifics?.length) {
+              return { ...mergeDetailBundles(bundle, shoppingResult, 'ebay-api+ebay-shopping-api'), marketplaceId };
+            }
+          }
+          return { ...bundle, marketplaceId };
+        }
         failures.push({ marketplaceId, status: itemResponse.status, reason: 'no-usable-details' });
       } else {
         const apiMessage = itemData.errors?.[0]?.message || itemData.error_description || itemData.message || 'Item lookup was not available.';
@@ -727,7 +761,15 @@ async function lookupEbayBrowseApi(itemId, options = {}) {
       const matched = summaries.find(item => itemMatchesLegacyId(item, itemId)) || (summaries.length === 1 ? summaries[0] : null);
       if (matched) {
         const bundle = buildBrowseDetailBundle(matched, itemId);
-        if (bundle.ok) return { ...bundle, source: 'ebay-api-search', marketplaceId };
+        if (bundle.ok) {
+          if (!bundle.itemSpecifics?.length) {
+            const shoppingResult = await lookupEbayShoppingApi(itemId, credentials, { ...options, accessToken: tokenData.access_token });
+            if (shoppingResult.ok && shoppingResult.itemSpecifics?.length) {
+              return { ...mergeDetailBundles({ ...bundle, source: 'ebay-api-search' }, shoppingResult, 'ebay-api-search+ebay-shopping-api'), marketplaceId };
+            }
+          }
+          return { ...bundle, source: 'ebay-api-search', marketplaceId };
+        }
       }
     }
 
