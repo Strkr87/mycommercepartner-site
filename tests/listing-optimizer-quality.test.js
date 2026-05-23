@@ -461,6 +461,14 @@ test('homepage optimizer prioritizes eBay item specifics over marketplace metada
   assert.match(result.ebayHtml, /<li>Machine Type: ATV<\/li>/);
   assert.match(result.ebayHtml, /<li>Bolt Pattern: 4x156<\/li>/);
   assert.match(result.ebayHtml, /<h3[^>]*>What's in the box<\/h3>\s*<ul[^>]*>\s*<li>Wheel with black bead ring<\/li>/i);
+  const highlights = result.ebayHtml.match(/<h3[^>]*>Highlights<\/h3>\s*<ul[^>]*>([\s\S]*?)<\/ul>/i)?.[1] || '';
+  const bulletLines = [...highlights.matchAll(/<li>(.*?)<\/li>/g)].map(match => match[1]);
+  assert.equal(bulletLines.length, 5);
+  assert.match(bulletLines.join(' '), /10x5 sizing gives a quick diameter and width check/i);
+  assert.match(bulletLines.join(' '), /4x156 bolt pattern lines up with hubs/i);
+  assert.match(bulletLines.join(' '), /4\+1 offset defines wheel stance/i);
+  assert.match(bulletLines.join(' '), /Single beadlock setup helps keep the tire bead secure/i);
+  assert.match(bulletLines.join(' '), /Carbon composite construction helps provide a strong, lightweight wheel option|Modular serviceable design makes maintenance/i);
   assert.ok(result.ebayHtml.indexOf('<p') < result.ebayHtml.indexOf('<h3 style="font-size:18px;margin:0 0 8px;">Highlights</h3>'));
   assert.doesNotMatch(result.ebayHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/i)?.[1] || '', /Product ID|Condition|Price|Seller|listed with|shoppers/i);
 });
@@ -600,8 +608,8 @@ test('homepage eBay product description shows five direct customer-facing bullet
   assert.match(bulletLines.join(' '), /10x5|beadlock|front wheel|4\+1|4x156/i);
   assert.doesNotMatch(bulletLines.join(' '), /Product ID|Condition:|SKU|MPN|Seller|Price|Notes:/i);
   assert.doesNotMatch(bulletLines.join(' '), /helps shoppers|helps confirm|before purchase|before checkout|before ordering|verify compatibility|clear wheel-construction detail|match the wheel to the intended position|compare fitment/i);
-  assert.match(bulletLines[0], /10x5 sizing provides a defined wheel dimension for compatible setups\./i);
-  assert.match(bulletLines[1], /Single beadlock design supports secure tire seating for off-road use\./i);
+  assert.match(bulletLines[0], /10x5 sizing gives a quick diameter and width check for wheel fitment\./i);
+  assert.match(bulletLines.join(' '), /Single beadlock setup helps keep the tire bead secure for off-road riding\./i);
 });
 
 test('homepage keywords and recommended fixes are product-specific instead of marketplace metadata', () => {
