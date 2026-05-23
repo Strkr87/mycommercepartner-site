@@ -401,6 +401,17 @@ ${bulletHtml}
       const clue = optExtractUrlClue(url);
       return clue.marketplace === 'eBay' && (!clue.title || Boolean(clue.id));
     }
+    let homeLastLookupUrl = '';
+    const homeLastLookupAutofill = {title:'', details:'', productType:''};
+    function homeClearStaleLookupAutofill(url, titleInput, detailsInput, productTypeInput){
+      if (!homeLastLookupUrl || url === homeLastLookupUrl) return;
+      if (titleInput && optClean(titleInput.value) === optClean(homeLastLookupAutofill.title)) titleInput.value = '';
+      if (detailsInput && optClean(detailsInput.value) === optClean(homeLastLookupAutofill.details)) detailsInput.value = '';
+      if (productTypeInput && optClean(productTypeInput.value) === optClean(homeLastLookupAutofill.productType)) productTypeInput.value = '';
+      homeLastLookupAutofill.title = '';
+      homeLastLookupAutofill.details = '';
+      homeLastLookupAutofill.productType = '';
+    }
     async function lookupHomeEbayItemIfNeeded(){
       const urlInput = homeOptimizerForm?.querySelector('[name="siteUrl"]');
       const url = optClean(urlInput?.value);
@@ -409,6 +420,7 @@ ${bulletHtml}
       const detailsInput = homeOptimizerForm.querySelector('[name="currentCopy"]');
       const productTypeInput = homeOptimizerForm.querySelector('[name="productType"]');
       const keywordInput = homeOptimizerForm.querySelector('[name="targetKeyword"]');
+      homeClearStaleLookupAutofill(url, titleInput, detailsInput, productTypeInput);
       if (optClean(titleInput?.value) || optClean(detailsInput?.value) || optClean(productTypeInput?.value) || optClean(keywordInput?.value)) return null;
       homeOptimizerStatus.textContent = 'Looking up public listing details from the eBay item number...';
       try {
@@ -419,7 +431,6 @@ ${bulletHtml}
         });
         const data = await response.json().catch(()=>({}));
         if (response.ok && data.ok && data.title) {
-          if (titleInput && !titleInput.value.trim()) titleInput.value = data.title;
           const itemSpecifics = Array.isArray(data.itemSpecifics) ? data.itemSpecifics : [];
           const details = [
             data.itemId && `Product ID: ${data.itemId}`,
@@ -433,8 +444,13 @@ ${bulletHtml}
             data.subtitle && `Notes: ${data.subtitle}`,
             data.description
           ].filter(Boolean).join('\n');
+          if (titleInput && !titleInput.value.trim()) titleInput.value = data.title;
           if (detailsInput && details && !detailsInput.value.trim()) detailsInput.value = details;
           if (productTypeInput && data.category && !productTypeInput.value.trim()) productTypeInput.value = data.category;
+          homeLastLookupUrl = url;
+          homeLastLookupAutofill.title = titleInput ? titleInput.value : '';
+          homeLastLookupAutofill.details = detailsInput ? detailsInput.value : '';
+          homeLastLookupAutofill.productType = productTypeInput ? productTypeInput.value : '';
           homeOptimizerStatus.textContent = 'Found listing details from the eBay item number.';
           return data;
         }

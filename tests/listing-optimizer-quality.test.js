@@ -50,6 +50,79 @@ function makeFormData(entries) {
   return { get(name) { return entries[name] || ''; } };
 }
 
+function loadHomepageOptimizerSubmitHarness(fetchImpl) {
+  const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  const script = html.match(/<script>([\s\S]*?)<\/script>/)[1];
+  const inputs = {
+    siteUrl: { value: '' },
+    currentTitle: { value: '' },
+    currentCopy: { value: '' },
+    productType: { value: '' },
+    targetKeyword: { value: '' }
+  };
+  let submitHandler;
+  const defaultElement = {
+    textContent: '',
+    innerHTML: '',
+    value: '',
+    hidden: false,
+    srcdoc: '',
+    classList: { add() {} },
+    querySelector() { return null; },
+    addEventListener() {}
+  };
+  const form = {
+    ...defaultElement,
+    querySelector(selector) {
+      const match = selector.match(/\[name="([^"]+)"\]/);
+      return match ? inputs[match[1]] : null;
+    },
+    addEventListener(type, handler) {
+      if (type === 'submit') submitHandler = handler;
+    }
+  };
+  const elements = new Map([
+    ['homeOptimizerForm', form],
+    ['homeOptimizerResult', { ...defaultElement }],
+    ['homeOptimizerStatus', { ...defaultElement }],
+    ['homeScoreValue', { ...defaultElement }],
+    ['homeScoreLabel', { ...defaultElement }],
+    ['homeScoreSummary', { ...defaultElement }],
+    ['homeEbayHtmlCard', { ...defaultElement }],
+    ['homeEbayHtmlOutput', { ...defaultElement }],
+    ['homeEbayPreviewCard', { ...defaultElement }],
+    ['homeEbayHtmlPreview', { ...defaultElement }],
+    ['homeKeywordChips', { ...defaultElement }],
+    ['homeFirstFixes', { ...defaultElement }],
+    ['year', { ...defaultElement }],
+    ['contactForm', { ...defaultElement }],
+    ['formStatus', { ...defaultElement }]
+  ]);
+  class TestFormData {
+    constructor() {}
+    get(name) { return inputs[name]?.value || ''; }
+  }
+  const context = {
+    URL,
+    Date,
+    FormData: TestFormData,
+    fetch: fetchImpl,
+    document: {
+      getElementById(id) { return elements.get(id) || { ...defaultElement }; },
+      querySelector() { return { ...defaultElement }; }
+    }
+  };
+  vm.createContext(context);
+  vm.runInContext(script, context);
+  return {
+    inputs,
+    async submit() {
+      assert.equal(typeof submitHandler, 'function');
+      await submitHandler({ preventDefault() {} });
+    }
+  };
+}
+
 function repeatedWords(title) {
   const counts = new Map();
   for (const word of title.toLowerCase().match(/[a-z0-9]+/g) || []) {
@@ -70,6 +143,49 @@ const dysonInput = {
   shipping: 'Free shipping',
   description: 'Robot vacuum with 360 vision navigation, edge cleaning, HEPA filtration, and app control.'
 };
+
+test('homepage repeated eBay URL submits refresh lookup-filled fields for the new listing', async () => {
+  const lookupByUrl = new Map([
+    ['https://www.ebay.com/itm/111111111111', {
+      itemId: '111111111111',
+      title: 'Dyson V7 Motorhead Cordless Vacuum Cleaner',
+      category: 'Vacuum Cleaners',
+      condition: 'Used',
+      description: 'Cordless vacuum with charger and motorhead for home cleaning.'
+    }],
+    ['https://www.ebay.com/itm/222222222222', {
+      itemId: '222222222222',
+      title: 'Premium Garden Shade Cloth 10 x 12 ft',
+      category: 'Garden Shade',
+      condition: 'New',
+      description: 'UV resistant mesh shade for patio and garden use.'
+    }]
+  ]);
+  const calls = [];
+  const harness = loadHomepageOptimizerSubmitHarness(async (url, options = {}) => {
+    assert.equal(String(url), '/api/contact');
+    const body = JSON.parse(options.body);
+    calls.push(body.url);
+    return { ok: true, json: async () => ({ ok: true, ...lookupByUrl.get(body.url) }) };
+  });
+
+  harness.inputs.siteUrl.value = 'https://www.ebay.com/itm/111111111111';
+  await harness.submit();
+  assert.equal(harness.inputs.currentTitle.value, 'Dyson V7 Motorhead Cordless Vacuum Cleaner');
+  assert.match(harness.inputs.currentCopy.value, /Product ID: 111111111111/);
+  assert.equal(harness.inputs.productType.value, 'Vacuum Cleaners');
+
+  harness.inputs.siteUrl.value = 'https://www.ebay.com/itm/222222222222';
+  await harness.submit();
+  assert.deepEqual(calls, [
+    'https://www.ebay.com/itm/111111111111',
+    'https://www.ebay.com/itm/222222222222'
+  ]);
+  assert.equal(harness.inputs.currentTitle.value, 'Premium Garden Shade Cloth 10 x 12 ft');
+  assert.match(harness.inputs.currentCopy.value, /Product ID: 222222222222/);
+  assert.doesNotMatch(harness.inputs.currentCopy.value, /111111111111|Cordless vacuum/);
+  assert.equal(harness.inputs.productType.value, 'Garden Shade');
+});
 
 test('optimizer creates shopper-facing marketplace copy from product facts instead of category paths and junk tokens', async () => {
   const { statusCode, payload } = await runOptimize(dysonInput);
