@@ -329,12 +329,12 @@
     function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
     const session = readSession();
-    if(!session){ window.location.href='index.html#authInline'; }
+    if(!session){ window.location.href='/#optimizer'; }
 
     async function startRescuePackCheckout(){
       const s = readSession();
       if(!s || !s.accessToken){
-        window.location.href='index.html#authInline';
+        window.location.href='/#optimizer';
         return;
       }
       const btn = document.getElementById('rescuePackCta');
@@ -496,7 +496,7 @@
     async function handleOptimize(e){
       e.preventDefault();
       const s = readSession();
-      if(!s){ window.location.href='index.html#authInline'; return; }
+      if(!s){ window.location.href='/#optimizer'; return; }
 
       const credits = s.creditsRemaining !== undefined ? s.creditsRemaining : s.credits !== undefined ? s.credits : 2;
       if(credits <= 0){

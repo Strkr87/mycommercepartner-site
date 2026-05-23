@@ -31,6 +31,16 @@
       "source": "/missed-lead-recovery.html",
       "destination": "/#services",
       "permanent": true
+    },
+    {
+      "source": "/ai-tools-for-small-business",
+      "destination": "/#services",
+      "permanent": true
+    },
+    {
+      "source": "/ai-tools-for-small-business.html",
+      "destination": "/#services",
+      "permanent": true
     }
   ],
   "headers": [
