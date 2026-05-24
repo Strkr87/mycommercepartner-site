@@ -647,30 +647,40 @@ ${bulletHtml}
     }
     function optBuildKeywordIdeas({marketplace, keyword, productType, specs, useCases, phrases, source, productDetails}){
       const product = optTitleCase(optCustomerProductName(productType || keyword || 'item', optDetailValue(productDetails, ['Brand']))).replace(/\bItem$/i, '').trim() || optTitleCase(keyword || productType || 'item');
-      const productLower = product.toLowerCase();
-      const pluralProduct = /s$/i.test(product) ? product : product.replace(/\b(panel|wheel|bottle|cover|screen|cable|case|bag|tool|ring)$/i, '$1s');
+      const productCore = optClean(product.replace(/\b(?:carbon composite|stainless steel|aluminum|black|white|gray|grey|tan|brown|green|blue)\b/ig, ' ')).replace(/\s+/g, ' ').trim() || product;
+      const productLower = productCore.toLowerCase();
+      const pluralProduct = /s$/i.test(productCore) ? productCore : productCore.replace(/\b(panel|wheel|bottle|cover|screen|cable|case|bag|tool|ring)$/i, '$1s');
       const size = optDetailValue(productDetails, ['Size', 'Dimensions', 'Capacity', 'Coverage']) || (specs || []).find(spec => /\d+\s?[x×]\s?\d+|\d+\s?(?:oz|lb|ft|in|cm|mm|m)\b|\d+\s?(?:-|to)\s?\d+\s?%/i.test(spec)) || '';
       const pack = optDetailValue(productDetails, ['Pack Count', 'Quantity']) || (specs || []).find(spec => /\b\d+(?:\.\d+)?[\s-]?(?:pack|pcs|piece|pieces)\b/i.test(spec)) || '';
-      const material = optDetailValue(productDetails, ['Material', 'Material / Feature']) || (specs || []).find(spec => /stainless steel|uv resistant|rust resistant|waterproof|leakproof|heavy duty|rechargeable|cordless/i.test(spec)) || '';
+      const material = optDetailValue(productDetails, ['Material', 'Material / Feature']) || (specs || []).find(spec => /stainless steel|uv resistant|rust resistant|waterproof|leakproof|heavy duty|rechargeable|cordless|carbon composite/i.test(spec)) || '';
       const color = optDetailValue(productDetails, ['Color']) || '';
+      const construction = optDetailValue(productDetails, ['Wheel Construction', 'Construction', 'Features']) || '';
+      const machineType = optDetailValue(productDetails, ['Machine Type']) || '';
+      const placement = optDetailValue(productDetails, ['Placement on Vehicle']) || '';
+      const boltPattern = optDetailValue(productDetails, ['Bolt Pattern']) || '';
+      const wheelContext = /\b(?:atv|utv|side-by-side|beadlock|wheel)\b/i.test(source);
+      const acousticContext = /\b(?:acoustic|sound|echo|wall panel)\b/i.test(source);
       const raw = [
-        keyword,
-        product,
-        pluralProduct !== product ? pluralProduct : '',
-        size ? `${product} ${size}` : '',
-        size ? `${size} ${productLower}` : '',
-        pack ? `${pack} ${pluralProduct.toLowerCase()}` : '',
-        pack ? `${product} ${pack}` : '',
-        material ? `${product} ${material}` : '',
+        productCore,
+        keyword && !/parts|accessories|category|listing/i.test(keyword) ? keyword : '',
+        pluralProduct !== productCore ? pluralProduct : '',
+        wheelContext ? `ATV ${productLower}` : '',
+        wheelContext ? `UTV ${productLower}` : '',
+        wheelContext && size ? `${size.replace(/\s+/g, '')} ${productLower}` : (size ? `${productLower} ${size}` : ''),
+        wheelContext && boltPattern ? `${boltPattern.replace(/\s+/g, '')} ${productLower}` : '',
+        construction && /3|three/i.test(construction) ? `3-piece ${productLower}` : '',
+        material ? `${optTitleCase(material)} ${productLower}` : '',
+        placement ? `${optTitleCase(placement)} ${productLower}` : '',
+        machineType ? `${machineType.toUpperCase()} ${productLower}` : '',
         color && !/^black|white|gray|grey|tan|brown|green|blue$/i.test(color) ? `${color} ${productLower}` : '',
-        /acoustic|sound/i.test(source) ? 'sound absorbing panels' : '',
-        /acoustic|sound/i.test(source) ? 'acoustic treatment panels' : '',
-        ...useCases.slice(0, 2).map(use => `${product} for ${use}`),
-        ...phrases.slice(0, 4)
+        acousticContext ? 'sound absorbing wall panels' : '',
+        acousticContext ? 'acoustic treatment panels' : '',
+        ...useCases.slice(0, 2).filter(use => !/parts|accessories/i.test(use)).map(use => `${productLower} for ${use}`),
+        ...phrases.slice(0, 4).filter(item => !/parts|accessories|category|condition|seller/i.test(item))
       ];
       return optDedupe(raw.map(item => optClean(item).toLowerCase().replace(/\b(\w+(?:\s+\w+){0,2})\s+\1\b/g, '$1')))
         .filter(item => item.length > 2)
-        .filter(item => !/\b(?:product id|item id|ebay item id|sku|mpn|category|condition|refund|money_back|price|seller|shipping|returns?|buying options|feedback|available quantity)\b/i.test(item))
+        .filter(item => !/\b(?:product id|item id|ebay item id|sku|mpn|category|condition|refund|money_back|price|seller|shipping|returns?|buying options|feedback|available quantity|parts|accessories)\b/i.test(item))
         .filter(item => !/\b\d{9,15}\b/.test(item))
         .filter(item => !/\b(?:musical instruments?|pro audio equipment|acoustical treatments?)\b/i.test(item))
         .filter(item => !/^marketplace listing$/.test(item) && !/\b(?:amazon|ebay) listing for (?:amazon|ebay)$/.test(item))
@@ -679,18 +689,23 @@ ${bulletHtml}
     function optBuildRecommendedFixes({marketplace, currentTitle, optimizedTitle, productType, specs, details, productDetails, bullets}){
       const product = optTitleCase(optCustomerProductName(productType, optDetailValue(productDetails, ['Brand']))).replace(/\bItem$/i, '').trim() || 'Product';
       const size = optDetailValue(productDetails, ['Size', 'Dimensions', 'Capacity', 'Coverage']) || (specs || []).find(spec => /\d+\s?[x×]\s?\d+|\d+\s?(?:oz|lb|ft|in|cm|mm|m)\b|\d+\s?(?:-|to)\s?\d+\s?%/i.test(spec)) || '';
-      const pack = optDetailValue(productDetails, ['Pack Count', 'Quantity']) || (specs || []).find(spec => /\b\d+(?:\.\d+)?[\s-]?(?:pack|pcs|piece|pieces)\b/i.test(spec)) || '';
+      const rawPack = optDetailValue(productDetails, ['Pack Count', 'Quantity']) || (specs || []).find(spec => /\b\d+(?:\.\d+)?[\s-]?(?:pack|pcs|piece|pieces|panels?)\b/i.test(spec)) || '';
+      const pack = /^1(?:\s*(?:pack|pc|pcs|piece|pieces|panel|panels))?$/i.test(optClean(rawPack)) ? '' : rawPack;
       const material = optDetailValue(productDetails, ['Material', 'Material / Feature', 'Color']) || '';
-      const marketRule = marketplace === 'eBay' ? 'Keep the final eBay title under 80 characters while using the strongest search terms first.' : 'Keep the title readable while using brand, product type, specs, and use case in one clean phrase.';
+      const construction = optDetailValue(productDetails, ['Wheel Construction', 'Construction', 'Features']) || '';
+      const boltPattern = optDetailValue(productDetails, ['Bolt Pattern']) || '';
+      const placement = optDetailValue(productDetails, ['Placement on Vehicle']) || '';
+      const included = optDetailValue(productDetails, ['Items Included', 'Included Components', 'Package Includes', 'Includes']) || '';
       const fixes = [];
       fixes.push(currentTitle
-        ? `Use a tighter title built around ${optTitleCase(product)}${size ? `, ${optTitleCase(size)}` : ''}${pack ? `, ${optTitleCase(pack)}` : ''}.`
+        ? `Title: lead with ${optTitleCase(product)}${size ? ` ${optTitleCase(size).replace(/\s+/g, '')}` : ''}, then add the most important fit or construction term.`
         : `Add the live product title so the rewrite can anchor on ${optTitleCase(product)} instead of only the URL.`);
-      if (size || pack || material) fixes.push(`Move the strongest facts into the first bullets: ${optNaturalList([size && optTitleCase(size), pack && optTitleCase(pack), material && optTitleCase(material)].filter(Boolean))}.`);
-      else fixes.push('Add concrete facts such as size, material, color, compatibility, quantity, and included items.');
-      fixes.push((bullets || []).length ? 'Turn each bullet into feature + buyer benefit wording, not a list of raw specs.' : 'Add 3–5 feature + buyer benefit bullets so the listing has usable shopper copy.');
-      fixes.push(marketRule);
-      fixes.push('Add or confirm photos, condition, shipping, and returns so the buyer-trust section feels complete.');
+      const facts = [size && optTitleCase(size), pack && optTitleCase(pack), boltPattern && `${boltPattern.replace(/\s+/g, '')} bolt pattern`, construction && optTitleCase(construction), material && optTitleCase(material), placement && optTitleCase(placement)].filter(Boolean);
+      if (facts.length) fixes.push(`Bullets: turn each key fact into a buyer benefit, especially ${optNaturalList(facts.slice(0, 4))}.`);
+      else fixes.push('Add concrete buyer facts such as size, material, color, compatibility, quantity, and included items.');
+      fixes.push((bullets || []).length ? 'Highlights: keep all 5 bullets customer-facing, with one idea per bullet and no item IDs, condition notes, or seller-only wording.' : 'Add 5 feature + buyer benefit bullets so the listing has usable shopper copy.');
+      fixes.push(marketplace === 'eBay' ? 'eBay description: keep raw specs in Product Details and keep Highlights focused on why those specs matter.' : 'Description: keep raw specs in Product Details and keep bullets focused on buyer benefits.');
+      fixes.push(included ? `Package/trust: confirm photos, condition, shipping, returns, and that the contents match "${optTitleCase(included)}".` : 'Package/trust: add what is in the box, then confirm photos, condition, shipping, and returns before publishing.');
       return fixes.slice(0, 5);
     }
     function optInferProduct({title, productType, keyword, host}){
