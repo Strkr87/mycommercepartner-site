@@ -699,6 +699,21 @@ ${bulletHtml}
       const offset = optDetailValue(productDetails, ['Offset']) || '';
       const mpn = optDetailValue(productDetails, ['Manufacturer Part Number', 'MPN', 'OE/OEM Part Number', 'Model']) || '';
       const color = optDetailValue(productDetails, ['Color', 'Finish']) || '';
+      if (marketplace === 'Amazon') {
+        const amazonTitleParts = [optDetailValue(productDetails, ['Brand']), product, size && optTitleCase(size), material && optTitleCase(material), color && optTitleCase(color)].filter(Boolean);
+        const amazonBenefitFacts = [size && optTitleCase(size), material && optTitleCase(material), color && optTitleCase(color), pack && optTitleCase(pack), included && optTitleCase(included)].filter(Boolean);
+        return [
+          currentTitle
+            ? `Amazon title: lead with ${optNaturalList(amazonTitleParts.slice(0, 4))}, keep it readable under 200 characters, and remove price, shipping, guarantee, or promo claims from the title.`
+            : `Amazon title: add the current product title so the optimizer can check brand, product type, size, material, and compliance issues.`,
+          `Image stack: confirm the main image is on a pure white background with the product filling most of the frame, then add lifestyle, scale, feature, and what's-included images where available.`,
+          amazonBenefitFacts.length
+            ? `Bullets: turn ${optNaturalList(amazonBenefitFacts.slice(0, 5))} into five short benefit-led bullets that answer shopper questions without seller-specific language.`
+            : `Bullets: write five benefit-led bullets covering use case, material/quality, dimensions or compatibility, included items, and care or setup details.`,
+          `Search terms: move secondary keywords, synonyms, and common buyer phrases into backend Search Terms; do not repeat words already covered in the title and bullets.`,
+          `Conversion check: add or improve A+ Content if Brand Registry is available, then use Manage Your Experiments to test the title, main image, bullets, description, or A+ modules.`
+        ];
+      }
       const fixes = [];
       const titleParts = [product, size && optTitleCase(size).replace(/\s+/g, ''), boltPattern && boltPattern.replace(/\s+/g, ''), mpn].filter(Boolean);
       fixes.push(currentTitle
@@ -987,6 +1002,67 @@ ${bulletHtml}
       const hasPrice = optHasAny(source, ['price:', '$', 'usd ']);
       const hasCompatibility = optHasAny(source, ['compatibility:', 'compatible', 'fits ', 'fitment', 'carrier:', 'network:']);
       const hasIncluded = optHasAny(source, ['included:', 'included accessories:', 'items included:', 'with ']);
+      if (marketplace === 'Amazon') {
+        const hasAPlus = optHasAny(source, ['a+ content', 'enhanced brand content', 'brand story', 'premium a+']);
+        const hasVideo = optHasAny(source, ['video:', 'product video', 'video']);
+        const hasReviews = optHasAny(source, ['review', 'rating', 'stars']);
+        const hasPrime = optHasAny(source, ['prime', 'fulfilled by amazon', 'fba']);
+        const hasPromoNoise = /\b(?:free shipping|best seller|bestseller|guaranteed|limited time|sale|discount|price:|usd)\b/i.test(sourceTitle);
+        let amazonTitleScore = 0;
+        if (titleLength >= 80 && titleLength <= 200) amazonTitleScore = 19;
+        else if (titleLength >= 50 && titleLength <= 200) amazonTitleScore = 15;
+        else if (titleLength >= 30 && titleLength <= 200) amazonTitleScore = 10;
+        else if (titleLength > 200) amazonTitleScore = 7;
+        else if (titleLength) amazonTitleScore = 5;
+        if (enteredProductType || specs.length) amazonTitleScore = Math.min(20, amazonTitleScore + 1);
+        if (hasPromoNoise || /!!!|\b100%\b/i.test(sourceTitle)) amazonTitleScore = Math.max(0, amazonTitleScore - 5);
+
+        let amazonImageScore = hasPhoto ? 8 : 0;
+        if (hasPhoto && optHasAny(source, ['white background', 'main image', 'lifestyle', 'infographic', 'dimensions image'])) amazonImageScore += 4;
+        if (hasVideo) amazonImageScore += 3;
+        amazonImageScore = Math.min(15, amazonImageScore);
+
+        let amazonBulletScore = 0;
+        if (details.length >= 180) amazonBulletScore += 7;
+        else if (details.length >= 80) amazonBulletScore += 4;
+        amazonBulletScore += Math.min(8, specs.length * 2);
+        if (hasIncluded || hasCompatibility) amazonBulletScore += 3;
+        if (/\b(?:free shipping|price|seller|guarantee|limited time)\b/i.test(details)) amazonBulletScore -= 3;
+        amazonBulletScore = Math.max(0, Math.min(20, amazonBulletScore));
+
+        let attributeScore = Math.min(12, specificsCount * 2);
+        if (hasIncluded) attributeScore += 2;
+        if (hasCompatibility) attributeScore += 1;
+        attributeScore = Math.min(15, attributeScore);
+
+        let keywordScore = 0;
+        if (enteredKeyword) keywordScore += 4;
+        if (enteredProductType) keywordScore += 2;
+        if (specs.length >= 2) keywordScore += 2;
+        if (titleLength >= 50) keywordScore += 2;
+        keywordScore = Math.min(10, keywordScore);
+
+        const aPlusScore = hasAPlus ? 10 : 0;
+        let testingTrustScore = 0;
+        if (hasReviews) testingTrustScore += 3;
+        if (hasPrime) testingTrustScore += 2;
+        if (hasPrice) testingTrustScore += 1;
+        if (!hasPromoNoise) testingTrustScore += 2;
+        if (optHasAny(source, ['manage your experiments', 'experiment', 'a/b test'])) testingTrustScore += 2;
+        testingTrustScore = Math.min(10, testingTrustScore);
+
+        const rawAmazon = amazonTitleScore + amazonImageScore + amazonBulletScore + attributeScore + keywordScore + aPlusScore + testingTrustScore;
+        const metrics = [
+          {label: 'Title/SEO', value: amazonTitleScore, max: 20},
+          {label: 'Image stack', value: amazonImageScore, max: 15},
+          {label: 'Bullets', value: amazonBulletScore, max: 20},
+          {label: 'Attributes', value: attributeScore, max: 15},
+          {label: 'Keyword coverage', value: keywordScore, max: 10},
+          {label: 'A+ content', value: aPlusScore, max: 10},
+          {label: 'Testing/trust', value: testingTrustScore, max: 10}
+        ];
+        return {score: Math.max(34, Math.min(96, Math.round(rawAmazon))), metrics, basis: 'Estimated from visible Amazon listing signals. Backend Search Terms, Listing Quality Dashboard issues, Brand Registry, A+ Content, experiments, and conversion data are scored as missing unless you add them.'};
+      }
       const titleMax = isEbay ? 80 : 200;
       let titleScore = 0;
       if (titleLength >= 55 && titleLength <= titleMax) titleScore = 24;

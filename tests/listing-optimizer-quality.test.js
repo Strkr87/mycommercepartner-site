@@ -647,6 +647,29 @@ test('homepage keywords and recommended fixes are product-specific instead of ma
   assert.doesNotMatch(fixes, /product type, main keyword|verified specs|short buyer-facing bullets|readiness estimate/i);
 });
 
+test('homepage Amazon readiness and fixes use Amazon-specific listing signals', () => {
+  const { __buildHomeOptimizer: buildHomeOptimizer } = loadHomepageOptimizer();
+  const result = buildHomeOptimizer(makeFormData({
+    siteUrl: 'https://www.amazon.com/AquaPro-Insulated-Water-Bottle-Stainless/dp/B0TEST1234',
+    currentTitle: 'AquaPro Water Bottle Water Bottle!!! Free Shipping 100% Quality Guaranteed Price: USD 29.99',
+    productType: 'Sports Water Bottle',
+    currentCopy: 'Brand: AquaPro\nMaterial: Stainless Steel\nCapacity: 40 oz\nColor: Blue\nIncluded: Straw lid and carry handle\nPhoto: main image\nPrime eligible\nDouble-wall insulated bottle for gym, office, hiking, and travel.',
+    targetKeyword: 'insulated water bottle',
+    goal: '',
+    revenue: ''
+  }));
+
+  assert.equal(result.marketplace, 'Amazon');
+  assert.match(result.scoreBasis, /Backend Search Terms|Listing Quality Dashboard|A\+ Content|experiments/i);
+  assert.equal(result.scoreMetrics.map(metric => metric.label).join(' | '), 'Title/SEO | Image stack | Bullets | Attributes | Keyword coverage | A+ content | Testing/trust');
+  const fixes = result.fixes.join(' ');
+  assert.match(fixes, /Amazon title|200 characters|price, shipping, guarantee, or promo/i);
+  assert.match(fixes, /Image stack|white background|lifestyle|scale|feature/i);
+  assert.match(fixes, /backend Search Terms|do not repeat/i);
+  assert.match(fixes, /A\+ Content|Manage Your Experiments/i);
+  assert.doesNotMatch(fixes, /eBay|Item Specifics|80-character|returns before publishing/i);
+});
+
 test('homepage presents the free listing optimizer as the primary offer', () => {
   const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
   assert.match(html, /<title>Free Amazon &amp; eBay Listing Optimizer|<title>Free Amazon & eBay Listing Optimizer/);
