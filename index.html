@@ -133,7 +133,7 @@
             <article class="output-card" id="homeEbayPreviewCard" hidden><small>eBay Product Description</small><iframe class="home-html-preview" id="homeEbayHtmlPreview" title="eBay product description preview" sandbox=""></iframe></article>
             <article class="output-card" id="homeEbayHtmlCard" hidden><small>eBay HTML description</small><textarea class="home-html-output" id="homeEbayHtmlOutput" readonly spellcheck="false"></textarea></article>
             <article class="output-card"><small>Keyword ideas</small><div class="chips" id="homeKeywordChips"></div></article>
-            <article class="output-card"><small>Recommended fixes</small><ol class="home-fix-list" id="homeFirstFixes"></ol></article>
+            <article class="output-card"><small>Priority improvements</small><ol class="home-fix-list" id="homeFirstFixes"></ol></article>
             <p class="home-opt-cta">Copy the result into your listing as a starter, then add any verified product facts the optimizer could not read.</p>
           </div>
         </section>
@@ -691,21 +691,32 @@ ${bulletHtml}
       const size = optDetailValue(productDetails, ['Size', 'Dimensions', 'Capacity', 'Coverage']) || (specs || []).find(spec => /\d+\s?[x×]\s?\d+|\d+\s?(?:oz|lb|ft|in|cm|mm|m)\b|\d+\s?(?:-|to)\s?\d+\s?%/i.test(spec)) || '';
       const rawPack = optDetailValue(productDetails, ['Pack Count', 'Quantity']) || (specs || []).find(spec => /\b\d+(?:\.\d+)?[\s-]?(?:pack|pcs|piece|pieces|panels?)\b/i.test(spec)) || '';
       const pack = /^1(?:\s*(?:pack|pc|pcs|piece|pieces|panel|panels))?$/i.test(optClean(rawPack)) ? '' : rawPack;
-      const material = optDetailValue(productDetails, ['Material', 'Material / Feature', 'Color']) || '';
+      const material = optDetailValue(productDetails, ['Material', 'Material / Feature', 'Wheel Material']) || '';
       const construction = optDetailValue(productDetails, ['Wheel Construction', 'Construction', 'Features']) || '';
       const boltPattern = optDetailValue(productDetails, ['Bolt Pattern']) || '';
       const placement = optDetailValue(productDetails, ['Placement on Vehicle']) || '';
       const included = optDetailValue(productDetails, ['Items Included', 'Included Components', 'Package Includes', 'Includes']) || '';
+      const offset = optDetailValue(productDetails, ['Offset']) || '';
+      const mpn = optDetailValue(productDetails, ['Manufacturer Part Number', 'MPN', 'OE/OEM Part Number', 'Model']) || '';
+      const color = optDetailValue(productDetails, ['Color', 'Finish']) || '';
       const fixes = [];
+      const titleParts = [product, size && optTitleCase(size).replace(/\s+/g, ''), boltPattern && boltPattern.replace(/\s+/g, ''), mpn].filter(Boolean);
       fixes.push(currentTitle
-        ? `Title: lead with ${optTitleCase(product)}${size ? ` ${optTitleCase(size).replace(/\s+/g, '')}` : ''}, then add the most important fit or construction term.`
-        : `Add the live product title so the rewrite can anchor on ${optTitleCase(product)} instead of only the URL.`);
-      const facts = [size && optTitleCase(size), pack && optTitleCase(pack), boltPattern && `${boltPattern.replace(/\s+/g, '')} bolt pattern`, construction && optTitleCase(construction), material && optTitleCase(material), placement && optTitleCase(placement)].filter(Boolean);
-      if (facts.length) fixes.push(`Bullets: turn each key fact into a buyer benefit, especially ${optNaturalList(facts.slice(0, 4))}.`);
-      else fixes.push('Add concrete buyer facts such as size, material, color, compatibility, quantity, and included items.');
-      fixes.push((bullets || []).length ? 'Highlights: keep all 5 bullets customer-facing, with one idea per bullet and no item IDs, condition notes, or seller-only wording.' : 'Add 5 feature + buyer benefit bullets so the listing has usable shopper copy.');
-      fixes.push(marketplace === 'eBay' ? 'eBay description: keep raw specs in Product Details and keep Highlights focused on why those specs matter.' : 'Description: keep raw specs in Product Details and keep bullets focused on buyer benefits.');
-      fixes.push(included ? `Package/trust: confirm photos, condition, shipping, returns, and that the contents match "${optTitleCase(included)}".` : 'Package/trust: add what is in the box, then confirm photos, condition, shipping, and returns before publishing.');
+        ? `Title priority: use ${optNaturalList(titleParts.slice(0, 4))} in that order, keep it under eBay's 80-character limit, and remove duplicate specs or condition wording.`
+        : `Title cleanup: add the live product title so the optimizer can anchor on ${optTitleCase(product)} instead of only the URL.`);
+      const fitFacts = [size && optTitleCase(size), boltPattern && `${boltPattern.replace(/\s+/g, '')} bolt pattern`, offset && `${offset.replace(/\s+/g, '')} offset`, placement && optTitleCase(placement)].filter(Boolean);
+      if (fitFacts.length) fixes.push(`Buyer fit check: put ${optNaturalList(fitFacts.slice(0, 4))} in Item Specifics and the first description paragraph so shoppers can verify compatibility fast.`);
+      else fixes.push('Buyer fit check: add exact size, model, compatibility, quantity, and included items before writing the final description.');
+      const benefitFacts = [construction && optTitleCase(construction), material && optTitleCase(material), color && optTitleCase(color), pack && optTitleCase(pack)].filter(Boolean);
+      fixes.push(benefitFacts.length
+        ? `Feature-to-benefit bullets: turn ${optNaturalList(benefitFacts.slice(0, 4))} into practical buyer outcomes; avoid repeating the same size, color, or fit phrase in multiple bullets.`
+        : 'Feature-to-benefit bullets: give each highlight one feature plus one practical reason it matters, with no filler claims.');
+      fixes.push(included
+        ? `What's in the box: list "${optTitleCase(included)}" plainly and say whether mounting hardware, accessories, or tools are included only if verified.`
+        : 'What\'s in the box: add a clear contents line so buyers know whether hardware, accessories, or tools are included.');
+      fixes.push(marketplace === 'eBay'
+        ? 'Trust check: add photos that prove the key specifics, then confirm condition, shipping cost/handling time, and returns before publishing.'
+        : 'Trust check: add photos that prove key details, then confirm condition, shipping, and returns before publishing.');
       return fixes.slice(0, 5);
     }
     function optInferProduct({title, productType, keyword, host}){

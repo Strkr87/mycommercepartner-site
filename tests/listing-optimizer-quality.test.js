@@ -642,6 +642,7 @@ test('homepage keywords and recommended fixes are product-specific instead of ma
   assert.match(fixes, /12 x 12|12x12/i);
   assert.match(fixes, /12 Pack/i);
   assert.match(fixes, /Acoustic Wall Panel/i);
+  assert.match(fixes, /80-character|Item Specifics|Feature-to-benefit/i);
   assert.match(fixes, /photos|condition|shipping|returns/i);
   assert.doesNotMatch(fixes, /product type, main keyword|verified specs|short buyer-facing bullets|readiness estimate/i);
 });
