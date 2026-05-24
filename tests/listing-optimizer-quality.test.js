@@ -646,11 +646,11 @@ test('homepage keywords and recommended fixes are product-specific instead of ma
   assert.doesNotMatch(fixes, /product type, main keyword|verified specs|short buyer-facing bullets|readiness estimate/i);
 });
 
-test('homepage presents the free listing optimizer as the front door and frames paid help as implementation', () => {
+test('homepage presents the free listing optimizer as the primary offer', () => {
   const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
   assert.match(html, /<title>Free Amazon &amp; eBay Listing Optimizer|<title>Free Amazon & eBay Listing Optimizer/);
   assert.match(html, /Use the Free Optimizer|Get My Optimized Result/);
-  assert.match(html, /Free diagnosis first/i);
-  assert.match(html, /implementation|done-for-you/i);
+  assert.match(html, /One link turns into cleaner listing copy/i);
+  assert.doesNotMatch(html, /Request Enhanced|Marketplace Growth Audit|5-day Listing Optimization Sprint|Paid help/i);
   assert.doesNotMatch(html, /outsourced|offshore|AI-powered|AI tool/i);
 });

@@ -24,32 +24,122 @@
     },
     {
       "source": "/website-reviews",
-      "destination": "/#services",
+      "destination": "/#optimizer",
       "permanent": true
     },
     {
       "source": "/website-reviews.html",
-      "destination": "/#services",
+      "destination": "/#optimizer",
       "permanent": true
     },
     {
       "source": "/missed-lead-recovery",
-      "destination": "/#services",
+      "destination": "/#optimizer",
       "permanent": true
     },
     {
       "source": "/missed-lead-recovery.html",
-      "destination": "/#services",
+      "destination": "/#optimizer",
       "permanent": true
     },
     {
       "source": "/ai-tools-for-small-business",
-      "destination": "/#services",
+      "destination": "/#optimizer",
       "permanent": true
     },
     {
       "source": "/ai-tools-for-small-business.html",
-      "destination": "/#services",
+      "destination": "/#optimizer",
+      "permanent": true
+    },
+    {
+      "source": "/marketplace-listing-audit",
+      "destination": "/#optimizer",
+      "permanent": true
+    },
+    {
+      "source": "/marketplace-listing-audit.html",
+      "destination": "/#optimizer",
+      "permanent": true
+    },
+    {
+      "source": "/monthly-management",
+      "destination": "/#optimizer",
+      "permanent": true
+    },
+    {
+      "source": "/monthly-management.html",
+      "destination": "/#optimizer",
+      "permanent": true
+    },
+    {
+      "source": "/listing-rescue",
+      "destination": "/#optimizer",
+      "permanent": true
+    },
+    {
+      "source": "/listing-rescue.html",
+      "destination": "/#optimizer",
+      "permanent": true
+    },
+    {
+      "source": "/ebay-listing-cleanup-service",
+      "destination": "/#optimizer",
+      "permanent": true
+    },
+    {
+      "source": "/ebay-listing-cleanup-service.html",
+      "destination": "/#optimizer",
+      "permanent": true
+    },
+    {
+      "source": "/amazon-ebay-listing-audit-checklist",
+      "destination": "/#optimizer",
+      "permanent": true
+    },
+    {
+      "source": "/amazon-ebay-listing-audit-checklist.html",
+      "destination": "/#optimizer",
+      "permanent": true
+    },
+    {
+      "source": "/blog-listing-optimization-sprint",
+      "destination": "/blog",
+      "permanent": true
+    },
+    {
+      "source": "/blog-listing-optimization-sprint.html",
+      "destination": "/blog",
+      "permanent": true
+    },
+    {
+      "source": "/blog-amazon-listing-optimization-service",
+      "destination": "/blog",
+      "permanent": true
+    },
+    {
+      "source": "/blog-amazon-listing-optimization-service.html",
+      "destination": "/blog",
+      "permanent": true
+    },
+    {
+      "source": "/blog-ebay-listing-cleanup-service",
+      "destination": "/blog",
+      "permanent": true
+    },
+    {
+      "source": "/blog-ebay-listing-cleanup-service.html",
+      "destination": "/blog",
+      "permanent": true
+    },
+    {
+      "source": "/blog-marketplace-account-management-signs",
+      "destination": "/blog",
+      "permanent": true
+    },
+    {
+      "source": "/blog-marketplace-account-management-signs.html",
+      "destination": "/blog",
       "permanent": true
     }
   ],
