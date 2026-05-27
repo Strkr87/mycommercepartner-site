@@ -128,7 +128,7 @@ function topupConfirmationEmail({ name, credits, kind }) {
     : kind === 'dfy'
       ? 'Done-For-You Package'
       : kind === 'rescue'
-        ? 'Listing Rescue Pack'
+        ? 'Listing Cleanup Pack'
         : 'Credit Pack';
   return emailBase(`
     <h2>Purchase confirmed, ${displayName}! ✅</h2>

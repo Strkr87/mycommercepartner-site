@@ -3,13 +3,13 @@ const assert = require('node:assert/strict');
 
 const { resolveOneTimeOffer } = require('../lib/offers');
 
-test('resolveOneTimeOffer returns the new $59 rescue pack for 20 credits', () => {
-  assert.deepEqual(resolveOneTimeOffer(20), {
-    credits: 20,
-    amount: 5900,
+test('resolveOneTimeOffer returns the new $199 cleanup pack for 25 credits', () => {
+  assert.deepEqual(resolveOneTimeOffer(25), {
+    credits: 25,
+    amount: 19900,
     kind: 'rescue',
-    name: '20 Listing Rescue Pack',
-    description: 'Instant access to rescue 20 eBay listings inside MyCommercePartner'
+    name: '25 Listing Cleanup Pack',
+    description: 'Instant access to clean up 25 eBay listings inside MyCommercePartner'
   });
 });
 

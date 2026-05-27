@@ -670,11 +670,13 @@ test('homepage Amazon readiness and fixes use Amazon-specific listing signals', 
   assert.doesNotMatch(fixes, /eBay|Item Specifics|80-character|returns before publishing/i);
 });
 
-test('homepage presents the free listing optimizer as the primary offer', () => {
+test('homepage presents the eBay-first optimizer and cleanup pack offer ladder', () => {
   const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-  assert.match(html, /<title>Free Amazon &amp; eBay Listing Optimizer|<title>Free Amazon & eBay Listing Optimizer/);
-  assert.match(html, /Use the Free Optimizer|Get My Optimized Result/);
-  assert.match(html, /One link turns into cleaner listing copy/i);
-  assert.doesNotMatch(html, /Request Enhanced|Marketplace Growth Audit|5-day Listing Optimization Sprint|Paid help/i);
+  assert.match(html, /<title>eBay Listing Optimizer for Active Sellers \| MyCommercePartner/);
+  assert.match(html, /Fix Your eBay Listings Before Buyers Skip Them/i);
+  assert.match(html, /Optimize an eBay Listing|Optimize My eBay Listing/);
+  assert.match(html, /\$199 Cleanup Pack|25 Listing Cleanup Pack/);
+  assert.match(html, /One eBay link turns into copy you can actually use/i);
+  assert.doesNotMatch(html, /Marketplace Growth Audit|5-day Listing Optimization Sprint/i);
   assert.doesNotMatch(html, /outsourced|offshore|AI-powered|AI tool/i);
 });
