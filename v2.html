@@ -279,19 +279,19 @@
             <h3>Starter</h3>
             <div class="price">$39<small>/mo</small></div>
             <div class="per">50 listings a month<span class="each">78¢ per listing</span></div>
-            <a class="btn btn-ghost" href="https://buy.stripe.com/00w28qep2aVT3sW0ZYdUY00">Choose</a>
+            <button class="btn btn-ghost" type="button" data-plan="Starter">Choose</button>
           </div>
           <div class="plan hot">
             <h3>Growth</h3>
             <div class="price">$99<small>/mo</small></div>
             <div class="per">250 listings a month<span class="each">40¢ per listing</span></div>
-            <a class="btn btn-primary" href="https://buy.stripe.com/dRm7sKgxaaVTd3weQOdUY01">Choose</a>
+            <button class="btn btn-primary" type="button" data-plan="Growth">Choose</button>
           </div>
           <div class="plan">
             <h3>Enterprise</h3>
             <div class="price">$249<small>/mo</small></div>
             <div class="per">800 listings a month<span class="each">31¢ per listing</span></div>
-            <a class="btn btn-ghost" href="https://buy.stripe.com/4gMeVc94I4xvfbE9wudUY02">Choose</a>
+            <button class="btn btn-ghost" type="button" data-plan="Enterprise">Choose</button>
           </div>
         </div>
         <div class="topups">Need more? Add 100 listings for $59 anytime · Cancel anytime</div>
@@ -386,7 +386,57 @@
         if (s && s.accessToken) { window.location.href = '/dashboard'; return; }
         openAuth('login');
       });
-      document.querySelectorAll('[data-signup]').forEach((b) => b.addEventListener('click', () => openAuth('signup')));
+      document.querySelectorAll('[data-signup]').forEach((b) => b.addEventListener('click', () => {
+        const s = readSession();
+        if (s && s.accessToken) { $('optimize').scrollIntoView({ behavior: 'smooth' }); $('fUrl').focus(); return; }
+        openAuth('signup');
+      }));
+
+      // --- plan checkout: goes through /api/checkout so Stripe knows which account and plan to upgrade ---
+      async function startCheckout(plan, btn){
+        const s = readSession();
+        if (!s || !s.accessToken) { openAuth('signup', () => startCheckout(plan, btn)); return; }
+        const label = btn.textContent;
+        btn.disabled = true; btn.textContent = 'Opening checkout…';
+        try {
+          const resp = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + s.accessToken },
+            body: JSON.stringify({ plan, origin: window.location.origin + '/v2' })
+          });
+          const data = await resp.json().catch(() => ({}));
+          if (resp.status === 401) { writeSession(null); renderNav(); openAuth('login', () => startCheckout(plan, btn)); return; }
+          if (!resp.ok || !data.url) throw new Error(data.error || 'Could not open checkout. Try again.');
+          window.location.href = data.url;
+          return;
+        } catch (err) {
+          toast(err.message);
+        }
+        btn.disabled = false; btn.textContent = label;
+      }
+      document.querySelectorAll('[data-plan]').forEach((b) => b.addEventListener('click', () => startCheckout(b.getAttribute('data-plan'), b)));
+
+      // --- returning from Stripe checkout ---
+      (async function handleCheckoutReturn(){
+        const params = new URLSearchParams(window.location.search);
+        const result = params.get('checkout');
+        if (!result) return;
+        history.replaceState(null, '', window.location.pathname + window.location.hash);
+        if (result === 'cancelled') { toast('Checkout cancelled'); return; }
+        const s = readSession();
+        const sessionId = params.get('session_id');
+        if (result !== 'success' || !sessionId || !s || !s.accessToken) return;
+        try {
+          const resp = await fetch('/api/checkout-status?session_id=' + encodeURIComponent(sessionId), {
+            headers: { Authorization: 'Bearer ' + s.accessToken }
+          });
+          const data = await resp.json().catch(() => ({}));
+          if (resp.ok && data.user) { writeSession(Object.assign({}, s, data.user)); renderNav(); }
+          toast(resp.ok ? "You're upgraded. Thanks!" : 'Payment received. Your plan will update shortly.');
+        } catch (err) {
+          toast('Payment received. Your plan will update shortly.');
+        }
+      })();
 
       $('authForm').addEventListener('submit', async (e) => {
         e.preventDefault();
