@@ -568,7 +568,7 @@ function buildResult(data) {
   if ((data.sku || "").trim() && !specifics.some((x) => /^(SKU|Model #|MPN|Manufacturer Part Number):/i.test(x))) {
     specifics.push(`SKU / Model #: ${data.sku}`);
   }
-  if (!specifics.some((x) => /^Cosmetic Condition:/i.test(x))) {
+  if (String(data.condition || "").trim() && !specifics.some((x) => /^Cosmetic Condition:/i.test(x))) {
     specifics.push(`Cosmetic Condition: ${data.condition.replace("Used - ", "")} with visible signs of normal handling`);
   }
   if (!specifics.some((x) => /^Shipping:/i.test(x))) {
