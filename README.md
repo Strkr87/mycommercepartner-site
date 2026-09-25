@@ -46,6 +46,8 @@ Launch-ready Vercel site for an eBay listing optimization SaaS.
 - `STRIPE_PRICE_STARTER`
 - `STRIPE_PRICE_GROWTH`
 - `STRIPE_PRICE_ENTERPRISE`
+- `ANTHROPIC_API_KEY` - enables the AI optimizer via Claude (without it, the rule-based optimizer is used)
+- `ANTHROPIC_MODEL` - optional, defaults to `claude-opus-5`
 
 ## What works after setup
 
@@ -60,7 +62,6 @@ Launch-ready Vercel site for an eBay listing optimization SaaS.
 
 ## Remaining production tasks
 
-- Replace heuristic optimizer logic in `api/optimize.js` with a real OpenAI integration
 - Store listing runs per seller in Supabase
 - Add credit deduction and replenishment rules by plan
 - Add email verification and password reset flows

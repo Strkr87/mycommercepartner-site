@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0",
     "nodemailer": "^8.0.7"
   }
 }

@@ -1,5 +1,6 @@
 const TRIAL_LIMIT = 2;
 const { authEnabled, getUserFromToken, getProfile, upsertProfile, applyCreditUse, creditState, ensureBillingPeriod } = require("../lib/platform");
+const { aiEnabled, generateAiListing } = require("./_lib/ai-optimizer");
 const { extractEbayItemId, extractEbayTitleFromUrlSlug, parseEbayItemHtml, lookupEbayBrowseApi, searchEbayBrowseApi } = require("./_lib/ebay-item-lookup");
 
 function pick(rx, s) {
@@ -118,6 +119,17 @@ function sentence(value) {
 
 function htmlEscape(value) {
   return cleanMarketplaceText(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function plainHtmlEscape(value) {
+  return String(value || "")
+    .replace(/\s+/g, " ")
+    .trim()
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -479,7 +491,7 @@ function isCustomerFacingSpecific(line) {
   return !/^\s*(?:ebay item id|item id|product id|sku|seller|price)\s*:/i.test(line || "");
 }
 
-function buildEbayDescriptionHtml(title, bulletItems, specifics, exact, data) {
+function buildEbayDescriptionHtml(title, bulletItems, specifics, exact, data, intro = "") {
   const detailLines = [
     exact.model && `Model: ${exact.model}`,
     exact.storageSize && `Storage / size / pack count: ${exact.storageSize}`,
@@ -502,7 +514,7 @@ function buildEbayDescriptionHtml(title, bulletItems, specifics, exact, data) {
 
   return `<div style="font-family:Arial,Helvetica,sans-serif;color:#222;line-height:1.55;font-size:16px;">
   <h2 style="font-size:22px;margin:0 0 12px;">${htmlEscape(title)}</h2>
-  <p style="margin:0 0 16px;">Review the highlights below for the item features, fit details, and included product information.</p>
+  <p style="margin:0 0 16px;">${intro ? plainHtmlEscape(intro) : "Review the highlights below for the item features, fit details, and included product information."}</p>
   <h3 style="font-size:18px;margin:0 0 8px;">Highlights</h3>
   <ul style="margin:0 0 16px 20px;padding:0;">
 ${highlightHtml}
@@ -556,7 +568,7 @@ function buildResult(data) {
   if ((data.sku || "").trim() && !specifics.some((x) => /^(SKU|Model #|MPN|Manufacturer Part Number):/i.test(x))) {
     specifics.push(`SKU / Model #: ${data.sku}`);
   }
-  if (!specifics.some((x) => /^Cosmetic Condition:/i.test(x))) {
+  if (String(data.condition || "").trim() && !specifics.some((x) => /^Cosmetic Condition:/i.test(x))) {
     specifics.push(`Cosmetic Condition: ${data.condition.replace("Used - ", "")} with visible signs of normal handling`);
   }
   if (!specifics.some((x) => /^Shipping:/i.test(x))) {
@@ -605,6 +617,7 @@ function buildResult(data) {
     : "";
 
   return {
+    engine: "heuristic",
     scores,
     title,
     specifics: specifics.join("\n"),
@@ -614,6 +627,22 @@ function buildResult(data) {
     warnings,
     actions: actions.map((x, i) => `${i + 1}. ${x}`).join("\n"),
     next: `Suggested next modules:\n- Bulk optimizer for ${(data.category || "inventory").toLowerCase()} inventory\n- Competitor title gap detection\n- Saved prompts for repeatable ${String(data.condition || "").toLowerCase()} inventory\n- Team review workflow before publish\n- Seller analytics tied to listing score changes`
+  };
+}
+
+function applyAiListing(result, data, ai) {
+  if (!ai) return result;
+  const exact = primaryFacts(data);
+  const specifics = String(result.specifics || "").split("\n").filter(Boolean);
+  const intro = ai.description.split(/\n\s*\n/)[0] || "";
+  return {
+    ...result,
+    engine: "ai",
+    title: ai.title,
+    bullets: ai.bullets.map((x) => `- ${x}`).join("\n"),
+    description: ai.description,
+    descriptionHtml: buildEbayDescriptionHtml(ai.title, ai.bullets, specifics, exact, data, intro),
+    actions: ai.actions.length ? ai.actions.map((x, i) => `${i + 1}. ${x}`).join("\n") : result.actions
   };
 }
 
@@ -721,9 +750,9 @@ module.exports = async (req, res) => {
     const remoteUser = authEnabled() && accessToken ? await getUserFromToken(accessToken) : null;
     const remoteProfile = remoteUser ? await getProfile(remoteUser.id) : null;
     const profilePlan = remoteProfile?.plan || "";
-    const hasPlan = Boolean(profilePlan || req.headers["x-user-plan"]);
+    const hasPlan = Boolean(profilePlan);
     const used = remoteProfile ? Number(remoteProfile.trial_used || 0) : 0;
-    const state = creditState(remoteProfile || { plan: profilePlan || String(req.headers["x-user-plan"] || "") });
+    const state = creditState(remoteProfile || {});
     const creditsUsed = state.creditsUsed;
     const bonusCredits = state.bonusCredits;
     const creditsLimit = state.planLimit + state.bonusCredits;
@@ -775,7 +804,9 @@ module.exports = async (req, res) => {
         optimizedInput = mergeEbaySearchEnrichment(optimizedInput, enrichment);
       }
     }
-    const result = buildResult(optimizedInput);
+    const draft = buildResult(optimizedInput);
+    const ai = aiEnabled() ? await generateAiListing(optimizedInput, draft) : null;
+    const result = applyAiListing(draft, optimizedInput, ai);
     const nextUsed = hasPlan ? used : used + 1;
     const nextCreditState = hasPlan ? applyCreditUse(remoteProfile || { plan: profilePlan }) : null;
     const nextCreditsUsed = nextCreditState ? nextCreditState.nextCreditsUsed : creditsUsed;

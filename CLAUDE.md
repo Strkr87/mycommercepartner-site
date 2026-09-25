@@ -22,7 +22,7 @@ The current optimizer is **heuristic/rule-based** (not AI). The next major miles
 | Auth | Supabase Auth (email/password, Bearer tokens) |
 | Payments | Stripe (subscriptions + one-time credit topups) |
 | Deployment | Vercel |
-| Build tools | None — no bundler, no npm, no package.json |
+| Build tools | None — no bundler; `package.json` only for runtime deps (`@anthropic-ai/sdk`, `nodemailer`) |
 
 ---
 
@@ -109,6 +109,8 @@ STRIPE_SECRET_KEY         # Stripe API key
 STRIPE_PRICE_STARTER      # Stripe price ID for Starter plan
 STRIPE_PRICE_GROWTH       # Stripe price ID for Growth plan
 STRIPE_PRICE_ENTERPRISE   # Stripe price ID for Enterprise plan
+ANTHROPIC_API_KEY         # Enables AI optimizer via Claude (api/_lib/ai-optimizer.js); heuristic fallback if unset
+ANTHROPIC_MODEL           # Optional model override (default claude-opus-5)
 ```
 
 ---
@@ -157,7 +159,7 @@ STRIPE_PRICE_ENTERPRISE   # Stripe price ID for Enterprise plan
 
 The key next milestones in priority order:
 
-1. **Replace heuristic optimizer with OpenAI** — Call GPT-4 (or similar) in `api/optimize.js` to generate real AI-powered titles, bullets, and descriptions instead of rule-based output.
+1. ~~**Replace heuristic optimizer with AI**~~ — Done: `api/_lib/ai-optimizer.js` calls Claude (`@anthropic-ai/sdk`, JSON-schema output) to rewrite title, bullets, description, and actions when `ANTHROPIC_API_KEY` is set. Scores stay rule-based; any AI failure falls back to the heuristic output. Responses include `engine: "ai" | "heuristic"`.
 
 2. **Listing history** — Persist each optimization run per user in a new `listing_runs` table (user_id, input, output, scores, timestamp). Show history in the dashboard.
 

@@ -4,7 +4,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const optimizeHandler = require('../api/optimize');
+const { TEST_TOKEN, loadOptimizeWithFakeAuth } = require('./helpers/fake-auth');
+
+const optimizeHandler = loadOptimizeWithFakeAuth();
 
 async function runOptimize(body) {
   let statusCode = 0;
@@ -12,7 +14,7 @@ async function runOptimize(body) {
   let payload;
   const req = {
     method: 'POST',
-    headers: { 'x-user-plan': 'Starter' },
+    headers: { authorization: `Bearer ${TEST_TOKEN}` },
     body
   };
   const res = {

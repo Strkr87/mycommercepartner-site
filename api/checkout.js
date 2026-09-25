@@ -42,8 +42,8 @@ module.exports = async (req, res) => {
 
   const { response, data } = await stripeRequest("/v1/checkout/sessions", {
     mode: "subscription",
-    success_url: `${siteOrigin}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${siteOrigin}/?checkout=cancelled`,
+    success_url: `${siteOrigin}?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${siteOrigin}?checkout=cancelled`,
     customer_email: user.email,
     "line_items[0][price]": priceId,
     "line_items[0][quantity]": "1",
