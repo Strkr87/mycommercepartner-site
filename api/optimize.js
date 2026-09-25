@@ -750,9 +750,9 @@ module.exports = async (req, res) => {
     const remoteUser = authEnabled() && accessToken ? await getUserFromToken(accessToken) : null;
     const remoteProfile = remoteUser ? await getProfile(remoteUser.id) : null;
     const profilePlan = remoteProfile?.plan || "";
-    const hasPlan = Boolean(profilePlan || req.headers["x-user-plan"]);
+    const hasPlan = Boolean(profilePlan);
     const used = remoteProfile ? Number(remoteProfile.trial_used || 0) : 0;
-    const state = creditState(remoteProfile || { plan: profilePlan || String(req.headers["x-user-plan"] || "") });
+    const state = creditState(remoteProfile || {});
     const creditsUsed = state.creditsUsed;
     const bonusCredits = state.bonusCredits;
     const creditsLimit = state.planLimit + state.bonusCredits;

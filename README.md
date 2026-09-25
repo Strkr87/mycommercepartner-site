@@ -46,8 +46,8 @@ Launch-ready Vercel site for an eBay listing optimization SaaS.
 - `STRIPE_PRICE_STARTER`
 - `STRIPE_PRICE_GROWTH`
 - `STRIPE_PRICE_ENTERPRISE`
-- `OPENAI_API_KEY` - enables the AI optimizer (without it, the rule-based optimizer is used)
-- `OPENAI_MODEL` - optional, defaults to `gpt-4.1-mini`
+- `ANTHROPIC_API_KEY` - enables the AI optimizer via Claude (without it, the rule-based optimizer is used)
+- `ANTHROPIC_MODEL` - optional, defaults to `claude-opus-5`
 
 ## What works after setup
 

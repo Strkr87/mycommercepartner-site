@@ -1,7 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const { generateAiListing, normalizeAiListing, buildMessages } = require('../api/_lib/ai-optimizer');
+const { generateAiListing, normalizeAiListing, buildPrompt } = require('../api/_lib/ai-optimizer');
+const { TEST_TOKEN, loadOptimizeWithFakeAuth } = require('./helpers/fake-auth');
 
 const listing = {
   marketplace: 'eBay',
@@ -20,51 +21,56 @@ const aiPayload = {
   actions: ['Add battery health percentage to item specifics.', 'Photograph the screen powered on.']
 };
 
-function mockFetch(content, { ok = true, capture } = {}) {
-  return async (url, init) => {
-    if (capture) capture.push({ url, init });
-    return {
-      ok,
-      json: async () => ({ choices: [{ message: { content: typeof content === 'string' ? content : JSON.stringify(content) } }] })
-    };
+function mockClient(payload, { stopReason = 'end_turn', capture, fail } = {}) {
+  return {
+    beta: {
+      messages: {
+        async create(params) {
+          if (capture) capture.push(params);
+          if (fail) throw fail;
+          const text = typeof payload === 'string' ? payload : JSON.stringify(payload);
+          return { stop_reason: stopReason, content: [{ type: 'text', text }] };
+        }
+      }
+    }
   };
 }
 
-test('generateAiListing returns null without an API key', async () => {
-  const previous = process.env.OPENAI_API_KEY;
-  delete process.env.OPENAI_API_KEY;
+test('generateAiListing returns null without an API key or client', async () => {
+  const previous = process.env.ANTHROPIC_API_KEY;
+  delete process.env.ANTHROPIC_API_KEY;
   try {
     assert.equal(await generateAiListing(listing, {}), null);
   } finally {
-    if (previous !== undefined) process.env.OPENAI_API_KEY = previous;
+    if (previous !== undefined) process.env.ANTHROPIC_API_KEY = previous;
   }
 });
 
-test('generateAiListing sends a strict JSON schema request and normalizes output', async () => {
+test('generateAiListing requests JSON schema output and normalizes the result', async () => {
   const calls = [];
   const result = await generateAiListing(listing, { title: 'draft' }, {
-    apiKey: 'sk-test',
     model: 'test-model',
-    fetchImpl: mockFetch(aiPayload, { capture: calls })
+    client: mockClient(aiPayload, { capture: calls })
   });
 
   assert.equal(calls.length, 1);
-  assert.equal(calls[0].url, 'https://api.openai.com/v1/chat/completions');
-  assert.equal(calls[0].init.headers.authorization, 'Bearer sk-test');
-  const body = JSON.parse(calls[0].init.body);
-  assert.equal(body.model, 'test-model');
-  assert.equal(body.response_format.type, 'json_schema');
-  assert.equal(body.response_format.json_schema.strict, true);
+  const params = calls[0];
+  assert.equal(params.model, 'test-model');
+  assert.equal(params.output_config.format.type, 'json_schema');
+  assert.deepEqual(params.output_config.format.schema.required, ['title', 'bullets', 'description', 'actions']);
+  assert.match(params.system, /Never invent/);
+  assert.equal(params.messages[0].role, 'user');
 
   assert.equal(result.title, aiPayload.title);
   assert.deepEqual(result.bullets, ['Unlocked for use on any carrier', '128GB storage for apps and photos', 'Midnight color']);
   assert.equal(result.actions.length, 2);
 });
 
-test('generateAiListing falls back to null on HTTP errors or bad JSON', async () => {
-  assert.equal(await generateAiListing(listing, {}, { apiKey: 'k', fetchImpl: mockFetch(aiPayload, { ok: false }) }), null);
-  assert.equal(await generateAiListing(listing, {}, { apiKey: 'k', fetchImpl: mockFetch('not json') }), null);
-  assert.equal(await generateAiListing(listing, {}, { apiKey: 'k', fetchImpl: async () => { throw new Error('network'); } }), null);
+test('generateAiListing falls back to null on errors, refusals, or bad JSON', async () => {
+  assert.equal(await generateAiListing(listing, {}, { client: mockClient(aiPayload, { fail: new Error('network') }) }), null);
+  assert.equal(await generateAiListing(listing, {}, { client: mockClient(aiPayload, { stopReason: 'refusal' }) }), null);
+  assert.equal(await generateAiListing(listing, {}, { client: mockClient(aiPayload, { stopReason: 'max_tokens' }) }), null);
+  assert.equal(await generateAiListing(listing, {}, { client: mockClient('not json') }), null);
 });
 
 test('normalizeAiListing enforces the eBay 80 character title limit', () => {
@@ -82,31 +88,40 @@ test('normalizeAiListing rejects thin output', () => {
 });
 
 test('prompt tells the model not to invent facts and includes listing input', () => {
-  const [system, user] = buildMessages(listing, { title: 'draft title', bullets: '- a' });
-  assert.match(system.content, /Never invent/);
-  assert.match(system.content, /at most 80 characters/);
-  assert.match(user.content, /Storage Capacity: 128 GB/);
-  assert.match(user.content, /draft title/);
+  const { system, user } = buildPrompt(listing, { title: 'draft title', bullets: '- a' });
+  assert.match(system, /Never invent/);
+  assert.match(system, /at most 80 characters/);
+  assert.match(user, /Storage Capacity: 128 GB/);
+  assert.match(user, /draft title/);
 });
 
-test('optimize handler uses AI output when OPENAI_API_KEY is set', async () => {
-  const previousKey = process.env.OPENAI_API_KEY;
-  const previousFetch = global.fetch;
-  process.env.OPENAI_API_KEY = 'sk-test';
-  global.fetch = async (url, init) => {
-    if (String(url).includes('api.openai.com')) return mockFetch(aiPayload)(url, init);
-    return { ok: false, status: 404, json: async () => ({}), text: async () => '' };
-  };
+function fakeRes() {
+  const res = { statusCode: 0, payload: null };
+  res.setHeader = () => {};
+  res.status = (code) => { res.statusCode = code; return res; };
+  res.json = (data) => { res.payload = data; return res; };
+  return res;
+}
+
+test('optimize handler rejects a spoofed x-user-plan header without a login', async () => {
+  const handler = loadOptimizeWithFakeAuth();
+  const res = fakeRes();
+  await handler({ method: 'POST', headers: { 'x-user-plan': 'Enterprise' }, body: listing }, res);
+  assert.equal(res.statusCode, 401);
+});
+
+test('optimize handler uses AI output when ANTHROPIC_API_KEY is set', async () => {
+  const previousKey = process.env.ANTHROPIC_API_KEY;
+  process.env.ANTHROPIC_API_KEY = 'sk-ant-test';
+  const aiModule = require('../api/_lib/ai-optimizer');
+  const originalGenerate = aiModule.generateAiListing;
+  aiModule.generateAiListing = (data, draft) => originalGenerate(data, draft, { client: mockClient(aiPayload) });
   try {
-    delete require.cache[require.resolve('../api/optimize')];
-    const handler = require('../api/optimize');
-    let payload;
-    let statusCode;
-    await handler(
-      { method: 'POST', headers: { 'x-user-plan': 'Starter' }, body: { ...listing, marketplace: 'Other' } },
-      { setHeader() {}, status(code) { statusCode = code; return this; }, json(data) { payload = data; return this; } }
-    );
-    assert.equal(statusCode, 200);
+    const handler = loadOptimizeWithFakeAuth();
+    const res = fakeRes();
+    await handler({ method: 'POST', headers: { authorization: `Bearer ${TEST_TOKEN}` }, body: { ...listing, marketplace: 'Other' } }, res);
+    const payload = res.payload;
+    assert.equal(res.statusCode, 200);
     assert.equal(payload.engine, 'ai');
     assert.equal(payload.title, aiPayload.title);
     assert.match(payload.bullets, /^- Unlocked for use on any carrier/);
@@ -114,7 +129,7 @@ test('optimize handler uses AI output when OPENAI_API_KEY is set', async () => {
     assert.match(payload.descriptionHtml, /Apple iPhone 13 with 128GB of storage, unlocked\./);
     assert.ok(payload.scores.seo > 0);
   } finally {
-    if (previousKey === undefined) delete process.env.OPENAI_API_KEY; else process.env.OPENAI_API_KEY = previousKey;
-    global.fetch = previousFetch;
+    aiModule.generateAiListing = originalGenerate;
+    if (previousKey === undefined) delete process.env.ANTHROPIC_API_KEY; else process.env.ANTHROPIC_API_KEY = previousKey;
   }
 });

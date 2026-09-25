@@ -1,5 +1,6 @@
-const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
-const DEFAULT_MODEL = "gpt-4.1-mini";
+const Anthropic = require("@anthropic-ai/sdk");
+
+const DEFAULT_MODEL = "claude-opus-5";
 const DEFAULT_TIMEOUT_MS = 20000;
 
 const RESPONSE_SCHEMA = {
@@ -15,11 +16,11 @@ const RESPONSE_SCHEMA = {
 };
 
 function aiEnabled() {
-  return Boolean(process.env.OPENAI_API_KEY);
+  return Boolean(process.env.ANTHROPIC_API_KEY);
 }
 
 function aiModel() {
-  return process.env.OPENAI_MODEL || DEFAULT_MODEL;
+  return process.env.ANTHROPIC_MODEL || DEFAULT_MODEL;
 }
 
 function titleLimit(data) {
@@ -54,7 +55,7 @@ function listingInput(data) {
     .join("\n");
 }
 
-function buildMessages(data, draft) {
+function buildPrompt(data, draft) {
   const limit = titleLimit(data);
   const system = [
     "You are an expert marketplace listing copywriter for eBay and Amazon sellers.",
@@ -75,10 +76,7 @@ function buildMessages(data, draft) {
     `title: ${draft.title || ""}`,
     `bullets:\n${draft.bullets || ""}`
   ].join("\n");
-  return [
-    { role: "system", content: system },
-    { role: "user", content: user }
-  ];
+  return { system, user };
 }
 
 function cleanList(items, max) {
@@ -99,40 +97,36 @@ function normalizeAiListing(raw, data) {
 }
 
 async function generateAiListing(data, draft, options = {}) {
-  const apiKey = options.apiKey || process.env.OPENAI_API_KEY;
-  if (!apiKey) return null;
-  const fetchImpl = options.fetchImpl || fetch;
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), options.timeoutMs || DEFAULT_TIMEOUT_MS);
+  const client = options.client || (process.env.ANTHROPIC_API_KEY
+    ? new Anthropic({ timeout: options.timeoutMs || DEFAULT_TIMEOUT_MS, maxRetries: 1 })
+    : null);
+  if (!client) return null;
+  const { system, user } = buildPrompt(data, draft || {});
 
   try {
-    const response = await fetchImpl(OPENAI_URL, {
-      method: "POST",
-      signal: controller.signal,
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${apiKey}`
+    const response = await client.beta.messages.create({
+      model: options.model || aiModel(),
+      max_tokens: 4000,
+      betas: ["server-side-fallback-2026-07-01"],
+      fallbacks: "default",
+      output_config: {
+        effort: "low",
+        format: { type: "json_schema", schema: RESPONSE_SCHEMA }
       },
-      body: JSON.stringify({
-        model: options.model || aiModel(),
-        temperature: 0.4,
-        messages: buildMessages(data, draft || {}),
-        response_format: {
-          type: "json_schema",
-          json_schema: { name: "listing_optimization", strict: true, schema: RESPONSE_SCHEMA }
-        }
-      })
+      system,
+      messages: [{ role: "user", content: user }]
     });
-    if (!response.ok) return null;
-    const payload = await response.json();
-    const content = payload?.choices?.[0]?.message?.content;
-    if (!content) return null;
-    return normalizeAiListing(JSON.parse(content), data);
-  } catch (_) {
+    if (response.stop_reason !== "end_turn") {
+      console.error(`AI optimizer: unexpected stop_reason ${response.stop_reason}`);
+      return null;
+    }
+    const text = response.content.find((block) => block.type === "text");
+    if (!text) return null;
+    return normalizeAiListing(JSON.parse(text.text), data);
+  } catch (error) {
+    console.error("AI optimizer failed:", error?.status || "", error?.message || error);
     return null;
-  } finally {
-    clearTimeout(timer);
   }
 }
 
-module.exports = { aiEnabled, aiModel, generateAiListing, normalizeAiListing, buildMessages };
+module.exports = { aiEnabled, aiModel, generateAiListing, normalizeAiListing, buildPrompt };
