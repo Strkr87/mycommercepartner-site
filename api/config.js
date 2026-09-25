@@ -1,4 +1,5 @@
 const { authEnabled, paymentsEnabled, json } = require("../lib/platform");
+const { aiEnabled } = require("./_lib/ai-optimizer");
 
 module.exports = async (req, res) => {
   if (req.method !== "GET") {
@@ -9,6 +10,7 @@ module.exports = async (req, res) => {
   json(res, 200, {
     authEnabled: authEnabled(),
     paymentsEnabled: paymentsEnabled(),
+    aiEnabled: aiEnabled(),
     trialLimit: 2
   });
 };

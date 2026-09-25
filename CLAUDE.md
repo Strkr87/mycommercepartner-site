@@ -109,6 +109,8 @@ STRIPE_SECRET_KEY         # Stripe API key
 STRIPE_PRICE_STARTER      # Stripe price ID for Starter plan
 STRIPE_PRICE_GROWTH       # Stripe price ID for Growth plan
 STRIPE_PRICE_ENTERPRISE   # Stripe price ID for Enterprise plan
+OPENAI_API_KEY            # Enables AI optimizer (api/_lib/ai-optimizer.js); heuristic fallback if unset
+OPENAI_MODEL              # Optional model override (default gpt-4.1-mini)
 ```
 
 ---
@@ -157,7 +159,7 @@ STRIPE_PRICE_ENTERPRISE   # Stripe price ID for Enterprise plan
 
 The key next milestones in priority order:
 
-1. **Replace heuristic optimizer with OpenAI** — Call GPT-4 (or similar) in `api/optimize.js` to generate real AI-powered titles, bullets, and descriptions instead of rule-based output.
+1. ~~**Replace heuristic optimizer with OpenAI**~~ — Done: `api/_lib/ai-optimizer.js` rewrites title, bullets, description, and actions when `OPENAI_API_KEY` is set. Scores stay rule-based; any AI failure falls back to the heuristic output. Responses include `engine: "ai" | "heuristic"`.
 
 2. **Listing history** — Persist each optimization run per user in a new `listing_runs` table (user_id, input, output, scores, timestamp). Show history in the dashboard.
 

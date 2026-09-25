@@ -46,6 +46,8 @@ Launch-ready Vercel site for an eBay listing optimization SaaS.
 - `STRIPE_PRICE_STARTER`
 - `STRIPE_PRICE_GROWTH`
 - `STRIPE_PRICE_ENTERPRISE`
+- `OPENAI_API_KEY` - enables the AI optimizer (without it, the rule-based optimizer is used)
+- `OPENAI_MODEL` - optional, defaults to `gpt-4.1-mini`
 
 ## What works after setup
 
@@ -60,7 +62,6 @@ Launch-ready Vercel site for an eBay listing optimization SaaS.
 
 ## Remaining production tasks
 
-- Replace heuristic optimizer logic in `api/optimize.js` with a real OpenAI integration
 - Store listing runs per seller in Supabase
 - Add credit deduction and replenishment rules by plan
 - Add email verification and password reset flows
