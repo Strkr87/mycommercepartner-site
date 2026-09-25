@@ -135,6 +135,7 @@
     .price{font-family:var(--serif);font-size:2.8rem;line-height:1;margin:12px 0 4px}
     .price small{font-family:var(--sans);font-size:.9rem;color:var(--muted)}
     .plan .per{font-size:.9rem;color:var(--ink2);margin-bottom:18px;flex:1}
+    .plan .each{display:block;font-size:.8rem;color:var(--accent);font-weight:600;margin-top:2px}
     .plan .btn{width:100%}
     .topups{margin-top:16px;font-size:.9rem;color:var(--muted);text-align:center}
 
@@ -231,34 +232,34 @@
 
     <section class="band" id="pricing">
       <div class="wrap">
-        <h2 class="serif sec-title">1 credit = 1 listing.</h2>
+        <h2 class="serif sec-title">Pay for the listings you optimize.</h2>
         <div class="plans">
           <div class="plan">
             <h3>Free</h3>
             <div class="price">$0</div>
-            <div class="per">2 listings</div>
+            <div class="per">2 listings to try it<span class="each">No card needed</span></div>
             <button class="btn btn-ghost" type="button" data-signup>Start free</button>
           </div>
           <div class="plan">
             <h3>Starter</h3>
             <div class="price">$39<small>/mo</small></div>
-            <div class="per">50 listings a month</div>
+            <div class="per">50 listings a month<span class="each">78¢ per listing</span></div>
             <a class="btn btn-ghost" href="https://buy.stripe.com/00w28qep2aVT3sW0ZYdUY00">Choose</a>
           </div>
           <div class="plan hot">
             <h3>Growth</h3>
             <div class="price">$99<small>/mo</small></div>
-            <div class="per">250 listings a month</div>
+            <div class="per">250 listings a month<span class="each">40¢ per listing</span></div>
             <a class="btn btn-primary" href="https://buy.stripe.com/dRm7sKgxaaVTd3weQOdUY01">Choose</a>
           </div>
           <div class="plan">
             <h3>Enterprise</h3>
             <div class="price">$249<small>/mo</small></div>
-            <div class="per">800 listings a month</div>
+            <div class="per">800 listings a month<span class="each">31¢ per listing</span></div>
             <a class="btn btn-ghost" href="https://buy.stripe.com/4gMeVc94I4xvfbE9wudUY02">Choose</a>
           </div>
         </div>
-        <div class="topups">Cancel anytime · Extra packs from $59</div>
+        <div class="topups">Need more? Add 100 listings for $59 anytime · Cancel anytime</div>
       </div>
     </section>
 
@@ -499,7 +500,7 @@
             return;
           }
           if (resp.status === 402) {
-            showGate(data.trialLimited ? 'Free listings used' : 'Out of credits', 'Pick a plan to keep going.', 'See plans',
+            showGate(data.trialLimited ? 'Free listings used' : 'No listings left this month', 'Pick a plan to keep going.', 'See plans',
               () => $('pricing').scrollIntoView({ behavior: 'smooth' }));
             return;
           }
