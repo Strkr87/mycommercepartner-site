@@ -36,7 +36,7 @@ Sources:
 1. **eBay Community, Selling board** (community.ebay.com). Answer "no views" threads with real, specific help. Don't post links in the first replies; build a history first.
 2. **Reddit:** r/Flipping, r/eBay, r/EbaySellerAdvice. Same approach: be helpful first, then offer the free checkup where the rules allow it. Read each subreddit's self-promotion rules.
 3. **Facebook groups** for eBay resellers (search "eBay sellers", "reseller community"). Many allow promotion on set days.
-4. **Direct outreach.** Search eBay for categories you know, find stores with 100+ listings and weak titles (all caps, cut-off, missing brand or model), and message them through eBay or their store's contact details.
+4. **Direct outreach.** Search eBay for categories you know, find stores with 100+ listings and weak titles (all caps, cut-off, missing brand or model), and contact them **outside eBay**: their own website, social accounts, or a business email listed off-platform. Don't use eBay's member messages for this; eBay's policy bans unsolicited offers there and it can get your account restricted.
 5. **YouTube reseller channels.** Comment on "why my eBay listings don't sell" videos.
 
 ## Scripts
