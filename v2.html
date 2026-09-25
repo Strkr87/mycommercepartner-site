@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>MyCommercePartner — AI eBay Listing Optimizer</title>
-  <meta name="description" content="Paste an eBay listing and get an AI-rewritten title, bullets, and description in seconds, plus a score and a fix list.">
+  <meta name="description" content="Paste an eBay listing link. Get a better title, bullets, and description in seconds.">
   <meta name="robots" content="noindex">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -14,7 +14,7 @@
   <style>
     :root{
       --bg:#f7f5f0; --surface:#ffffff; --ink:#15171a; --ink2:#3d4148; --muted:#6c717a;
-      --line:#e4e0d7; --line2:#d3cec2; --accent:#0e6b5c; --accent-ink:#ffffff; --accent-soft:#e3f1ec;
+      --line:#e4e0d7; --line2:#d3cec2; --accent:#0e6b5c; --accent-soft:#e3f1ec;
       --warn:#b45309; --warn-soft:#fdf1e1; --bad:#b42318; --good:#0e6b5c;
       --radius:18px; --shadow:0 1px 2px rgba(20,20,20,.04),0 12px 32px rgba(20,20,20,.06);
       --serif:"Instrument Serif",Georgia,serif; --sans:"Plus Jakarta Sans",system-ui,-apple-system,Segoe UI,sans-serif;
@@ -23,185 +23,140 @@
     html{scroll-behavior:smooth}
     body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
     a{color:inherit}
-    img{max-width:100%}
     .wrap{max-width:1140px;margin:0 auto;padding:0 20px}
     .serif{font-family:var(--serif);font-weight:400;letter-spacing:-.01em}
-    .eyebrow{font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:13px 22px;font:600 .95rem var(--sans);cursor:pointer;text-decoration:none;transition:transform .15s,background .15s,box-shadow .15s}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:13px 22px;font:600 .95rem var(--sans);cursor:pointer;text-decoration:none;transition:transform .15s,background .15s,box-shadow .15s;white-space:nowrap}
     .btn:active{transform:translateY(1px)}
     .btn-primary{background:var(--ink);color:#fff}
     .btn-primary:hover{background:#000;box-shadow:0 6px 18px rgba(0,0,0,.18)}
-    .btn-accent{background:var(--accent);color:var(--accent-ink)}
+    .btn-accent{background:var(--accent);color:#fff}
     .btn-accent:hover{background:#0a5a4d}
     .btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line2)}
     .btn-ghost:hover{background:#fff}
     .btn[disabled]{opacity:.6;cursor:progress}
 
     /* nav */
-    .nav{position:sticky;top:0;z-index:30;background:rgba(247,245,240,.86);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid transparent;transition:border-color .2s}
+    .nav{position:sticky;top:0;z-index:30;background:rgba(247,245,240,.9);backdrop-filter:blur(12px);border-bottom:1px solid transparent;transition:border-color .2s}
     .nav.scrolled{border-bottom-color:var(--line)}
-    .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:68px}
+    .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
     .brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;letter-spacing:-.01em}
     .brand-mark{width:30px;height:30px;border-radius:9px;background:var(--ink);color:#fff;display:grid;place-items:center;font:700 .8rem var(--sans)}
-    .nav-links{display:flex;gap:28px;font-size:.92rem;color:var(--ink2)}
-    .nav-links a{text-decoration:none}
-    .nav-links a:hover{color:var(--ink)}
     .nav-cta{display:flex;gap:10px;align-items:center}
     .nav-cta .btn{padding:9px 16px;font-size:.88rem}
+    .nav-link{font-size:.9rem;color:var(--ink2);text-decoration:none}
+    .nav-link:hover{color:var(--ink)}
     #navUser{font-size:.88rem;color:var(--ink2)}
 
-    /* hero */
-    .hero{padding:72px 0 56px}
-    .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
-    .hero h1{font-size:clamp(2.6rem,5.6vw,4.6rem);line-height:1.02;margin:14px 0 20px}
+    /* hero = optimizer */
+    .hero{padding:56px 0 64px}
+    .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+    .hero h1{font-size:clamp(2.6rem,5.4vw,4.4rem);line-height:1.02;margin:0 0 16px}
     .hero h1 em{color:var(--accent)}
-    .hero p.lead{font-size:1.14rem;color:var(--ink2);max-width:520px;margin:0 0 28px}
-    .hero-form{display:flex;gap:8px;background:#fff;border:1px solid var(--line2);border-radius:999px;padding:6px;max-width:540px;box-shadow:var(--shadow)}
-    .hero-form input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:500 .98rem var(--sans);padding:0 14px;color:var(--ink)}
-    .hero-note{font-size:.84rem;color:var(--muted);margin-top:12px}
-    .trust{display:flex;gap:22px;flex-wrap:wrap;margin-top:28px;font-size:.86rem;color:var(--ink2)}
-    .trust span::before{content:"✓";color:var(--accent);font-weight:700;margin-right:7px}
-
-    .demo{position:relative}
-    .demo-card{background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:22px}
-    .demo-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-    .demo-label{font-size:.74rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-    .demo-title{font-size:.98rem;line-height:1.45;padding:12px 14px;border-radius:12px;margin:0 0 14px}
-    .demo-before{background:#f4f2ed;color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(180,35,24,.45)}
-    .demo-after{background:var(--accent-soft);color:var(--ink);font-weight:600}
-    .demo-scores{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
-    .demo-score{border:1px solid var(--line);border-radius:12px;padding:10px 12px}
-    .demo-score b{display:block;font-size:1.4rem;line-height:1.1}
-    .demo-score small{font-size:.76rem;color:var(--muted)}
-    .delta{font-size:.74rem;font-weight:700;color:var(--good);margin-left:4px}
-    .pill{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--ink);color:#fff}
-    .pill.soft{background:var(--accent-soft);color:var(--accent)}
-    .float-tag{position:absolute;right:-12px;bottom:-18px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 14px;box-shadow:var(--shadow);font-size:.84rem}
-    .float-tag b{color:var(--accent)}
-
-    /* sections */
-    section{padding:84px 0}
-    .sec-head{max-width:680px;margin-bottom:40px}
-    .sec-head h2{font-size:clamp(2rem,3.8vw,3rem);line-height:1.08;margin:10px 0 12px}
-    .sec-head p{color:var(--ink2);margin:0;font-size:1.05rem}
-    .band{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-
-    /* optimizer */
-    .opt-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:28px;align-items:start}
-    .panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}
-    .band .panel{background:var(--bg);box-shadow:none}
-    label{display:block;font-size:.84rem;font-weight:600;margin:0 0 6px}
-    .field{margin-bottom:16px}
-    input,textarea,select{width:100%;border:1px solid var(--line2);border-radius:12px;background:#fff;padding:11px 13px;font:400 .95rem var(--sans);color:var(--ink);outline:0;transition:border-color .15s,box-shadow .15s}
-    input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,107,92,.14)}
-    textarea{min-height:110px;resize:vertical}
-    .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .hint{font-size:.8rem;color:var(--muted);margin-top:5px}
-    details.more{border-top:1px dashed var(--line2);padding-top:14px;margin:6px 0 18px}
-    details.more summary{cursor:pointer;font-weight:600;font-size:.9rem;color:var(--accent);list-style:none}
-    details.more summary::-webkit-details-marker{display:none}
-    details.more summary::before{content:"+ "}
-    details.more[open] summary::before{content:"– "}
-    details.more[open] summary{margin-bottom:14px}
-    .status{font-size:.86rem;color:var(--ink2);margin-top:12px;min-height:1.3em}
+    .lead{font-size:1.15rem;color:var(--ink2);margin:0 0 26px}
+    .url-bar{display:flex;gap:8px;background:#fff;border:1px solid var(--line2);border-radius:999px;padding:6px;box-shadow:var(--shadow)}
+    .url-bar:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,107,92,.14),var(--shadow)}
+    .url-bar input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:500 1rem var(--sans);padding:0 14px;color:var(--ink)}
+    .perks{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;font-size:.86rem;color:var(--muted)}
+    .perks span::before{content:"✓";color:var(--accent);font-weight:700;margin-right:6px}
+    .more-toggle{margin-top:18px;border:0;background:none;padding:0;font:600 .9rem var(--sans);color:var(--accent);cursor:pointer}
+    .more{display:none;margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+    .more.open{display:block}
+    label{display:block;font-size:.82rem;font-weight:600;margin:0 0 5px}
+    .field{margin-bottom:14px}
+    .field:last-child{margin-bottom:0}
+    input,textarea,select{width:100%;border:1px solid var(--line2);border-radius:12px;background:#fff;padding:10px 12px;font:400 .95rem var(--sans);color:var(--ink);outline:0}
+    .more input:focus,.more textarea:focus,.more select:focus,.modal input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,107,92,.14)}
+    textarea{min-height:92px;resize:vertical}
+    .row2{display:grid;grid-template-columns:1fr 1fr;column-gap:12px}
+    .status{font-size:.88rem;color:var(--ink2);margin-top:12px;min-height:1.3em}
     .status.err{color:var(--bad)}
+    .steps{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:34px;font-size:.9rem;font-weight:600;color:var(--ink2)}
+    .steps b{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;font-size:.75rem;margin-right:6px}
+    .steps i{font-style:normal;color:var(--line2)}
 
-    .results-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:420px;color:var(--muted)}
-    .results-empty .big{font-family:var(--serif);font-size:1.8rem;color:var(--ink);margin-bottom:6px}
-    .skeleton{height:14px;border-radius:7px;background:linear-gradient(90deg,#eeebe4 0,#f7f5f0 50%,#eeebe4 100%);background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:10px}
-    @keyframes sh{to{background-position:-200% 0}}
-    .scores{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
-    .ring{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;padding:12px}
+    /* result card */
+    .card{background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:22px;scroll-margin-top:80px}
+    .card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+    .card-head strong{font-size:1rem}
+    .pill{display:inline-flex;align-items:center;font-size:.74rem;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--ink);color:#fff}
+    .pill.soft{background:var(--accent-soft);color:var(--accent)}
+    .pill.muted{background:#efece6;color:var(--muted)}
+    .scores{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+    .ring{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:14px;padding:10px}
     .ring svg{flex:none}
-    .ring b{font-size:1.25rem;display:block;line-height:1.1}
-    .ring small{color:var(--muted);font-size:.78rem}
-    .out{margin-bottom:22px}
-    .out-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-    .out-head h4{margin:0;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+    .ring b{font-size:1.2rem;display:block;line-height:1.1}
+    .ring small{color:var(--muted);font-size:.76rem}
+    .out{margin-bottom:18px}
+    .out:last-child{margin-bottom:0}
+    .out-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
+    .out-head h4{margin:0;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
     .copy{border:1px solid var(--line2);background:#fff;border-radius:999px;padding:4px 12px;font:600 .78rem var(--sans);cursor:pointer;color:var(--ink2)}
     .copy:hover{border-color:var(--ink)}
     .copy.done{background:var(--accent);border-color:var(--accent);color:#fff}
-    .title-out{font-size:1.08rem;font-weight:600;padding:14px 16px;border-radius:12px;background:var(--accent-soft)}
+    .before-title{font-size:.95rem;color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(180,35,24,.45);padding:10px 14px;background:#f4f2ed;border-radius:12px;margin:0 0 10px}
+    .title-out{font-size:1.06rem;font-weight:600;padding:13px 15px;border-radius:12px;background:var(--accent-soft)}
     .count{font-size:.78rem;color:var(--muted);margin-top:6px}
     .count.over{color:var(--bad)}
     ul.clean{margin:0;padding:0;list-style:none}
-    ul.clean li{position:relative;padding:8px 0 8px 26px;border-bottom:1px solid var(--line)}
-    ul.clean li:last-child{border-bottom:0}
-    ul.clean li::before{content:"";position:absolute;left:4px;top:16px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
-    ol.fixes{margin:0;padding-left:20px}
-    ol.fixes li{padding:6px 0}
-    .desc-out{white-space:pre-wrap;font-size:.94rem;color:var(--ink2);background:#faf9f6;border:1px solid var(--line);border-radius:12px;padding:14px 16px;max-height:260px;overflow:auto}
-    .tabs{display:flex;gap:6px;margin-bottom:10px}
-    .tab{border:1px solid var(--line2);background:#fff;border-radius:999px;padding:5px 12px;font:600 .8rem var(--sans);cursor:pointer;color:var(--ink2)}
+    ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:.95rem}
+    ul.clean li::before{content:"";position:absolute;left:4px;top:15px;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+    ol.fixes{margin:0;padding-left:20px;font-size:.95rem}
+    ol.fixes li{padding:4px 0}
+    details.fold{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+    details.fold summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;font-size:.76rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+    details.fold summary::-webkit-details-marker{display:none}
+    details.fold summary::after{content:"+";font-size:1.2rem;font-weight:400;letter-spacing:0}
+    details.fold[open] summary::after{content:"–"}
+    details.fold[open] summary{margin-bottom:10px}
+    .desc-out{white-space:pre-wrap;font-size:.92rem;color:var(--ink2);background:#faf9f6;border:1px solid var(--line);border-radius:12px;padding:12px 14px;max-height:240px;overflow:auto}
+    .tabs{display:flex;gap:6px}
+    .tab{border:1px solid var(--line2);background:#fff;border-radius:999px;padding:4px 11px;font:600 .78rem var(--sans);cursor:pointer;color:var(--ink2)}
     .tab.on{background:var(--ink);border-color:var(--ink);color:#fff}
-    iframe.html-preview{width:100%;height:320px;border:1px solid var(--line);border-radius:12px;background:#fff}
-    .warn{background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:10px 14px;font-size:.9rem;margin-bottom:18px}
-    .gate{text-align:center;padding:36px 18px}
-    .gate h3{font-family:var(--serif);font-weight:400;font-size:2rem;margin:0 0 8px}
+    iframe.html-preview{width:100%;height:300px;border:1px solid var(--line);border-radius:12px;background:#fff}
+    .warn{background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:10px 14px;font-size:.9rem;margin-bottom:16px}
+    .copy-all{width:100%;margin-top:18px}
+    .gate{text-align:center;padding:40px 12px}
+    .gate h3{font-family:var(--serif);font-weight:400;font-size:2rem;line-height:1.1;margin:0 0 8px}
     .gate p{color:var(--ink2);margin:0 0 18px}
+    .skeleton{height:14px;border-radius:7px;background:linear-gradient(90deg,#eeebe4 0,#f7f5f0 50%,#eeebe4 100%);background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:10px}
+    @keyframes sh{to{background-position:-200% 0}}
 
-    /* how */
-    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:s}
-    .step{border-top:2px solid var(--ink);padding-top:18px}
-    .step::before{counter-increment:s;content:"0" counter(s);font-family:var(--serif);font-size:2.4rem;line-height:1;color:var(--accent)}
-    .step h3{margin:10px 0 6px;font-size:1.12rem}
-    .step p{margin:0;color:var(--ink2)}
-
-    /* features */
-    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-    .feature{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px}
-    .feature .ico{width:38px;height:38px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:700;margin-bottom:14px}
-    .feature h3{margin:0 0 6px;font-size:1.02rem}
-    .feature p{margin:0;color:var(--ink2);font-size:.94rem}
-
-    /* compare */
-    .compare{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fff}
-    .compare > div{padding:28px}
-    .compare .before{background:#f4f2ed}
-    .compare h3{margin:0 0 14px;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-    .compare .t{font-size:1.1rem;font-weight:600;margin-bottom:14px}
-    .compare .before .t{color:var(--muted);font-weight:500}
-    .compare ul{margin:0;padding-left:18px;color:var(--ink2);font-size:.94rem}
+    /* sections */
+    section{padding:72px 0}
+    .band{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .sec-title{font-size:clamp(2rem,3.6vw,2.8rem);line-height:1.08;margin:0 0 32px;text-align:center}
 
     /* pricing */
-    .plans{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-    .plan{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:24px;display:flex;flex-direction:column}
-    .plan.hot{border:2px solid var(--ink);position:relative}
-    .plan.hot::after{content:"Most popular";position:absolute;top:-12px;left:22px;background:var(--ink);color:#fff;font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:999px}
-    .plan h3{margin:0;font-size:1.05rem}
-    .price{font-family:var(--serif);font-size:2.8rem;line-height:1;margin:14px 0 4px}
+    .plans{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .plan{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);padding:22px;display:flex;flex-direction:column;align-items:flex-start}
+    .plan.hot{background:#fff;border:2px solid var(--ink);position:relative}
+    .plan.hot::after{content:"Popular";position:absolute;top:-11px;left:20px;background:var(--ink);color:#fff;font-size:.72rem;font-weight:600;padding:2px 10px;border-radius:999px}
+    .plan h3{margin:0;font-size:1rem}
+    .price{font-family:var(--serif);font-size:2.8rem;line-height:1;margin:12px 0 4px}
     .price small{font-family:var(--sans);font-size:.9rem;color:var(--muted)}
-    .plan .per{font-size:.84rem;color:var(--muted);margin-bottom:16px}
-    .plan ul{list-style:none;padding:0;margin:0 0 22px;font-size:.92rem;color:var(--ink2);flex:1}
-    .plan li{padding:5px 0 5px 22px;position:relative}
-    .plan li::before{content:"✓";position:absolute;left:0;color:var(--accent);font-weight:700}
+    .plan .per{font-size:.9rem;color:var(--ink2);margin-bottom:18px;flex:1}
     .plan .btn{width:100%}
-    .topups{margin-top:18px;font-size:.92rem;color:var(--ink2);text-align:center}
+    .topups{margin-top:16px;font-size:.9rem;color:var(--muted);text-align:center}
 
     /* faq */
-    .faq{max-width:780px}
-    .faq details{border-bottom:1px solid var(--line);padding:18px 0}
-    .faq summary{cursor:pointer;font-weight:600;font-size:1.04rem;list-style:none;display:flex;justify-content:space-between;gap:16px}
+    .faq{max-width:720px;margin:0 auto}
+    .faq details{border-bottom:1px solid var(--line);padding:16px 0}
+    .faq summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:16px}
     .faq summary::-webkit-details-marker{display:none}
-    .faq summary::after{content:"+";font-weight:400;font-size:1.4rem;line-height:1;color:var(--muted)}
+    .faq summary::after{content:"+";font-weight:400;font-size:1.3rem;line-height:1;color:var(--muted)}
     .faq details[open] summary::after{content:"–"}
-    .faq p{margin:10px 0 0;color:var(--ink2)}
+    .faq p{margin:8px 0 0;color:var(--ink2)}
 
-    .cta-band{background:var(--ink);color:#fff;border-radius:28px;padding:56px 40px;text-align:center}
-    .cta-band h2{font-size:clamp(2rem,4vw,3.2rem);margin:0 0 12px;line-height:1.05}
-    .cta-band p{color:#c9ccd1;margin:0 0 24px}
-    .cta-band .btn-primary{background:#fff;color:var(--ink)}
-
-    footer{padding:40px 0 56px;color:var(--muted);font-size:.88rem}
+    footer{padding:36px 0 48px;color:var(--muted);font-size:.88rem;border-top:1px solid var(--line)}
     footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
-    footer nav{display:flex;gap:20px}
+    footer nav{display:flex;gap:20px;flex-wrap:wrap}
     footer a{text-decoration:none}
     footer a:hover{color:var(--ink)}
 
     /* modal */
     .modal{position:fixed;inset:0;z-index:60;background:rgba(21,23,26,.45);display:none;align-items:center;justify-content:center;padding:16px}
     .modal.open{display:flex}
-    .modal-card{background:#fff;border-radius:22px;max-width:420px;width:100%;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.25);position:relative}
+    .modal-card{background:#fff;border-radius:22px;max-width:400px;width:100%;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.25);position:relative}
     .modal-card h3{font-family:var(--serif);font-weight:400;font-size:2rem;margin:0 0 4px}
     .modal-card p.sub{color:var(--ink2);margin:0 0 20px;font-size:.94rem}
     .modal-x{position:absolute;top:14px;right:14px;border:0;background:#f1efe9;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem}
@@ -212,22 +167,18 @@
     .toast.show{opacity:1}
 
     @media (max-width:960px){
-      .hero-grid,.opt-grid{grid-template-columns:1fr}
+      .hero-grid{grid-template-columns:1fr}
       .plans{grid-template-columns:1fr 1fr}
-      .features{grid-template-columns:1fr 1fr}
-      .float-tag{right:8px}
     }
-    @media (max-width:680px){
-      .nav-links{display:none}
-      .hero{padding:44px 0 36px}
-      section{padding:60px 0}
-      .steps,.features,.plans,.compare{grid-template-columns:1fr}
-      .scores{grid-template-columns:1fr}
-      .row2{grid-template-columns:1fr}
-      .hero-form{flex-direction:column;border-radius:18px}
-      .hero-form input{padding:12px 10px}
-      .cta-band{padding:40px 22px}
-      #navLogin{display:none}
+    @media (max-width:640px){
+      .hero{padding:32px 0 48px}
+      section{padding:56px 0}
+      .plans,.row2{grid-template-columns:1fr}
+      .scores{gap:6px}
+      .ring{flex-direction:column;align-items:flex-start;gap:6px;padding:8px}
+      .url-bar{flex-direction:column;border-radius:18px}
+      .url-bar input{padding:12px 10px}
+      .nav-link,#navUser{display:none}
     }
   </style>
 </head>
@@ -235,221 +186,89 @@
   <header class="nav" id="nav">
     <div class="wrap">
       <a class="brand" href="/v2"><span class="brand-mark">MC</span>MyCommercePartner</a>
-      <nav class="nav-links">
-        <a href="#optimize">Optimizer</a>
-        <a href="#how">How it works</a>
-        <a href="#pricing">Pricing</a>
-        <a href="#faq">FAQ</a>
-      </nav>
       <div class="nav-cta">
+        <a class="nav-link" href="#pricing">Pricing</a>
         <span id="navUser" hidden></span>
         <button class="btn btn-ghost" id="navLogin" type="button">Log in</button>
-        <a class="btn btn-primary" href="#optimize" id="navStart">Try it free</a>
       </div>
     </div>
   </header>
 
   <main>
-    <!-- hero -->
-    <div class="hero">
+    <div class="hero" id="optimize">
       <div class="wrap hero-grid">
         <div>
-          <span class="eyebrow">AI listing optimizer for eBay sellers</span>
-          <h1 class="serif">Listings that get <em>found</em>, then get bought.</h1>
-          <p class="lead">Paste an eBay listing. In seconds you get a sharper title under 80 characters, buyer-ready bullets, a clean description, and a scored list of what to fix next.</p>
-          <form class="hero-form" id="heroForm">
-            <input name="url" type="url" inputmode="url" placeholder="https://www.ebay.com/itm/…" aria-label="eBay listing URL">
-            <button class="btn btn-accent" type="submit">Optimize →</button>
-          </form>
-          <div class="hero-note">2 free optimizations when you create an account. No card, no eBay login.</div>
-          <div class="trust"><span>Only uses facts from your listing</span><span>Copy-paste ready for eBay</span><span>HTML description included</span></div>
-        </div>
-        <div class="demo" aria-hidden="true">
-          <div class="demo-card">
-            <div class="demo-row"><span class="demo-label">Your title</span><span class="pill soft">Before</span></div>
-            <p class="demo-title demo-before">shade cloth privacy screen 90% sun block fence cover black grommets patio garden deck</p>
-            <div class="demo-row"><span class="demo-label">Optimized title</span><span class="pill">After · AI</span></div>
-            <p class="demo-title demo-after" id="demoAfter">90% Black Shade Cloth Privacy Screen with Grommets for Fence and Patio</p>
-            <div class="demo-scores">
-              <div class="demo-score"><b><span data-count="91">91</span><span class="delta">+27</span></b><small>SEO</small></div>
-              <div class="demo-score"><b><span data-count="86">86</span><span class="delta">+22</span></b><small>Conversion</small></div>
-              <div class="demo-score"><b><span data-count="88">88</span><span class="delta">+25</span></b><small>Overall</small></div>
+          <h1 class="serif">Better eBay listings in <em>one click</em>.</h1>
+          <p class="lead">Paste a listing link. Get a stronger title, bullets, and description.</p>
+          <form id="optForm" novalidate>
+            <div class="url-bar">
+              <input id="fUrl" name="listingUrl" type="url" inputmode="url" placeholder="Paste your eBay listing link" aria-label="eBay listing link">
+              <button class="btn btn-accent" id="optBtn" type="submit">Optimize</button>
             </div>
-          </div>
-          <div class="float-tag">Title fits in <b>70 / 80</b> characters</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- optimizer -->
-    <section class="band" id="optimize">
-      <div class="wrap">
-        <div class="sec-head">
-          <span class="eyebrow">Optimizer</span>
-          <h2 class="serif">Run a listing through it.</h2>
-          <p>Start with the URL. If the listing is thin, add details and the rewrite gets sharper. Nothing is invented, and gaps show up as fixes instead.</p>
-        </div>
-        <div class="opt-grid">
-          <form class="panel" id="optForm" novalidate>
-            <div class="field">
-              <label for="fUrl">eBay listing URL</label>
-              <input id="fUrl" name="listingUrl" type="url" placeholder="https://www.ebay.com/itm/…">
-              <div class="hint">Public listings only. We never need access to your eBay account.</div>
-            </div>
-            <div class="field">
-              <label for="fTitle">Current title</label>
-              <input id="fTitle" name="title" maxlength="200" placeholder="Leave blank to pull it from the URL">
-            </div>
-            <details class="more" id="moreDetails">
-              <summary>Add product details (better results)</summary>
+            <div class="perks"><span>2 free</span><span>No card</span><span>No eBay login</span></div>
+            <button class="more-toggle" type="button" id="moreToggle" aria-expanded="false">+ No link? Type it in instead</button>
+            <div class="more" id="more">
+              <div class="field"><label for="fTitle">Title</label><input id="fTitle" name="title" maxlength="200"></div>
               <div class="row2">
                 <div class="field"><label for="fBrand">Brand</label><input id="fBrand" name="brand"></div>
-                <div class="field"><label for="fSku">Model / MPN</label><input id="fSku" name="sku"></div>
-              </div>
-              <div class="row2">
-                <div class="field"><label for="fCategory">Category</label><input id="fCategory" name="category" placeholder="e.g. Cell Phones & Smartphones"></div>
                 <div class="field"><label for="fCondition">Condition</label>
                   <select id="fCondition" name="condition">
-                    <option value="">Choose…</option>
+                    <option value=""></option>
                     <option>New</option><option>New - Open Box</option><option>Used - Like New</option><option>Used - Good</option><option>Used - Acceptable</option><option>For parts or not working</option>
                   </select>
                 </div>
               </div>
-              <div class="field"><label for="fSpecifics">Item specifics</label><textarea id="fSpecifics" name="specifics" placeholder="One per line, e.g.&#10;Storage Capacity: 128 GB&#10;Color: Midnight&#10;Included: Charger, box"></textarea></div>
-              <div class="field"><label for="fDesc">Current description</label><textarea id="fDesc" name="description"></textarea></div>
-              <div class="field"><label for="fShipping">Shipping & returns</label><input id="fShipping" name="shipping" placeholder="e.g. Free 3-day shipping, 30-day returns"></div>
-            </details>
-            <button class="btn btn-primary" id="optBtn" type="submit" style="width:100%">Optimize listing</button>
+              <div class="field"><label for="fSpecifics">Details</label><textarea id="fSpecifics" name="specifics" placeholder="Size: Large&#10;Color: Black&#10;Includes: charger, box"></textarea></div>
+            </div>
             <div class="status" id="optStatus" role="status" aria-live="polite"></div>
           </form>
-
-          <div class="panel" id="results">
-            <div class="results-empty" id="resultsEmpty">
-              <div class="big">Your rewrite shows up here.</div>
-              <div>Title, bullets, description, HTML, and a fix list, each with a copy button.</div>
-            </div>
-          </div>
+          <div class="steps"><span><b>1</b>Paste</span><i>→</i><span><b>2</b>Optimize</span><i>→</i><span><b>3</b>Copy to eBay</span></div>
         </div>
+
+        <div class="card" id="results"></div>
       </div>
-    </section>
+    </div>
 
-    <!-- how -->
-    <section id="how">
-      <div class="wrap">
-        <div class="sec-head">
-          <span class="eyebrow">How it works</span>
-          <h2 class="serif">Three steps. About thirty seconds.</h2>
-        </div>
-        <div class="steps">
-          <div class="step"><h3>Paste your listing</h3><p>Drop in a public eBay URL. We read the title, specifics, condition, and shipping that buyers already see.</p></div>
-          <div class="step"><h3>AI rewrites it</h3><p>The optimizer rewrites the copy for eBay search and mobile scanning, using only the facts in your listing.</p></div>
-          <div class="step"><h3>Copy, paste, fix</h3><p>Paste the title, bullets, and HTML description into eBay, then work down the prioritized fix list.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- features -->
-    <section class="band">
-      <div class="wrap">
-        <div class="sec-head">
-          <span class="eyebrow">What you get</span>
-          <h2 class="serif">Everything a listing needs, nothing it doesn't.</h2>
-        </div>
-        <div class="features">
-          <div class="feature"><div class="ico">T</div><h3>Title under 80 characters</h3><p>Brand, model, and the terms buyers actually search go first, and words never get cut off mid-way.</p></div>
-          <div class="feature"><div class="ico">•</div><h3>Scannable bullets</h3><p>Short buyer-benefit lines, each backed by a fact from your listing, so they hold up to questions.</p></div>
-          <div class="feature"><div class="ico">¶</div><h3>Description + HTML</h3><p>A clean plain-text description plus mobile-friendly HTML you can paste straight into eBay.</p></div>
-          <div class="feature"><div class="ico">%</div><h3>SEO, conversion, completeness</h3><p>Three scores show where a listing is weak before buyers scroll past it.</p></div>
-          <div class="feature"><div class="ico">!</div><h3>Prioritized fix list</h3><p>Missing specifics, weak photos, and policy gaps, ranked by what to fix first.</p></div>
-          <div class="feature"><div class="ico">✓</div><h3>No made-up claims</h3><p>If a fact isn't in your listing, it won't show up in the copy. It becomes a fix to add instead.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- before/after -->
-    <section>
-      <div class="wrap">
-        <div class="sec-head">
-          <span class="eyebrow">Before &amp; after</span>
-          <h2 class="serif">Same product. Easier to find, easier to trust.</h2>
-        </div>
-        <div class="compare">
-          <div class="before">
-            <h3>Before</h3>
-            <div class="t">apple iphone 13 128gb unlocked GREAT CONDITION L@@K fast ship</div>
-            <ul><li>Shouty, filler words take up title space</li><li>No color, carrier, or battery details</li><li>Description is one run-on paragraph</li></ul>
-          </div>
-          <div>
-            <h3>After</h3>
-            <div class="t">Apple iPhone 13 128GB Unlocked Midnight Smartphone, Good Condition</div>
-            <ul><li>Search terms up front, 68 / 80 characters</li><li>Bullets for carrier, storage, and what's included</li><li>Fix list: add battery health and a powered-on screen photo</li></ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- pricing -->
     <section class="band" id="pricing">
       <div class="wrap">
-        <div class="sec-head">
-          <span class="eyebrow">Pricing</span>
-          <h2 class="serif">One credit per listing. Start free.</h2>
-          <p>Each optimization uses one credit. Credits refresh every month, and you can cancel anytime.</p>
-        </div>
+        <h2 class="serif sec-title">1 credit = 1 listing.</h2>
         <div class="plans">
           <div class="plan">
             <h3>Free</h3>
             <div class="price">$0</div>
-            <div class="per">2 optimizations</div>
-            <ul><li>Full AI rewrite</li><li>Scores and fix list</li><li>No card required</li></ul>
-            <button class="btn btn-ghost" type="button" data-signup>Create free account</button>
+            <div class="per">2 listings</div>
+            <button class="btn btn-ghost" type="button" data-signup>Start free</button>
           </div>
           <div class="plan">
             <h3>Starter</h3>
             <div class="price">$39<small>/mo</small></div>
-            <div class="per">50 listings / month</div>
-            <ul><li>Everything in Free</li><li>HTML descriptions</li><li>Buy extra credits anytime</li></ul>
-            <a class="btn btn-ghost" href="https://buy.stripe.com/00w28qep2aVT3sW0ZYdUY00">Choose Starter</a>
+            <div class="per">50 listings a month</div>
+            <a class="btn btn-ghost" href="https://buy.stripe.com/00w28qep2aVT3sW0ZYdUY00">Choose</a>
           </div>
           <div class="plan hot">
             <h3>Growth</h3>
             <div class="price">$99<small>/mo</small></div>
-            <div class="per">250 listings / month</div>
-            <ul><li>Everything in Starter</li><li>Best per-listing price for active stores</li><li>Priority support</li></ul>
-            <a class="btn btn-primary" href="https://buy.stripe.com/dRm7sKgxaaVTd3weQOdUY01">Choose Growth</a>
+            <div class="per">250 listings a month</div>
+            <a class="btn btn-primary" href="https://buy.stripe.com/dRm7sKgxaaVTd3weQOdUY01">Choose</a>
           </div>
           <div class="plan">
             <h3>Enterprise</h3>
             <div class="price">$249<small>/mo</small></div>
-            <div class="per">800 listings / month</div>
-            <ul><li>Everything in Growth</li><li>For large catalogs and teams</li><li>Direct line to us</li></ul>
-            <a class="btn btn-ghost" href="https://buy.stripe.com/4gMeVc94I4xvfbE9wudUY02">Choose Enterprise</a>
+            <div class="per">800 listings a month</div>
+            <a class="btn btn-ghost" href="https://buy.stripe.com/4gMeVc94I4xvfbE9wudUY02">Choose</a>
           </div>
         </div>
-        <div class="topups">Need more this month? Add credit packs: 100 for $59 · 250 for $129 · 500 for $229.</div>
+        <div class="topups">Cancel anytime · Extra packs from $59</div>
       </div>
     </section>
 
-    <!-- faq -->
     <section id="faq">
       <div class="wrap">
-        <div class="sec-head"><span class="eyebrow">FAQ</span><h2 class="serif">Questions sellers ask.</h2></div>
+        <h2 class="serif sec-title">Questions</h2>
         <div class="faq">
-          <details><summary>Do you need access to my eBay account?</summary><p>No. The optimizer reads the public listing page, plus anything you type in. You paste the results into eBay yourself.</p></details>
-          <details><summary>Will the AI make things up about my item?</summary><p>No. It's instructed to use only facts from your listing and the details you add. When something important is missing, like battery health or included accessories, it shows up in your fix list instead of in the copy.</p></details>
-          <details><summary>What counts as a credit?</summary><p>One optimization of one listing. Re-running the same listing after adding details uses another credit.</p></details>
-          <details><summary>Does it work for Amazon?</summary><p>eBay comes first. Amazon-style titles are supported when you set the marketplace, but the product is built around eBay.</p></details>
-          <details><summary>Can I cancel anytime?</summary><p>Yes. Plans are month to month through Stripe, and you can manage or cancel from your dashboard.</p></details>
-        </div>
-      </div>
-    </section>
-
-    <section style="padding-top:0">
-      <div class="wrap">
-        <div class="cta-band">
-          <h2 class="serif">Your next sale starts with the title.</h2>
-          <p>Try it on your weakest listing. Two optimizations are free.</p>
-          <a class="btn btn-primary" href="#optimize">Optimize a listing</a>
+          <details><summary>Do you need my eBay login?</summary><p>No. We only read the public listing page.</p></details>
+          <details><summary>Will it make things up?</summary><p>No. It only uses facts from your listing. Anything missing goes on your fix list.</p></details>
+          <details><summary>Can I cancel anytime?</summary><p>Yes, from your dashboard.</p></details>
         </div>
       </div>
     </section>
@@ -458,21 +277,19 @@
   <footer>
     <div class="wrap">
       <div>© <span id="yr"></span> MyCommercePartner LLC</div>
-      <nav><a href="/about">About</a><a href="/faq">FAQ</a><a href="/blog">Blog</a><a href="/contact">Contact</a><a href="/dashboard">Dashboard</a></nav>
+      <nav><a href="/about">About</a><a href="/blog">Blog</a><a href="/contact">Contact</a><a href="/dashboard">Dashboard</a></nav>
     </div>
   </footer>
 
-  <!-- auth modal -->
   <div class="modal" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
     <div class="modal-card">
       <button class="modal-x" type="button" id="authClose" aria-label="Close">×</button>
       <h3 id="authTitle">Create your account</h3>
-      <p class="sub" id="authSub">Get 2 free optimizations. No card needed.</p>
+      <p class="sub" id="authSub">2 free listings. No card.</p>
       <form id="authForm">
-        <div class="field" id="nameField"><label for="aName">Name</label><input id="aName" name="name" autocomplete="name"></div>
         <div class="field"><label for="aEmail">Email</label><input id="aEmail" name="email" type="email" autocomplete="email" required></div>
         <div class="field"><label for="aPass">Password</label><input id="aPass" name="password" type="password" autocomplete="new-password" minlength="6" required></div>
-        <button class="btn btn-primary" id="authBtn" type="submit" style="width:100%">Create account</button>
+        <button class="btn btn-primary" id="authBtn" type="submit" style="width:100%;margin-top:6px">Create account</button>
         <div class="status" id="authStatus" role="status" aria-live="polite"></div>
       </form>
       <div class="switch" id="authSwitch"></div>
@@ -487,24 +304,18 @@
       const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
       $('yr').textContent = new Date().getFullYear();
 
-      // --- session (shared with /dashboard via localStorage.mcpSession) ---
+      // Session is shared with /dashboard via localStorage.mcpSession.
       function readSession(){ try { return JSON.parse(localStorage.getItem('mcpSession') || 'null'); } catch (e) { return null; } }
       function writeSession(s){ try { s ? localStorage.setItem('mcpSession', JSON.stringify(s)) : localStorage.removeItem('mcpSession'); } catch (e) {} }
+      function creditsLeft(s){ return s.plan ? s.creditsRemaining : Math.max(0, 2 - Number(s.trialUsed || 0)); }
       function renderNav(){
         const s = readSession();
-        const user = $('navUser');
-        if (s && s.accessToken) {
-          user.hidden = false;
-          const left = s.plan ? s.creditsRemaining : Math.max(0, 2 - Number(s.trialUsed || 0));
-          user.textContent = (left != null ? left + ' credits left' : '');
-          $('navLogin').textContent = 'Dashboard';
-        } else {
-          user.hidden = true;
-          $('navLogin').textContent = 'Log in';
-        }
+        const signedIn = Boolean(s && s.accessToken);
+        $('navUser').hidden = !signedIn;
+        if (signedIn) { const left = creditsLeft(s); $('navUser').textContent = left != null ? left + ' left' : ''; }
+        $('navLogin').textContent = signedIn ? 'Dashboard' : 'Log in';
       }
       renderNav();
-
       window.addEventListener('scroll', () => $('nav').classList.toggle('scrolled', window.scrollY > 8), { passive: true });
 
       function toast(msg){
@@ -519,16 +330,15 @@
         authMode = mode; afterAuth = then || null;
         const signup = mode === 'signup';
         $('authTitle').textContent = signup ? 'Create your account' : 'Welcome back';
-        $('authSub').textContent = signup ? 'Get 2 free optimizations. No card needed.' : 'Log in to keep optimizing.';
-        $('nameField').hidden = !signup;
+        $('authSub').textContent = signup ? '2 free listings. No card.' : 'Log in to keep going.';
         $('aPass').autocomplete = signup ? 'new-password' : 'current-password';
         $('authBtn').textContent = signup ? 'Create account' : 'Log in';
         $('authSwitch').innerHTML = signup
-          ? 'Already have an account? <button type="button" data-mode="login">Log in</button>'
+          ? 'Have an account? <button type="button" data-mode="login">Log in</button>'
           : 'New here? <button type="button" data-mode="signup">Create an account</button>';
         $('authStatus').textContent = ''; $('authStatus').className = 'status';
         $('authModal').classList.add('open');
-        setTimeout(() => (signup ? $('aName') : $('aEmail')).focus(), 30);
+        setTimeout(() => $('aEmail').focus(), 30);
       }
       function closeAuth(){ $('authModal').classList.remove('open'); }
       $('authClose').addEventListener('click', closeAuth);
@@ -544,8 +354,9 @@
 
       $('authForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const body = { email: $('aEmail').value.trim(), password: $('aPass').value };
-        if (authMode === 'signup') body.name = $('aName').value.trim() || body.email.split('@')[0];
+        const email = $('aEmail').value.trim();
+        const body = { email, password: $('aPass').value };
+        if (authMode === 'signup') body.name = email.split('@')[0];
         const status = $('authStatus');
         status.className = 'status'; status.textContent = authMode === 'signup' ? 'Creating your account…' : 'Logging in…';
         $('authBtn').disabled = true;
@@ -554,11 +365,8 @@
             method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
           });
           const data = await resp.json().catch(() => ({}));
-          if (!resp.ok || !data.user) throw new Error(data.error || 'Something went wrong. Please try again.');
-          if (!data.session || !data.session.accessToken) {
-            status.textContent = 'Check your email to confirm your account, then log in.';
-            return;
-          }
+          if (!resp.ok || !data.user) throw new Error(data.error || 'Something went wrong. Try again.');
+          if (!data.session || !data.session.accessToken) { status.textContent = 'Check your email to confirm, then log in.'; return; }
           writeSession(Object.assign({}, data.user, { accessToken: data.session.accessToken, refreshToken: data.session.refreshToken }));
           renderNav();
           closeAuth();
@@ -571,60 +379,65 @@
         }
       });
 
-      // --- hero form -> optimizer ---
-      $('heroForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const url = e.target.url.value.trim();
-        $('fUrl').value = url;
-        $('optimize').scrollIntoView({ behavior: 'smooth' });
-        if (url) setTimeout(() => $('optForm').requestSubmit(), 450);
-        else $('fUrl').focus();
+      // --- manual entry toggle ---
+      $('moreToggle').addEventListener('click', () => {
+        const open = $('more').classList.toggle('open');
+        $('moreToggle').setAttribute('aria-expanded', String(open));
+        $('moreToggle').textContent = open ? '– Hide' : '+ No link? Type it in instead';
+        if (open) $('fTitle').focus();
       });
 
-      // --- optimizer ---
+      // --- results ---
       function ring(value, label){
         const v = Math.max(0, Math.min(100, Number(value) || 0));
         const color = v >= 80 ? 'var(--good)' : v >= 60 ? 'var(--warn)' : 'var(--bad)';
-        const c = 2 * Math.PI * 18;
-        return `<div class="ring"><svg width="46" height="46" viewBox="0 0 46 46" aria-hidden="true">
-          <circle cx="23" cy="23" r="18" fill="none" stroke="#eeebe4" stroke-width="5"/>
-          <circle cx="23" cy="23" r="18" fill="none" stroke="${color}" stroke-width="5" stroke-linecap="round"
-            stroke-dasharray="${(v / 100) * c} ${c}" transform="rotate(-90 23 23)"/></svg>
+        const c = 2 * Math.PI * 16;
+        return `<div class="ring"><svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+          <circle cx="20" cy="20" r="16" fill="none" stroke="#eeebe4" stroke-width="5"/>
+          <circle cx="20" cy="20" r="16" fill="none" stroke="${color}" stroke-width="5" stroke-linecap="round"
+            stroke-dasharray="${(v / 100) * c} ${c}" transform="rotate(-90 20 20)"/></svg>
           <div><b>${v}</b><small>${label}</small></div></div>`;
       }
       function lines(text){ return String(text || '').split('\n').map((l) => l.replace(/^\s*(?:[-*•]|\d+[.)])\s*/, '').trim()).filter(Boolean); }
-      function copyBtn(key){ return `<button class="copy" type="button" data-copy="${key}">Copy</button>`; }
+      function copyBtn(key, label){ return `<button class="copy" type="button" data-copy="${key}">${label || 'Copy'}</button>`; }
+
+      const example = {
+        example: true,
+        before: 'shade cloth privacy screen 90% sun block fence cover black grommets patio garden deck',
+        title: '90% Black Shade Cloth Privacy Screen with Grommets for Fence and Patio',
+        scores: { seo: 91, conv: 86, all: 88 },
+        bullets: '- Blocks 90% of sun for shade and privacy\n- Brass grommets for quick fence or deck install\n- Black mesh blends into patio and garden spaces'
+      };
 
       let lastResult = null;
       function renderResult(r){
         lastResult = r;
-        const limit = 80;
         const len = (r.title || '').length;
         const bullets = lines(r.bullets);
         const fixes = lines(r.actions);
+        const badge = r.example ? '<span class="pill muted">Example</span>'
+          : `<span class="pill ${r.engine === 'ai' ? '' : 'soft'}">${r.engine === 'ai' ? 'AI rewrite' : 'Rewrite'}</span>`;
         $('results').innerHTML = `
           ${r.warnings ? `<div class="warn">${esc(r.warnings)}</div>` : ''}
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-            <strong>Your optimized listing</strong>
-            <span class="pill ${r.engine === 'ai' ? '' : 'soft'}">${r.engine === 'ai' ? 'AI rewrite' : 'Rule-based rewrite'}</span>
-          </div>
-          <div class="scores">${ring(r.scores && r.scores.seo, 'SEO')}${ring(r.scores && r.scores.conv, 'Conversion')}${ring(r.scores && r.scores.all, 'Overall')}</div>
-          <div class="out"><div class="out-head"><h4>Title</h4>${copyBtn('title')}</div>
+          <div class="card-head"><strong>${r.example ? 'What you get' : 'Your new listing'}</strong>${badge}</div>
+          <div class="scores">${ring(r.scores && r.scores.seo, 'SEO')}${ring(r.scores && r.scores.conv, 'Sales')}${ring(r.scores && r.scores.all, 'Overall')}</div>
+          <div class="out"><div class="out-head"><h4>Title</h4>${r.example ? '' : copyBtn('title')}</div>
+            ${r.before ? `<p class="before-title">${esc(r.before)}</p>` : ''}
             <div class="title-out">${esc(r.title)}</div>
-            <div class="count ${len > limit ? 'over' : ''}">${len} / ${limit} characters</div></div>
-          <div class="out"><div class="out-head"><h4>Bullets</h4>${copyBtn('bullets')}</div>
+            <div class="count ${len > 80 ? 'over' : ''}">${len} / 80 characters</div></div>
+          <div class="out"><div class="out-head"><h4>Bullets</h4>${r.example ? '' : copyBtn('bullets')}</div>
             <ul class="clean">${bullets.map((b) => `<li>${esc(b)}</li>`).join('')}</ul></div>
-          <div class="out"><div class="out-head"><h4>Description</h4>
-              <div style="display:flex;gap:6px;align-items:center">
-                <div class="tabs" style="margin:0"><button class="tab on" type="button" data-view="text">Text</button><button class="tab" type="button" data-view="html">eBay HTML</button></div>
-                <span id="descCopy">${copyBtn('description')}</span>
-              </div></div>
+          ${r.example ? '' : `
+          <details class="fold"><summary>Description</summary>
+            <div class="out-head"><div class="tabs"><button class="tab on" type="button" data-view="text">Text</button><button class="tab" type="button" data-view="html">eBay HTML</button></div><span id="descCopy">${copyBtn('description')}</span></div>
             <div id="descText" class="desc-out">${esc(r.description)}</div>
-            <iframe id="descHtml" class="html-preview" title="eBay HTML preview" sandbox="" hidden></iframe></div>
-          ${fixes.length ? `<div class="out" style="margin-bottom:0"><div class="out-head"><h4>Fix next</h4>${copyBtn('actions')}</div>
-            <ol class="fixes">${fixes.map((f) => `<li>${esc(f)}</li>`).join('')}</ol></div>` : ''}`;
-        $('descHtml').srcdoc = `<!doctype html><meta charset="utf-8"><body style="margin:0;padding:16px">${r.descriptionHtml || ''}</body>`;
+            <iframe id="descHtml" class="html-preview" title="eBay HTML preview" sandbox="" hidden></iframe>
+          </details>
+          ${fixes.length ? `<details class="fold"><summary>Fix next (${fixes.length})</summary><ol class="fixes">${fixes.map((f) => `<li>${esc(f)}</li>`).join('')}</ol></details>` : ''}
+          <button class="btn btn-primary copy-all" type="button" data-copy="all">Copy title, bullets &amp; description</button>`}`;
+        if (!r.example) $('descHtml').srcdoc = `<!doctype html><meta charset="utf-8"><body style="margin:0;padding:16px">${r.descriptionHtml || ''}</body>`;
       }
+      renderResult(example);
 
       $('results').addEventListener('click', async (e) => {
         const view = e.target.getAttribute('data-view');
@@ -636,43 +449,43 @@
           return;
         }
         const key = e.target.getAttribute('data-copy');
-        if (!key || !lastResult) return;
-        const value = key === 'bullets' || key === 'actions' ? lines(lastResult[key]).join('\n') : lastResult[key];
+        if (!key || !lastResult || lastResult.example) return;
+        let value;
+        if (key === 'all') value = [lastResult.title, lines(lastResult.bullets).map((b) => '• ' + b).join('\n'), lastResult.description].join('\n\n');
+        else if (key === 'bullets' || key === 'actions') value = lines(lastResult[key]).join('\n');
+        else value = lastResult[key];
         try { await navigator.clipboard.writeText(value || ''); } catch (err) {}
+        const label = e.target.textContent;
         e.target.textContent = 'Copied'; e.target.classList.add('done');
-        setTimeout(() => { e.target.textContent = 'Copy'; e.target.classList.remove('done'); }, 1400);
+        setTimeout(() => { e.target.textContent = label; e.target.classList.remove('done'); }, 1400);
       });
 
       function showLoading(){
-        $('results').innerHTML = `<div style="padding:8px 0"><div class="status" style="margin:0 0 18px">Reading the listing and rewriting it…</div>
-          ${[92, 70, 85, 60, 78, 50, 88].map((w) => `<div class="skeleton" style="width:${w}%"></div>`).join('')}</div>`;
+        $('results').innerHTML = `<div class="card-head"><strong>Rewriting your listing…</strong><span class="pill muted">~10 sec</span></div>
+          ${[92, 70, 85, 60, 78, 50, 88].map((w) => `<div class="skeleton" style="width:${w}%"></div>`).join('')}`;
       }
       function showGate(title, text, btnLabel, action){
         $('results').innerHTML = `<div class="gate"><h3>${esc(title)}</h3><p>${esc(text)}</p><button class="btn btn-primary" type="button" id="gateBtn">${esc(btnLabel)}</button></div>`;
         $('gateBtn').addEventListener('click', action);
       }
+      function toResults(){ if (window.innerWidth < 960) $('results').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 
       $('optForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const form = e.target;
         const fd = Object.fromEntries(new FormData(form).entries());
         const status = $('optStatus');
-        status.className = 'status';
+        status.className = 'status'; status.textContent = '';
         if (!fd.listingUrl && !fd.title) {
-          status.className = 'status err'; status.textContent = 'Add an eBay URL or a current title to start.'; return;
+          status.className = 'status err'; status.textContent = 'Paste a link or type a title.';
+          $('fUrl').focus(); return;
         }
         const s = readSession();
-        if (!s || !s.accessToken) {
-          showGate('Create a free account to see your rewrite', 'You get 2 free optimizations. No card needed.', 'Create free account',
-            () => openAuth('signup', () => form.requestSubmit()));
-          openAuth('signup', () => form.requestSubmit());
-          return;
-        }
+        if (!s || !s.accessToken) { openAuth('signup', () => form.requestSubmit()); return; }
         const body = Object.assign({ marketplace: 'eBay' }, fd);
         Object.keys(body).forEach((k) => { if (body[k] === '') delete body[k]; });
         $('optBtn').disabled = true;
-        status.textContent = '';
-        showLoading();
+        showLoading(); toResults();
         try {
           const resp = await fetch('/api/optimize', {
             method: 'POST',
@@ -682,22 +495,19 @@
           const data = await resp.json().catch(() => ({}));
           if (resp.status === 401) {
             writeSession(null); renderNav();
-            showGate('Please log in again', 'Your session expired.', 'Log in', () => openAuth('login', () => form.requestSubmit()));
+            showGate('Log in again', 'Your session expired.', 'Log in', () => openAuth('login', () => form.requestSubmit()));
             return;
           }
           if (resp.status === 402) {
-            showGate(data.trialLimited ? "You've used your free optimizations" : "You're out of credits this month",
-              'Pick a plan to keep optimizing. Credits refresh monthly.', 'See plans',
+            showGate(data.trialLimited ? 'Free listings used' : 'Out of credits', 'Pick a plan to keep going.', 'See plans',
               () => $('pricing').scrollIntoView({ behavior: 'smooth' }));
             return;
           }
-          if (!resp.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
-          renderResult(data);
+          if (!resp.ok) throw new Error(data.error || 'Something went wrong. Try again.');
+          renderResult(data); toResults();
           if (data.user) { writeSession(Object.assign({}, s, data.user)); renderNav(); }
-          status.textContent = data.engine === 'ai' ? 'Done. AI rewrite is ready.' : 'Done.';
-          if (window.innerWidth < 960) $('results').scrollIntoView({ behavior: 'smooth' });
         } catch (err) {
-          $('results').innerHTML = '<div class="results-empty"><div class="big">That didn\'t work.</div><div>' + esc(err.message) + '</div></div>';
+          showGate("That didn't work", err.message, 'Try again', () => form.requestSubmit());
         } finally {
           $('optBtn').disabled = false;
         }
