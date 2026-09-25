@@ -126,6 +126,19 @@
     .band{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
     .sec-title{font-size:clamp(2rem,3.6vw,2.8rem);line-height:1.08;margin:0 0 32px;text-align:center}
 
+
+    /* store checkup */
+    .store{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+    .store h2{font-size:clamp(2rem,3.6vw,2.8rem);line-height:1.08;margin:0 0 12px}
+    .store p.lead{margin:0 0 18px}
+    .store ul{list-style:none;padding:0;margin:0;color:var(--ink2)}
+    .store li{padding:4px 0 4px 24px;position:relative}
+    .store li::before{content:"✓";position:absolute;left:0;color:var(--accent);font-weight:700}
+    .store .card .btn{width:100%;margin-top:4px}
+    .done-msg{text-align:center;padding:24px 8px}
+    .done-msg h3{font-family:var(--serif);font-weight:400;font-size:1.9rem;margin:0 0 6px}
+    .done-msg p{margin:0;color:var(--ink2)}
+
     /* pricing */
     .plans{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
     .plan{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);padding:22px;display:flex;flex-direction:column;align-items:flex-start}
@@ -168,7 +181,7 @@
     .toast.show{opacity:1}
 
     @media (max-width:960px){
-      .hero-grid{grid-template-columns:1fr}
+      .hero-grid,.store{grid-template-columns:1fr}
       .plans{grid-template-columns:1fr 1fr}
     }
     @media (max-width:640px){
@@ -188,6 +201,7 @@
     <div class="wrap">
       <a class="brand" href="/v2"><span class="brand-mark">MC</span>MyCommercePartner</a>
       <div class="nav-cta">
+        <a class="nav-link" href="#store">Big store?</a>
         <a class="nav-link" href="#pricing">Pricing</a>
         <span id="navUser" hidden></span>
         <button class="btn btn-ghost" id="navLogin" type="button">Log in</button>
@@ -229,6 +243,27 @@
         <div class="card" id="results"></div>
       </div>
     </div>
+
+    <section id="store">
+      <div class="wrap store">
+        <div>
+          <h2 class="serif">Got 100+ listings? Fix them all at once.</h2>
+          <p class="lead">We're building a tool that scans your whole store, finds the weak listings, and fixes them in bulk.</p>
+          <ul><li>Free checkup of your 20 weakest listings</li><li>Early access at a founding price</li></ul>
+        </div>
+        <form class="card" id="storeForm">
+          <div class="field"><label for="sEmail">Email</label><input id="sEmail" name="email" type="email" autocomplete="email" required></div>
+          <div class="field"><label for="sStore">eBay store or seller link</label><input id="sStore" name="siteUrl" placeholder="ebay.com/str/yourstore" required></div>
+          <div class="field"><label for="sCount">Active listings</label>
+            <select id="sCount" name="listings" required>
+              <option value="">Choose…</option><option>Under 50</option><option>50–250</option><option>250–1,000</option><option>1,000+</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" id="storeBtn" type="submit">Get my free checkup</button>
+          <div class="status" id="storeStatus" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
 
     <section class="band" id="pricing">
       <div class="wrap">
@@ -513,7 +548,34 @@
           $('optBtn').disabled = false;
         }
       });
+      // --- store checkup / bulk-fix waitlist (demand test) ---
+      $('storeForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        if (!form.reportValidity()) return;
+        const fd = Object.fromEntries(new FormData(form).entries());
+        const status = $('storeStatus');
+        status.className = 'status'; status.textContent = 'Sending…';
+        $('storeBtn').disabled = true;
+        try {
+          const resp = await fetch('/api/contact', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: fd.email.split('@')[0], email: fd.email, siteUrl: fd.siteUrl,
+              package: 'Store checkup + bulk-fix early access',
+              message: 'Active listings: ' + fd.listings + '\nSource: /v2 store checkup form'
+            })
+          });
+          const data = await resp.json().catch(() => ({}));
+          if (!resp.ok) throw new Error(data.error || 'Something went wrong. Try again.');
+          form.innerHTML = '<div class="done-msg"><h3>You\'re on the list.</h3><p>We\'ll email your store checkup within 2 business days.</p></div>';
+        } catch (err) {
+          status.className = 'status err'; status.textContent = err.message;
+          $('storeBtn').disabled = false;
+        }
+      });
     })();
   </script>
+  <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
